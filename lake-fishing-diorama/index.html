@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>湖畔垂钓 · Isometric Pixel Diorama</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <header class="hud">
+    <div class="brand"><span class="dot"></span>LAKESIDE<em>湖畔垂钓</em></div>
+    <div class="hud-right">
+      <div class="quality" id="quality" aria-label="画质">
+        <button data-q="0">高清</button><button data-q="1">标准</button><button data-q="2">复古</button>
+      </div>
+      <div class="catch">今日渔获 <b id="catch">0</b></div>
+    </div>
+  </header>
+
+  <p class="hint" id="hint">点击钓鱼人抛竿 · 点击湖面泛起涟漪</p>
+  <div class="fade"></div>
+
+  <nav class="switcher" id="switcher" aria-label="场景切换">
+    <span class="indicator"></span>
+    <button data-scene="morning">清晨薄雾</button>
+    <button data-scene="noon" class="active">午后垂钓</button>
+    <button data-scene="dusk">黄昏归舟</button>
+    <button data-scene="night">月夜静湖</button>
+  </nav>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

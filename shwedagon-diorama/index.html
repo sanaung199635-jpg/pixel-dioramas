@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>仰光大金塔 · Shwedagon Pixel Diorama</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+        "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <header class="hud">
+    <div class="brand"><span class="dot"></span>SHWEDAGON<em id="brand-name">仰光大金塔</em></div>
+    <div class="hud-right">
+      <button class="lang" id="lang" aria-label="Language">EN</button>
+      <div class="quality" id="quality" aria-label="画质">
+        <button data-q="0">高清</button><button data-q="1">标准</button><button data-q="2">复古</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <aside class="card" id="card" aria-live="polite">
+    <button class="card-close" aria-label="关闭">
+      <svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 6l12 12M18 6L6 18" /></svg>
+    </button>
+    <div class="card-kicker"></div>
+    <h2 class="card-title"></h2>
+    <div class="card-sub"></div>
+    <div class="card-badge" hidden></div>
+    <dl class="card-meta"></dl>
+    <div class="card-body"></div>
+    <div class="card-actions" hidden></div>
+    <p class="card-source"></p>
+  </aside>
+
+  <p class="hint" id="hint"></p>
+  <div class="fade"></div>
+
+  <div class="toolbar" id="toolbar">
+    <button data-tool="rotate"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7" /><path d="M20 4v4h-4" /></svg><span></span></button>
+    <button data-tool="zoomIn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4 4M11 8v6M8 11h6" /></svg><span></span></button>
+    <button data-tool="zoomOut"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4 4M8 11h6" /></svg><span></span></button>
+    <button data-tool="reset"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7" /><path d="M6.5 9.5V20h11V9.5" /></svg><span></span></button>
+    <button data-tool="auto"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M10 8.5l5.5 3.5-5.5 3.5z" /></svg><span></span></button>
+    <button data-tool="info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M12 11v5.5M12 7.6v.2" /></svg><span></span></button>
+  </div>
+
+  <nav class="switcher" id="switcher" aria-label="场景切换">
+    <span class="indicator"></span>
+    <button data-scene="dawn">晨曦礼佛</button>
+    <button data-scene="noon" class="active">正午金光</button>
+    <button data-scene="dusk">黄昏诵经</button>
+    <button data-scene="night">夜色金塔</button>
+  </nav>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

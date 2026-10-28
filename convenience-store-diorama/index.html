@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>便利店微缩沙盘 · Convenience Store Diorama</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <header class="hud">
+    <div class="brand"><span class="dot"></span>CONVENIENCE STORE<em>便利店微缩沙盘</em></div>
+    <div class="quality" id="quality" aria-label="画质">
+      <button data-q="0">高清</button><button data-q="1">标准</button><button data-q="2">复古</button>
+    </div>
+  </header>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <aside class="card" id="card" aria-live="polite">
+    <button class="card-close" aria-label="关闭">
+      <svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 6l12 12M18 6L6 18" /></svg>
+    </button>
+    <div class="card-kicker"></div>
+    <h2 class="card-title"></h2>
+    <div class="card-badge" hidden></div>
+    <dl class="card-meta"></dl>
+    <div class="card-body"></div>
+    <p class="card-note"></p>
+  </aside>
+
+  <p class="hint" id="hint">拖动轻微旋转 · 滚轮缩放 · 点击人物或店铺查看信息 · 「透视」揭开屋顶</p>
+  <div class="fade"></div>
+
+  <nav class="switcher" id="switcher" aria-label="天气与时间">
+    <span class="indicator"></span>
+    <button data-weather="sunny" class="active">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></svg>
+      晴天
+    </button>
+    <button data-weather="rain">
+      <svg viewBox="0 0 24 24"><path d="M7 15a4.5 4.5 0 1 1 1.2-8.8A5.5 5.5 0 0 1 18.5 9 3.5 3.5 0 0 1 17.5 15z" /><path d="M8.5 18l-1 2.5M12.5 18l-1 2.5M16.5 18l-1 2.5" /></svg>
+      下雨
+    </button>
+    <button data-weather="snow">
+      <svg viewBox="0 0 24 24"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5" /></svg>
+      下雪
+    </button>
+    <span class="sep"></span>
+    <button class="xray" id="xray" aria-label="透视店内">
+      <svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="3" /></svg>
+      <span>透视</span>
+    </button>
+    <button class="time" id="time" aria-label="白天 / 夜晚">
+      <svg class="sun-i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 3v2M12 19v2M3 12h2M19 12h2" /></svg>
+      <svg class="moon-i" viewBox="0 0 24 24"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z" /></svg>
+      <span>白天</span>
+    </button>
+  </nav>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
