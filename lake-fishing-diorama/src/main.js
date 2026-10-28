@@ -130,6 +130,7 @@ try {
 function resize() {
   const w = window.innerWidth;
   const h = window.innerHeight;
+  if (!w || !h) return; // hidden / background tab: wait for a real size
   // full device pixel ratio so the art pixels map 1:1 onto screen pixels (no browser resampling)
   const dpr = window.devicePixelRatio || 1;
   renderer.setPixelRatio(dpr);
@@ -331,6 +332,8 @@ function frame() {
 }
 
 window.addEventListener('resize', resize);
+// also refit whenever the canvas itself changes size (e.g. a tab opened in the background)
+new ResizeObserver(() => resize()).observe(canvas);
 resize();
 applyState();
 requestAnimationFrame(frame);

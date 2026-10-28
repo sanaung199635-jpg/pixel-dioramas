@@ -147,6 +147,7 @@ const tmpCam = new THREE.OrthographicCamera();
 function resize() {
   const w = window.innerWidth;
   const h = window.innerHeight;
+  if (!w || !h) return; // hidden / background tab: wait for a real size
   renderer.setPixelRatio(window.devicePixelRatio || 1);
   renderer.setSize(w, h, false);
   const buf = renderer.getDrawingBufferSize(new THREE.Vector2());
@@ -580,5 +581,7 @@ function frame() {
 }
 
 window.addEventListener('resize', resize);
+// also refit whenever the canvas itself changes size (e.g. a tab opened in the background)
+new ResizeObserver(() => resize()).observe(canvas);
 resize();
 frame(); // draw the first frame right away (it schedules the next ones)
