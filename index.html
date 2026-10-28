@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Dioramas · 等距像素微缩沙盘</title>
+  <style>
+    :root { --ink: #2c3330; --muted: #8b918e; --line: #ecedec; --chip: #f4f6f4; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #fff; color: var(--ink); font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif; display: grid; place-items: center; padding: 48px 16px; }
+    main { width: 100%; max-width: 920px; }
+    .kicker { font-size: 12px; letter-spacing: 0.24em; color: var(--muted); }
+    h1 { margin: 10px 0 8px; font-size: clamp(26px, 4vw, 36px); font-weight: 600; letter-spacing: 0.04em; }
+    p.lead { margin: 0 0 36px; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    a.card { display: block; padding: 22px 22px 20px; border: 1px solid var(--line); border-radius: 18px; text-decoration: none; color: inherit; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; }
+    a.card:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(30, 40, 35, 0.08); border-color: #dfe3e0; }
+    .dot { width: 34px; height: 34px; border-radius: 10px; margin-bottom: 16px; }
+    .card h2 { margin: 0 0 6px; font-size: 18px; font-weight: 600; }
+    .card p { margin: 0 0 16px; font-size: 13px; line-height: 1.7; color: #6b716e; }
+    .go { display: inline-block; font-size: 12px; padding: 6px 12px; border-radius: 999px; background: var(--chip); letter-spacing: 0.06em; }
+    footer { margin-top: 36px; font-size: 12px; color: var(--muted); }
+    footer a { color: inherit; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="kicker">THREE.JS · ISOMETRIC PIXEL DIORAMAS</div>
+    <h1>等距像素微缩沙盘</h1>
+    <p class="lead">三件用 Three.js 程序化建模、低分辨率离屏渲染再按像素放大的 3D 微缩场景。点击卡片在线打开。</p>
+    <div class="grid">
+      <a class="card" href="./lake-fishing-diorama/">
+        <div class="dot" style="background: linear-gradient(135deg, #5fc3b1, #2e8b92)"></div>
+        <h2>湖畔垂钓</h2>
+        <p>木屋、码头、小船与三位钓鱼人，抛竿、等待、收竿上鱼，四个时段光照。</p>
+        <span class="go">打开 ▶</span>
+      </a>
+      <a class="card" href="./shwedagon-diorama/">
+        <div class="dot" style="background: linear-gradient(135deg, #ffd978, #d9a23c)"></div>
+        <h2>仰光大金塔</h2>
+        <p>阶梯金塔与环塔佛龛，跪拜信众；可旋转视角，点击人物与建筑查看中英文介绍。</p>
+        <span class="go">打开 ▶</span>
+      </a>
+      <a class="card" href="./convenience-store-diorama/">
+        <div class="dot" style="background: linear-gradient(135deg, #f58220 0 33%, #00845a 33% 66%, #e31b23 66%)"></div>
+        <h2>便利店</h2>
+        <p>透过玻璃可见的店内陈设，晴天 / 下雨 / 下雪天气系统，白天夜晚与“透视”模式。</p>
+        <span class="go">打开 ▶</span>
+      </a>
+    </div>
+    <footer>源码：<a href="https://github.com/sanaung199635-jpg/pixel-dioramas">github.com/sanaung199635-jpg/pixel-dioramas</a> · 人物均为虚构角色</footer>
+  </main>
+</body>
+</html>
