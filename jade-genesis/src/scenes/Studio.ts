@@ -63,13 +63,29 @@ export class Studio {
     this.key.shadow.map = null;
   }
 
+  /** Move the key light (and its shadow box) to the active station. */
+  focus(x: number, z: number): void {
+    this.key.target.position.set(x, 0, z);
+    this.key.position.set(x + 5, 10, z + 6);
+    this.key.target.updateMatrixWorld();
+  }
+
+  /** Showcase lighting presets. */
+  setMode(mode: 'gallery' | 'soft' | 'back'): void {
+    const m = { gallery: [1, 1, 1, 1], soft: [1.5, 0.35, 1.6, 0.6], back: [0.35, 0.25, 0.2, 3.2] }[mode];
+    this.mode = m;
+  }
+
+  private mode = [1, 1, 1, 1];
+
   /** 1 = normal gallery light, 0 = dark room for torch inspection. */
   setExposure(level: number, scene: THREE.Scene): void {
     const k = 0.12 + 0.88 * level;
-    this.hemi.intensity = this.base.hemi * k;
-    this.key.intensity = this.base.key * k;
-    this.fill.intensity = this.base.fill * k;
-    this.rim.intensity = this.base.rim * k;
+    const [hm, km, fm, rm] = this.mode;
+    this.hemi.intensity = this.base.hemi * k * hm;
+    this.key.intensity = this.base.key * k * km;
+    this.fill.intensity = this.base.fill * k * fm;
+    this.rim.intensity = this.base.rim * k * rm;
     scene.environmentIntensity = 0.85 * (0.2 + 0.8 * level);
     this.backdrop.color.lerpColors(this.dim, this.paper, level);
     (scene.fog as THREE.Fog).color.copy(this.backdrop.color);

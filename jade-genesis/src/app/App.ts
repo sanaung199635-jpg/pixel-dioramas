@@ -1,43 +1,46 @@
 import * as THREE from 'three';
 import { Ui } from '../components/Ui';
-import { JadeMaterial } from '../materials/JadeMaterial';
+import { t } from '../content';
 import { CameraRig } from '../controls/CameraRig';
-import { CuttingScene, phaseAt } from '../scenes/CuttingScene';
-import { ROUGH_SHOT, RoughStoneScene } from '../scenes/RoughStoneScene';
+import { STAGES, phaseKey } from '../journey/stages';
+import { JadeMaterial } from '../materials/JadeMaterial';
+import { Director, type LightMode } from '../scenes/Director';
 import { World } from '../scenes/World';
-import { Journey, type JourneySnapshot, type StageId } from './Journey';
+import { Journey, type JourneySnapshot, type Speed } from './Journey';
 import { Quality } from './Quality';
+import { Sound } from './Sound';
 
 export function hasWebGL2(): boolean {
   try {
-    const c = document.createElement('canvas');
-    return !!c.getContext('webgl2');
+    return !!document.createElement('canvas').getContext('webgl2');
   } catch {
     return false;
   }
 }
 
-/** Debug / test hook. Read-only views plus the same actions the UI uses. */
+/** Debug / test hook: read-only views plus the same actions the UI uses. */
 export interface JadeDebug {
-  state(): JourneySnapshot & { cameraMode: string; torch: boolean; exposure: number; quality: string; dpr: number; frames: number; avgFrameMs: number; phase: string };
-  setStage(s: StageId): void;
+  state(): JourneySnapshot & {
+    stageId: string; cameraMode: string; torch: boolean; exposure: number; sound: boolean;
+    lightMode: LightMode; compare: number; quality: string; dpr: number; frames: number; avgFrameMs: number; phase: string; intro: boolean;
+  };
+  start(): void;
+  goTo(stage: number, play?: boolean): void;
+  /** Set an exact state without pausing (e.g. near the end of a stage, still playing). */
+  restore(s: Partial<JourneySnapshot>): void;
   seek(p: number): void;
   play(): void;
   pause(): void;
-  setSpeed(s: 0.5 | 1 | 2): void;
+  setSpeed(s: Speed): void;
   torch(on: boolean): void;
+  lightMode(m: LightMode): void;
+  compare(v: number): void;
   resetView(): void;
   hotspots(): { id: string; x: number; y: number; visible: boolean }[];
-  /** Resolves after n more frames have been rendered. */
   frames(n: number): Promise<void>;
-  /** Stop the render loop after rendering `settle` frames (for stable screenshots). */
   freeze(settle?: number): Promise<void>;
-  /** Restart the render loop. */
   unfreeze(): void;
-  /** Dev: change the stone's interior seed. */
   field(x: number, y: number, z: number): void;
-  /** Dev: set a property or jade uniform on the intact stone's material. */
-  mat(key: string, value: number): void;
 }
 
 declare global {
@@ -47,12 +50,12 @@ declare global {
 export class App {
   private readonly renderer: THREE.WebGLRenderer;
   private readonly world: World;
+  private readonly director: Director;
   private readonly rig: CameraRig;
   private readonly journey = new Journey();
-  private readonly rough: RoughStoneScene;
-  private readonly cutting: CuttingScene;
   private readonly ui: Ui;
   private readonly quality: Quality;
+  private readonly sound = new Sound();
   private readonly raycaster = new THREE.Raycaster();
   private readonly pointer = new THREE.Vector2();
   private readonly tmp = new THREE.Vector3();
@@ -64,42 +67,56 @@ export class App {
   private frameWaiters: { at: number; resolve: () => void }[] = [];
   private hotspots: { id: string; x: number; y: number; visible: boolean }[] = [];
   private down: { x: number; y: number; t: number } | null = null;
+  private intro = true;
+  private exposure = 1;
 
   constructor(private readonly canvas: HTMLCanvasElement, uiRoot: HTMLElement) {
     const mobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 760;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.0;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.localClippingEnabled = true;
 
     this.world = new World(this.renderer);
+    this.director = new Director(this.world);
     this.rig = new CameraRig(canvas);
-    this.rough = new RoughStoneScene(this.world);
-    this.cutting = new CuttingScene(this.world);
     this.quality = new Quality(mobile, (q) => this.applyQuality(q.dprCap, q.shadow));
 
     this.ui = new Ui(uiRoot, {
-      stage: (id) => this.setStage(id),
-      toggle: () => this.journey.toggle(),
+      start: () => { this.leaveIntro(); this.journey.startJourney(); this.rig.reset(); },
+      explore: () => this.leaveIntro(),
+      goTo: (i) => { this.leaveIntro(); this.journey.goTo(i); },
+      prev: () => { this.leaveIntro(); this.journey.prev(); },
+      next: () => { this.leaveIntro(); this.journey.next(); },
+      toggle: () => { this.leaveIntro(); this.journey.toggle(); },
       speed: (s) => this.journey.setSpeed(s),
       seek: (p) => this.journey.seek(p),
-      step: (d) => { if (this.journey.state.stage === 'cut') this.journey.seek(this.journey.state.progress + d); },
+      step: (d) => this.journey.step(d),
       resetView: () => this.rig.reset(),
-      torch: (on) => this.setTorch(on),
-      toggleTorch: () => this.setTorch(!this.rough.torchMode),
+      toggleTorch: () => this.setTorch(!this.director.torchMode),
+      toggleSound: () => void this.toggleSound(),
+      lightMode: (m) => { this.director.lightMode = m; },
+      compare: (v) => { this.director.compare = v; },
     });
 
-    this.journey.subscribe((s) => { if (s.stage !== 'rough' && this.rough.torchMode) this.setTorch(false); });
-    this.rig.onMode(() => this.pushUi());
+    // every stage change: hand the camera back to the guide, drop the manual torch
+    let lastStage = -1;
+    this.journey.subscribe((s) => {
+      if (s.stage === lastStage) return;
+      lastStage = s.stage;
+      this.rig.reset();
+      if (s.stage !== 2) this.setTorch(false);
+      this.rig.setDistanceLimits(s.stage === STAGES.length - 1 ? 1.4 : 2.4, s.stage === 0 ? 22 : 16);
+    });
 
     this.bindPointer();
     this.bindContextLoss();
     window.addEventListener('resize', () => this.resize());
+    // never keep playing sound in a background tab
+    document.addEventListener('visibilitychange', () => { if (document.hidden && this.sound.enabled) void this.sound.disable(); });
     this.applyQuality(this.quality.current.dprCap, this.quality.current.shadow);
     this.resize();
-    this.cutting.apply(0, 0, 0);
     this.exposeDebug();
   }
 
@@ -120,17 +137,22 @@ export class App {
     cancelAnimationFrame(this.raf);
   }
 
-  private setStage(id: StageId): void {
-    if (id === this.journey.state.stage) return;
-    this.journey.setStage(id);
-    this.rig.reset();
+  private leaveIntro(): void {
+    if (!this.intro) return;
+    this.intro = false;
+    this.ui.hideIntro();
   }
 
   private setTorch(on: boolean): void {
-    if (on && this.journey.state.stage !== 'rough') return;
-    this.rough.setTorchMode(on);
-    if (on) this.rough.placeDefaultTorch();
-    this.pushUi();
+    if (on && this.journey.state.stage !== 2) return;
+    this.director.torchMode = on;
+    if (!on) this.director.manualTorch = null;
+    if (on) this.journey.pause();
+  }
+
+  private async toggleSound(): Promise<void> {
+    if (this.sound.enabled) await this.sound.disable();
+    else await this.sound.enable();
   }
 
   private frame(now: number): void {
@@ -140,15 +162,17 @@ export class App {
     this.quality.sample(dtMs);
 
     const machineDt = this.journey.tick(dt);
-    this.machineTime += machineDt;
+    // machines keep idling (water, spin) even while the story is paused
+    const idleDt = this.journey.state.playing ? machineDt : dt * 0.25;
+    this.machineTime += idleDt;
     const s = this.journey.state;
-    this.cutting.apply(s.progress, this.machineTime, machineDt);
-    if (s.stage === 'rough') this.rough.update(dt);
-    else this.rough.resetLight();
+    const f = this.director.apply(s.stage, s.progress, this.machineTime, idleDt);
+    this.exposure = this.director.lastExposure;
+    this.sound.setMix(f.sound);
 
-    this.rig.update(dt, s.stage === 'rough' ? ROUGH_SHOT : this.cutting.shot());
+    this.rig.update(dt, f.shot, Director.stationOf(s.stage));
     this.renderer.render(this.world.scene, this.rig.camera);
-    this.projectHotspots();
+    this.projectHotspots(f.hotspots);
     this.pushUi();
 
     this.frameCount++;
@@ -157,16 +181,24 @@ export class App {
 
   private pushUi(): void {
     const s = this.journey.state;
-    this.ui.update({ ...s, phase: phaseAt(s.progress), cameraMode: this.rig.mode, torch: this.rough.torchMode });
+    this.ui.update({
+      ...s,
+      phase: t(phaseKey(s.stage, s.progress)),
+      cameraMode: this.rig.mode,
+      torch: this.director.torchMode,
+      sound: this.sound.enabled,
+      lightMode: this.director.lightMode,
+      compare: this.director.compare,
+    });
   }
 
-  private projectHotspots(): void {
-    const list = this.journey.state.stage === 'rough' ? (this.rough.torchMode ? [] : this.rough.hotspots()) : this.cutting.hotspots();
+  private projectHotspots(list: { id: string; world: THREE.Vector3 }[]): void {
     const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
+    const hide = this.intro || this.director.torchMode;
     this.hotspots = list.map((hs) => {
       this.tmp.copy(hs.world).project(this.rig.camera);
       const x = (this.tmp.x * 0.5 + 0.5) * w, y = (-this.tmp.y * 0.5 + 0.5) * h;
-      const visible = this.tmp.z < 1 && x > 8 && x < w - 8 && y > 64 && y < h - 8;
+      const visible = !hide && this.tmp.z < 1 && x > 8 && x < w - 8 && y > 64 && y < h - 8;
       return { id: hs.id, x, y, visible };
     });
     this.ui.setHotspots(this.hotspots);
@@ -193,29 +225,36 @@ export class App {
     this.raycaster.setFromCamera(this.pointer, this.rig.camera);
   }
 
+  /** Torch mode: aim the torch where the pointer meets the stone. */
+  private aimTorch(): void {
+    const stone = this.world.pieces.intact;
+    const hit = this.raycaster.intersectObject(stone, false)[0];
+    if (!hit?.face) return;
+    this.director.manualTorch = { point: stone.worldToLocal(hit.point.clone()), normal: hit.face.normal.clone() };
+  }
+
   private bindPointer(): void {
     const c = this.canvas;
     c.addEventListener('pointerdown', (e) => { this.down = { x: e.clientX, y: e.clientY, t: performance.now() }; });
     c.addEventListener('pointermove', (e) => {
-      if (!this.rough.torchMode || e.buttons) return;
+      if (!this.director.torchMode || e.buttons) return;
       this.setRay(e);
-      this.rough.pointTorch(this.raycaster);
+      this.aimTorch();
     });
     c.addEventListener('pointerup', (e) => {
       const d = this.down;
       this.down = null;
       if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6 || performance.now() - d.t > 600) return;
       this.setRay(e);
-      if (this.rough.torchMode) { this.rough.pointTorch(this.raycaster); return; }
-      const hit = this.raycaster.intersectObjects(this.world.pickables, true)[0];
+      if (this.director.torchMode) { this.aimTorch(); return; }
+      const hit = this.raycaster.intersectObjects(this.world.pickables, true).find((x) => x.object.visible);
       if (!hit) { this.ui.closePopover(); return; }
       let id: string | undefined;
       for (let o: THREE.Object3D | null = hit.object; o && !id; o = o.parent) id = o.userData.info as string | undefined;
       if (id === 'stone' && hit.face) {
-        // rind or window? read the rim attribute at the hit face
         const rim = (hit.object as THREE.Mesh).geometry.getAttribute('rim');
         const r = (rim.getX(hit.face.a) + rim.getX(hit.face.b) + rim.getX(hit.face.c)) / 3;
-        id = r < 0.5 ? 'window' : 'rind';
+        id = r < 0.5 && this.journey.state.stage >= 3 ? 'window' : 'rind';
       }
       if (id) this.ui.showInfo(id, e.clientX, e.clientY);
     });
@@ -225,7 +264,7 @@ export class App {
     this.canvas.addEventListener('webglcontextlost', (e) => {
       e.preventDefault();
       this.stop();
-      this.ui.showFallback('图形上下文已丢失', '浏览器暂时收回了 3D 渲染资源（常见于切换应用或显存不足）。正在等待恢复，你也可以刷新页面。', () => location.reload());
+      this.ui.showFallback(t('fallback.lost.title'), t('fallback.lost.body'), () => location.reload());
     });
     this.canvas.addEventListener('webglcontextrestored', () => {
       this.ui.hideFallback();
@@ -236,23 +275,35 @@ export class App {
 
   private exposeDebug(): void {
     window.__jade = {
-      state: () => ({
-        ...this.journey.state,
-        cameraMode: this.rig.mode,
-        torch: this.rough.torchMode,
-        exposure: Math.round(this.rough.exposureLevel * 100) / 100,
-        quality: this.quality.current.name,
-        dpr: this.renderer.getPixelRatio(),
-        frames: this.frameCount,
-        avgFrameMs: Math.round(this.quality.avgFrameMs * 10) / 10,
-        phase: phaseAt(this.journey.state.progress),
-      }),
-      setStage: (s) => this.setStage(s),
-      seek: (p) => this.journey.seek(p),
+      state: () => {
+        const s = this.journey.state;
+        return {
+          ...s,
+          stageId: STAGES[s.stage].id,
+          cameraMode: this.rig.mode,
+          torch: this.director.torchMode,
+          exposure: Math.round(this.exposure * 100) / 100,
+          sound: this.sound.enabled,
+          lightMode: this.director.lightMode,
+          compare: this.director.compare,
+          quality: this.quality.current.name,
+          dpr: this.renderer.getPixelRatio(),
+          frames: this.frameCount,
+          avgFrameMs: Math.round(this.quality.avgFrameMs * 10) / 10,
+          phase: t(phaseKey(s.stage, s.progress)),
+          intro: this.intro,
+        };
+      },
+      start: () => { this.leaveIntro(); this.journey.startJourney(); },
+      goTo: (i, play = false) => { this.leaveIntro(); this.journey.goTo(i, play); },
+      restore: (st) => { this.leaveIntro(); this.journey.restore(st); },
+      seek: (p) => { this.leaveIntro(); this.journey.seek(p); },
       play: () => this.journey.play(),
       pause: () => this.journey.pause(),
       setSpeed: (s) => this.journey.setSpeed(s),
       torch: (on) => this.setTorch(on),
+      lightMode: (m) => { this.director.lightMode = m; },
+      compare: (v) => { this.director.compare = v; },
       resetView: () => this.rig.reset(true),
       hotspots: () => this.hotspots.map((h) => ({ ...h })),
       frames: (n) => new Promise((resolve) => this.frameWaiters.push({ at: this.frameCount + n, resolve })),
@@ -264,11 +315,6 @@ export class App {
       },
       unfreeze: () => this.start(),
       field: (x, y, z) => JadeMaterial.field.set(x, y, z),
-      mat: (key, value) => {
-        const m = this.world.stone.intact.material as unknown as Record<string, unknown> & JadeMaterial;
-        const u = (m.jade as unknown as Record<string, { value: unknown }>)[key];
-        if (u) u.value = value; else m[key] = value;
-      },
     };
   }
 }

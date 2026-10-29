@@ -1,15 +1,239 @@
 {
   "locale": "zh-CN",
   "hotspots": {
-    "rind": { "label": "石皮", "sub": "Rind", "body": "原石表面因风化形成的外层。它会遮挡内部的真实品质。", "stage": "washing" },
-    "window": { "label": "开窗", "sub": "Window", "body": "磨去一小块皮壳露出的内部石质。窗口所见只代表这一个位置。", "stage": "window" },
-    "fissure": { "label": "裂隙", "sub": "Fissure", "body": "一条贯穿原石的裂隙。它会在窗口、切面和板料上的同一位置出现，决定后面从哪里取镯。", "stage": "planning" },
-    "stone": { "label": "翡翠原石", "sub": "Jadeite rough", "body": "本作中的原石是程序化生成的教学示意，并非真实标本。", "stage": "lighting" },
-    "saw": { "label": "水冷切割机", "sub": "Slab saw", "body": "用镶有金刚石的圆锯片剖开原石。工作台可前后进给，锯头可升降。", "stage": "slabbing" },
-    "blade": { "label": "金刚石锯片", "sub": "Diamond blade", "body": "锯片刃口镶有金刚石。切割时锯片高速旋转，并持续加冷却水。", "stage": "slabbing" },
-    "coolant": { "label": "冷却水", "sub": "Coolant", "body": "持续冲向切口的水流：降温，并带走切割产生的岩粉。", "stage": "slabbing" },
-    "cutface": { "label": "切面", "sub": "Cut face", "body": "两个切面互为镜像。它们的色带、棉絮和裂隙都来自同一块原石的内部。", "stage": "slabbing" },
-    "fissure-cut": { "label": "裂隙在切面上", "sub": "Same fissure", "body": "窗口上看到的那条裂隙，在切面上出现在对应的位置。", "stage": "planning" },
-    "plinth": { "label": "展台", "sub": "Plinth", "body": "原石观察工位。", "stage": "lighting" }
+    "rind": {
+      "label": "石皮",
+      "sub": "Rind",
+      "body": "原石表面因风化形成的外层。它会遮挡内部的真实品质。",
+      "stage": "washing"
+    },
+    "window": {
+      "label": "开窗",
+      "sub": "Window",
+      "body": "磨去一小块皮壳露出的内部石质。窗口所见只代表这一个位置。",
+      "stage": "window"
+    },
+    "fissure": {
+      "label": "裂隙",
+      "sub": "Fissure",
+      "body": "一条贯穿原石的裂隙。它会在窗口、切面和板料上的同一位置出现，决定后面从哪里取镯。",
+      "stage": "planning"
+    },
+    "stone": {
+      "label": "翡翠原石",
+      "sub": "Jadeite rough",
+      "body": "本作中的原石是程序化生成的教学示意，并非真实标本。",
+      "stage": "lighting"
+    },
+    "saw": {
+      "label": "水冷切割机",
+      "sub": "Slab saw",
+      "body": "用镶有金刚石的圆锯片剖开原石。工作台可前后进给，锯头可升降。",
+      "stage": "slabbing"
+    },
+    "blade": {
+      "label": "金刚石锯片",
+      "sub": "Diamond blade",
+      "body": "锯片刃口镶有金刚石。切割时锯片高速旋转，并持续加冷却水。",
+      "stage": "slabbing"
+    },
+    "coolant": {
+      "label": "冷却水",
+      "sub": "Coolant",
+      "body": "持续冲向切口的水流：降温，并带走切割产生的岩粉。",
+      "stage": "slabbing"
+    },
+    "cutface": {
+      "label": "切面",
+      "sub": "Cut face",
+      "body": "两个切面互为镜像。它们的色带、棉絮和裂隙都来自同一块原石的内部。",
+      "stage": "slabbing"
+    },
+    "fissure-cut": {
+      "label": "裂隙在切面上",
+      "sub": "Same fissure",
+      "body": "窗口上看到的那条裂隙，在切面上出现在对应的位置。",
+      "stage": "planning"
+    },
+    "plinth": {
+      "label": "展台",
+      "sub": "Plinth",
+      "body": "原石观察工位。",
+      "stage": "lighting"
+    },
+    "mine": {
+      "label": "矿坑",
+      "sub": "Open pit",
+      "body": "示意性的阶梯式露天矿。实际矿区既有机械化开采，也有手工开采，方式差异很大。",
+      "stage": "mining"
+    },
+    "excavator": {
+      "label": "挖掘机",
+      "sub": "Excavator",
+      "body": "剥离覆土、挖出原石。帕敢一带的大型露天矿以重型机械开采为主。",
+      "stage": "mining"
+    },
+    "cutlines": {
+      "label": "切割线",
+      "sub": "Cut lines",
+      "body": "三条粉笔线：中间一条先把原石对半剖开，另外两条从其中一半取出板料。",
+      "stage": "planning"
+    },
+    "slab": {
+      "label": "板料",
+      "sub": "Slab",
+      "body": "约 14 毫米厚的平板。它的两个面都来自原石内部，手镯将从这里取出。",
+      "stage": "slabbing"
+    },
+    "fissure-slab": {
+      "label": "裂隙",
+      "sub": "Fissure",
+      "body": "窗口上看到的那条裂隙，也穿过这块板料。画圈时要避开它。",
+      "stage": "marking"
+    },
+    "marks": {
+      "label": "画好的圈",
+      "sub": "Marked rings",
+      "body": "每处两圈：外圈决定手镯外径，内圈决定圈口。两组都避开了裂隙。",
+      "stage": "marking"
+    },
+    "drill": {
+      "label": "钻床",
+      "sub": "Core drill",
+      "body": "带管状金刚石钻头的钻床，钻切时加水冷却。",
+      "stage": "coring"
+    },
+    "outer-bit": {
+      "label": "外圈钻头",
+      "sub": "Outer bit",
+      "body": "先沿外轮廓钻切出圆形（依据 GIA 对平洲工厂的描述）。",
+      "stage": "coring"
+    },
+    "inner-bit": {
+      "label": "内圈钻头",
+      "sub": "Inner bit",
+      "body": "再换用较小的钻头切出内径。不同资料对先后顺序说法不一。",
+      "stage": "coring"
+    },
+    "blank": {
+      "label": "镯坯",
+      "sub": "Bangle blank",
+      "body": "切出后、尚未修形的环形毛坯，截面还是方的。",
+      "stage": "coring"
+    },
+    "core": {
+      "label": "镯芯",
+      "sub": "Core",
+      "body": "内圈切下的圆柱料，可另作吊坠等（行业资料）。",
+      "stage": "coring"
+    },
+    "offcut": {
+      "label": "余料",
+      "sub": "Offcut",
+      "body": "取镯后剩下的板料。另一处画好的圈还可以再取一只。",
+      "stage": "coring"
+    },
+    "wheel": {
+      "label": "粗磨轮",
+      "sub": "Coarse wheel",
+      "body": "磨去方形截面的棱角，定出内外圈与条形轮廓。",
+      "stage": "shaping"
+    },
+    "drum": {
+      "label": "细磨筒",
+      "sub": "Sanding drum",
+      "body": "磨筒伸入内圈，逐级换用更细的磨料。设备形式为示意。",
+      "stage": "fine-grinding"
+    },
+    "buff": {
+      "label": "抛光轮",
+      "sub": "Polishing buff",
+      "body": "用极细的磨料打出光泽。抛光是正常加工，不是“优化处理”。",
+      "stage": "polishing"
+    },
+    "bangle-rough": {
+      "label": "镯坯",
+      "sub": "Blank",
+      "body": "表面粗糙、没有光泽，截面正在由方变圆。",
+      "stage": "shaping"
+    },
+    "bangle-fine": {
+      "label": "精磨中",
+      "sub": "Fine grinding",
+      "body": "粗磨痕迹逐渐消失，表面变得平整。",
+      "stage": "fine-grinding"
+    },
+    "bangle-polish": {
+      "label": "抛光中",
+      "sub": "Polishing",
+      "body": "高光由模糊变清晰，颜色和透明度显现出来。",
+      "stage": "polishing"
+    },
+    "inspect": {
+      "label": "检查",
+      "sub": "Inspection",
+      "body": "量圈口，打灯检查裂纹与抛光状态。",
+      "stage": "showcase"
+    },
+    "edge": {
+      "label": "边缘透光",
+      "sub": "Translucent edge",
+      "body": "光线在薄的边缘处透过并散射，显得温润。",
+      "stage": "showcase"
+    },
+    "colour": {
+      "label": "色带",
+      "sub": "Colour band",
+      "body": "绿色浓淡不均，是同一块原石内部的天然分布。",
+      "stage": "showcase"
+    },
+    "lustre": {
+      "label": "抛光高光",
+      "sub": "Polish lustre",
+      "body": "清晰、不变形的反射是做工好的标志之一（GIA）。",
+      "stage": "showcase"
+    },
+    "bangle": {
+      "label": "翡翠手镯",
+      "sub": "Jadeite bangle",
+      "body": "本作中的手镯由程序生成，用于教学示意，不代表任何真实商品。",
+      "stage": "showcase"
+    },
+    "wash": {
+      "label": "清洗台",
+      "sub": "Wash basin",
+      "body": "冲去泥沙，让皮壳看得更清楚。",
+      "stage": "washing"
+    },
+    "lightbox": {
+      "label": "灯箱",
+      "sub": "Lightbox",
+      "body": "从下方透光，便于观察板料内部的裂与颜色。",
+      "stage": "marking"
+    },
+    "grind-bench": {
+      "label": "磨床",
+      "sub": "Grinding bench",
+      "body": "可更换磨轮、磨筒和抛光轮。",
+      "stage": "shaping"
+    },
+    "showcase": {
+      "label": "展台",
+      "sub": "Showcase",
+      "body": "成品展厅。",
+      "stage": "showcase"
+    },
+    "grinder-hand": {
+      "label": "角磨机",
+      "sub": "Angle grinder",
+      "body": "用砂轮磨去局部皮壳。",
+      "stage": "window"
+    },
+    "inner-diameter": {
+      "label": "圈口 ≈ 59.6 mm",
+      "sub": "Inner diameter",
+      "body": "手镯的内径。本作模型的圈口约 59.6 毫米、条宽约 8.8 毫米，仅为示意，不作为尺码建议。",
+      "stage": "showcase"
+    }
   }
 }

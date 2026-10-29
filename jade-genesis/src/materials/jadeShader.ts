@@ -32,8 +32,12 @@ float fbm(vec3 p){ float a=.5, s=0.; for(int i=0;i<4;i++){ s+=a*snoise(p); p=p*2
 export const JADE_PARS_GLSL = /* glsl */ `
 uniform float uRindAmt, uRough, uWet, uBump, uGreen, uEdgeGlow, uWave;
 uniform vec3 uField;
-uniform vec3 uMarks[4]; uniform int uMarkN;
-uniform vec4 uPlans[4]; uniform int uPlanN;
+uniform vec3 uMarks[4]; uniform int uMarkN; uniform float uMarkSweep;
+uniform vec4 uPlans[4]; uniform int uPlanN; uniform vec4 uPlanSweep;
+uniform vec3 uHoles[2]; uniform int uHoleN;
+uniform vec3 uKerfs[4]; uniform int uKerfN;
+uniform float uReveal;
+uniform vec4 uWin; // window centre (xyz) and radius (w): grinding spreads outward from the centre
 uniform vec4 uTorch;
 varying vec3 vJ; varying float vRim;
 // Named fissure plane in the stone frame. Mirrors FISSURE in StoneSolid.ts.
@@ -81,20 +85,35 @@ vec3 bumpNormal(vec3 surfPos, vec3 surfNorm, float h){
 `;
 
 export const COLOR_GLSL = /* glsl */ `#include <color_fragment>
+  for (int i=0;i<2;i++){ if(i>=uHoleN) break; if (length(vJ.yz-uHoles[i].xy) < uHoles[i].z) discard; }
   float cot, crk; vec3 jc = jadeColor(vJ, cot, crk);
   gCotton = cot; gCrack = crk;
-  gRind = clamp(vRim*uRindAmt, 0., 1.);
+  float reach = uReveal * uWin.w;
+  float ground = 1. - smoothstep(reach - 0.06, reach, distance(vJ, uWin.xyz) + 0.04*snoise(vJ*9.));
+  gRind = clamp(mix(1.0, vRim, ground)*uRindAmt, 0., 1.);
   vec3 col = mix(jc, skinColor(vJ) * mix(1.0, 0.62, uWet), gRind);
   col = mix(col, vec3(0.16,0.13,0.09), crk*gRind*0.8);
   gMark = 0.;
+  // marker circles are drawn one after another as uMarkSweep goes 0 → 1
   for (int i=0;i<4;i++){ if(i>=uMarkN) break;
-    gMark = max(gMark, 1.-smoothstep(0.004,0.009, abs(length(vJ.yz-uMarks[i].xy)-uMarks[i].z))); }
+    vec2 d = vJ.yz-uMarks[i].xy;
+    float a = (atan(d.y, d.x) + PI) / (2.*PI);
+    float drawn = step(a, clamp(uMarkSweep*float(uMarkN) - float(i), 0., 1.));
+    gMark = max(gMark, drawn*(1.-smoothstep(0.004,0.009, abs(length(d)-uMarks[i].z)))); }
+  // chalk cut lines sweep around the stone's x axis
   float chalk = 0.;
   for (int i=0;i<4;i++){ if(i>=uPlanN) break;
-    chalk = max(chalk, 1.-smoothstep(0.01,0.018, abs(dot(vJ,uPlans[i].xyz)-uPlans[i].w))); }
+    float a = (atan(vJ.z, vJ.y) + PI) / (2.*PI);
+    float drawn = step(a, uPlanSweep[i]);
+    chalk = max(chalk, drawn*(1.-smoothstep(0.01,0.018, abs(dot(vJ,uPlans[i].xyz)-uPlans[i].w)))); }
+  // saw kerf left by a tube drill
+  float kerf = 0.;
+  for (int i=0;i<4;i++){ if(i>=uKerfN) break;
+    kerf = max(kerf, 1.-smoothstep(0.003,0.007, abs(length(vJ.yz-uKerfs[i].xy)-uKerfs[i].z))); }
   col = mix(col, vec3(0.78,0.16,0.12), gMark);
   col = mix(col, vec3(0.97,0.96,0.92), chalk*0.92);
-  gMark = max(gMark, chalk);
+  col = mix(col, vec3(0.22,0.24,0.22), kerf*0.85);
+  gMark = max(max(gMark, chalk), kerf);
   gJade = toLinear(jc);
   diffuseColor.rgb = toLinear(col);`;
 

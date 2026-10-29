@@ -1,29 +1,39 @@
 // DOM overlay. Built once; `update()` patches only what changed.
-import type { Speed, StageId } from '../app/Journey';
+import type { Speed } from '../app/Journey';
 import type { CameraMode } from '../controls/CameraRig';
-import { SOURCES, hotspot, stage, type StageContent } from '../content';
-import { PHASE_LABELS } from '../scenes/CuttingScene';
+import { SOURCES, STAGE_CONTENT, hotspot, stage, t, type StageContent } from '../content';
+import { STAGES } from '../journey/stages';
+import type { LightMode } from '../scenes/Director';
 
 export interface UiHandlers {
-  stage(id: StageId): void;
+  start(): void;
+  explore(): void;
+  goTo(stage: number): void;
+  prev(): void;
+  next(): void;
   toggle(): void;
   speed(s: Speed): void;
   seek(p: number): void;
-  /** Move the timeline by d (only in the cutting station). */
   step(d: number): void;
   resetView(): void;
-  torch(on: boolean): void;
   toggleTorch(): void;
+  toggleSound(): void;
+  lightMode(m: LightMode): void;
+  compare(v: number): void;
 }
 
 export interface UiState {
-  stage: StageId;
+  stage: number;
   progress: number;
   playing: boolean;
   speed: Speed;
+  guided: boolean;
   phase: string;
   cameraMode: CameraMode;
   torch: boolean;
+  sound: boolean;
+  lightMode: LightMode;
+  compare: number;
 }
 
 export interface ScreenHotspot { id: string; x: number; y: number; visible: boolean }
@@ -31,10 +41,13 @@ export interface ScreenHotspot { id: string; x: number; y: number; visible: bool
 const ICON = {
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="fill" d="M7 5l12 7-12 7z"/></svg>',
   pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="fill" d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg>',
+  prev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>',
+  next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
   reset: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/></svg>',
   torch: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 6h-4z"/><path d="M10 9v11h4V9"/><path d="M18 4l2-1M18 8h2"/></svg>',
   book: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg>',
   close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  sound: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/><path class="mute" d="M17 9l4 6M21 9l-4 6"/></svg>',
 };
 
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', html = ''): HTMLElementTagNameMap[K] => {
@@ -43,71 +56,100 @@ const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', html = ''): 
   if (html) el.innerHTML = html;
   return el;
 };
+const btn = (cls: string, html: string, label: string, onClick: () => void): HTMLButtonElement => {
+  const b = h('button', cls, html);
+  b.type = 'button';
+  b.setAttribute('aria-label', label);
+  b.title = label;
+  b.addEventListener('click', onClick);
+  return b;
+};
+const pad = (n: number) => String(n).padStart(2, '0');
 
 export class Ui {
   private readonly root: HTMLElement;
-  private readonly tabs: Record<StageId, HTMLButtonElement>;
+  private readonly intro: HTMLElement;
   private readonly story: HTMLElement;
   private readonly know: HTMLElement;
-  private readonly dock: HTMLElement;
+  private readonly knowToggle: HTMLButtonElement;
+  private readonly steps: HTMLButtonElement[] = [];
+  private readonly stepFill: HTMLElement[] = [];
   private readonly playBtn: HTMLButtonElement;
-  private readonly speedBtns: Map<Speed, HTMLButtonElement>;
+  private readonly prevBtn: HTMLButtonElement;
+  private readonly nextBtn: HTMLButtonElement;
+  private readonly speedBtns = new Map<Speed, HTMLButtonElement>();
   private readonly scrub: HTMLInputElement;
   private readonly phaseText: HTMLElement;
+  private readonly ticks: HTMLElement;
   private readonly torchBtn: HTMLButtonElement;
-  private readonly startBtn: HTMLButtonElement;
+  private readonly soundBtn: HTMLButtonElement;
+  private readonly showcaseBar: HTMLElement;
+  private readonly lightBtns = new Map<LightMode, HTMLButtonElement>();
+  private readonly compareInput: HTMLInputElement;
   private readonly camChip: HTMLButtonElement;
+  private readonly guidedChip: HTMLElement;
   private readonly hotLayer: HTMLElement;
   private readonly pins = new Map<string, HTMLButtonElement>();
   private readonly popover: HTMLElement;
   private readonly toast: HTMLElement;
   private readonly live: HTMLElement;
-  private readonly knowToggle: HTMLButtonElement;
-  private last: Partial<UiState> & { knowledgeId?: string } = {};
+  private readonly panels: HTMLElement[];
+  private last: Partial<UiState> = {};
   private scrubbing = false;
 
   constructor(mount: HTMLElement, private readonly on: UiHandlers) {
     this.root = mount;
     this.root.className = 'ui';
+    this.root.dataset.intro = 'true';
 
-    // top bar
+    // ---- top bar
     const top = h('header', 'top');
-    top.innerHTML = '<div class="brand"><span class="mark" aria-hidden="true"></span><b>JADE GENESIS</b><i>翡翠诞生记</i></div>';
-    const nav = h('nav', 'tabs');
-    nav.setAttribute('role', 'tablist');
-    nav.setAttribute('aria-label', '工位');
-    const mkTab = (id: StageId, no: string, label: string) => {
-      const b = h('button', 'tab', `<span class="no">${no}</span>${label}`);
-      b.setAttribute('role', 'tab');
-      b.dataset.stage = id;
-      b.addEventListener('click', () => this.on.stage(id));
-      nav.append(b);
-      return b;
-    };
-    this.tabs = { rough: mkTab('rough', '03–05', '原石观察'), cut: mkTab('cut', '06', '水冷切片') };
-    top.append(nav, h('span', 'proto', 'Phase 3 技术原型'));
+    top.innerHTML = `<div class="brand"><span class="mark" aria-hidden="true"></span><b>JADE GENESIS</b><i>${t('brand.sub')}</i></div>`;
+    this.guidedChip = h('span', 'guided', `<i aria-hidden="true"></i>${t('guided')}`);
+    this.soundBtn = btn('chip sound', `${ICON.sound}<span>${t('btn.soundOff')}</span>`, t('btn.soundOff'), () => this.on.toggleSound());
+    const tools = h('div', 'tools');
+    tools.append(this.guidedChip, this.soundBtn);
+    top.append(tools);
 
+    // ---- intro
+    this.intro = h('section', 'intro');
+    this.intro.innerHTML = `<div class="kicker">${t('intro.kicker')}</div><h1>${t('intro.title')}</h1><p class="lead">${t('intro.lead')}</p>`;
+    const cta = h('div', 'cta-row');
+    cta.append(
+      btn('pill primary big', `<span>${t('intro.start')}</span>${ICON.play}`, t('intro.start'), () => this.on.start()),
+      btn('pill big', `<span>${t('intro.explore')}</span>`, t('intro.explore'), () => this.on.explore()),
+    );
+    this.intro.append(cta, h('p', 'note', t('intro.note')));
+
+    // ---- story + knowledge
     this.story = h('section', 'story');
-    this.story.setAttribute('aria-live', 'polite');
     this.know = h('aside', 'know');
     this.know.id = 'knowledge';
-    this.know.setAttribute('aria-label', '知识卡片');
-    this.knowToggle = h('button', 'know-toggle', `${ICON.book}<span>知识</span>`);
+    this.know.setAttribute('aria-label', t('card.title'));
+    this.knowToggle = btn('know-toggle', `${ICON.book}<span>${t('btn.knowledge')}</span>`, t('btn.knowledge'), () => this.setKnowOpen(!this.know.classList.contains('open')));
     this.knowToggle.setAttribute('aria-controls', 'knowledge');
     this.knowToggle.setAttribute('aria-expanded', 'false');
-    this.knowToggle.addEventListener('click', () => this.setKnowOpen(!this.know.classList.contains('open')));
 
-    // dock
-    this.dock = h('div', 'dock');
-    this.playBtn = h('button', 'round primary play');
-    this.playBtn.addEventListener('click', () => this.on.toggle());
+    // ---- dock: timeline row + controls row
+    const dock = h('div', 'dock');
+    const tl = h('nav', 'timeline');
+    tl.setAttribute('aria-label', t('tl.label'));
+    STAGE_CONTENT.forEach((c, i) => {
+      const b = btn('step', `<span class="bar"><span class="fill"></span></span><span class="n">${pad(c.no)}</span><span class="zh">${c.title}</span>`, `${pad(c.no)} ${c.title}`, () => this.on.goTo(i));
+      b.dataset.stage = String(i);
+      this.steps.push(b);
+      this.stepFill.push(b.querySelector('.fill') as HTMLElement);
+      tl.append(b);
+    });
+    const ctl = h('div', 'controls');
+    this.prevBtn = btn('round', ICON.prev, t('btn.prev'), () => this.on.prev());
+    this.playBtn = btn('round primary play', ICON.play, t('btn.play'), () => this.on.toggle());
+    this.nextBtn = btn('round', ICON.next, t('btn.next'), () => this.on.next());
     const speeds = h('div', 'speed');
     speeds.setAttribute('role', 'group');
-    speeds.setAttribute('aria-label', '演示速度');
-    this.speedBtns = new Map();
+    speeds.setAttribute('aria-label', t('speed.label'));
     for (const s of [0.5, 1, 2] as Speed[]) {
-      const b = h('button', '', `${s}×`);
-      b.addEventListener('click', () => this.on.speed(s));
+      const b = btn('', `${s}×`, `${s}×`, () => this.on.speed(s));
       speeds.append(b);
       this.speedBtns.set(s, b);
     }
@@ -117,30 +159,40 @@ export class Ui {
     this.scrub.min = '0';
     this.scrub.max = '1000';
     this.scrub.step = '1';
-    this.scrub.setAttribute('aria-label', '切割进度');
+    this.scrub.setAttribute('aria-label', t('scrub.label'));
     this.scrub.addEventListener('input', () => { this.scrubbing = true; this.on.seek(+this.scrub.value / 1000); });
     this.scrub.addEventListener('change', () => { this.scrubbing = false; });
-    const ticks = h('div', 'ticks');
-    ticks.setAttribute('aria-hidden', 'true');
-    for (const p of PHASE_LABELS) {
-      const t = h('span', '', p.label);
-      t.style.left = `${p.at * 100}%`;
-      ticks.append(t);
-    }
+    this.ticks = h('div', 'ticks');
+    this.ticks.setAttribute('aria-hidden', 'true');
     this.phaseText = h('div', 'phase');
-    scrubWrap.append(this.phaseText, this.scrub, ticks);
-    this.torchBtn = h('button', 'pill', `${ICON.torch}<span>打灯观察</span>`);
-    this.torchBtn.addEventListener('click', () => this.on.toggleTorch());
-    this.startBtn = h('button', 'pill primary', `<span>开始切割</span>${ICON.play}`);
-    this.startBtn.addEventListener('click', () => this.on.stage('cut'));
-    const resetBtn = h('button', 'round', ICON.reset);
-    resetBtn.setAttribute('aria-label', '重置视角');
-    resetBtn.title = '重置视角 (R)';
-    resetBtn.addEventListener('click', () => this.on.resetView());
-    this.camChip = h('button', 'cam-chip', '自由视角 · 点击回到导览');
-    this.camChip.addEventListener('click', () => this.on.resetView());
-    this.dock.append(this.torchBtn, this.startBtn, this.playBtn, speeds, scrubWrap, resetBtn);
+    scrubWrap.append(this.phaseText, this.scrub, this.ticks);
+    this.torchBtn = btn('pill torch', `${ICON.torch}<span>${t('btn.torch')}</span>`, t('btn.torch'), () => this.on.toggleTorch());
+    const resetBtn = btn('round', ICON.reset, t('btn.reset'), () => this.on.resetView());
+    ctl.append(this.prevBtn, this.playBtn, this.nextBtn, speeds, scrubWrap, this.torchBtn, resetBtn);
+    dock.append(tl, ctl);
 
+    // ---- showcase controls (stage 12)
+    this.showcaseBar = h('div', 'showcase-bar');
+    const lights = h('div', 'seg');
+    lights.setAttribute('role', 'group');
+    lights.setAttribute('aria-label', t('show.lights'));
+    for (const m of ['gallery', 'soft', 'back'] as LightMode[]) {
+      const b = btn('', t(`show.${m}`), t(`show.${m}`), () => this.on.lightMode(m));
+      lights.append(b);
+      this.lightBtns.set(m, b);
+    }
+    const cmp = h('label', 'compare');
+    this.compareInput = h('input');
+    this.compareInput.type = 'range';
+    this.compareInput.min = '0';
+    this.compareInput.max = '100';
+    this.compareInput.value = '100';
+    this.compareInput.setAttribute('aria-label', t('show.compare'));
+    this.compareInput.addEventListener('input', () => this.on.compare(+this.compareInput.value / 100));
+    cmp.append(h('span', '', t('show.before')), this.compareInput, h('span', '', t('show.after')));
+    this.showcaseBar.append(h('span', 'lbl', t('show.lights')), lights, h('span', 'lbl', t('show.compare')), cmp);
+
+    this.camChip = btn('cam-chip', t('cam.free'), t('cam.free'), () => this.on.resetView());
     this.hotLayer = h('div', 'hots');
     this.popover = h('div', 'popover');
     this.popover.setAttribute('role', 'dialog');
@@ -149,9 +201,10 @@ export class Ui {
     this.toast.setAttribute('role', 'status');
     this.live = h('div', 'sr-only');
     this.live.setAttribute('aria-live', 'polite');
-    const hint = h('div', 'hint', '拖动旋转 · 滚轮或双指缩放 · 空格 播放/暂停 · ←→ 逐帧');
+    const hint = h('div', 'hint', t('hint'));
 
-    this.root.append(top, this.story, this.knowToggle, this.know, this.hotLayer, this.popover, this.toast, this.camChip, hint, this.dock, this.live);
+    this.root.append(top, this.intro, this.story, this.knowToggle, this.know, this.hotLayer, this.popover, this.toast, this.camChip, this.showcaseBar, hint, dock, this.live);
+    this.panels = [this.story, this.know, dock, this.knowToggle, this.intro, this.showcaseBar];
 
     window.addEventListener('keydown', (e) => this.onKey(e));
     document.addEventListener('pointerdown', (e) => {
@@ -159,18 +212,25 @@ export class Ui {
     });
   }
 
+  hideIntro(): void {
+    this.root.dataset.intro = 'false';
+  }
+
   private onKey(e: KeyboardEvent): void {
-    const target = e.target as HTMLElement;
-    if (target && (target.tagName === 'INPUT' && e.key !== ' ')) return;
-    if (e.key === ' ') { e.preventDefault(); this.on.toggle(); }
-    else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-      e.preventDefault();
-      this.on.step(e.key === 'ArrowRight' ? 0.02 : -0.02);
-    } else if (e.key === '1') this.on.stage('rough');
-    else if (e.key === '2') this.on.stage('cut');
-    else if (e.key === 'r' || e.key === 'R') this.on.resetView();
-    else if (e.key === 't' || e.key === 'T') this.on.toggleTorch();
-    else if (e.key === 'Escape') this.closePopover();
+    const el = e.target as HTMLElement;
+    if (el?.tagName === 'INPUT' && e.key !== ' ') return;
+    if (el?.tagName === 'BUTTON' && (e.key === ' ' || e.key === 'Enter')) return; // buttons handle their own activation
+    switch (e.key) {
+      case ' ': e.preventDefault(); this.on.toggle(); break;
+      case 'ArrowRight': e.preventDefault(); this.on.step(0.02); break;
+      case 'ArrowLeft': e.preventDefault(); this.on.step(-0.02); break;
+      case ']': this.on.next(); break;
+      case '[': this.on.prev(); break;
+      case 'r': case 'R': this.on.resetView(); break;
+      case 't': case 'T': this.on.toggleTorch(); break;
+      case 'm': case 'M': this.on.toggleSound(); break;
+      case 'Escape': this.closePopover(); this.setKnowOpen(false); break;
+    }
   }
 
   private setKnowOpen(open: boolean): void {
@@ -181,59 +241,80 @@ export class Ui {
   update(s: UiState): void {
     const L = this.last;
     if (s.stage !== L.stage) {
-      for (const [id, b] of Object.entries(this.tabs)) {
-        b.setAttribute('aria-selected', String(id === s.stage));
-        b.classList.toggle('on', id === s.stage);
-      }
-      this.root.dataset.stage = s.stage;
+      const c = stage(STAGES[s.stage].id);
+      this.renderKnowledge(c);
+      this.steps.forEach((b, i) => {
+        b.classList.toggle('on', i === s.stage);
+        b.classList.toggle('done', i < s.stage);
+        if (i === s.stage) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      });
+      this.root.dataset.stage = String(s.stage);
+      this.prevBtn.disabled = s.stage === 0;
+      this.nextBtn.disabled = s.stage === STAGES.length - 1;
+      this.ticks.innerHTML = STAGES[s.stage].phases.map(([at, key]) => `<span style="left:${at * 100}%">${t(key)}</span>`).join('');
       this.closePopover();
-      this.live.textContent = s.stage === 'cut' ? '已进入工位 06：水冷切片' : '已进入工位 03–05：原石观察';
+      this.live.textContent = t('live.stage', { no: pad(c.no), title: c.title });
     }
-    const kid = s.stage === 'cut' ? 'slabbing' : s.torch ? 'lighting' : 'window';
-    if (kid !== L.knowledgeId) this.renderKnowledge(stage(kid));
-    if (s.playing !== L.playing || s.stage !== L.stage || (s.progress >= 1) !== ((L.progress ?? 0) >= 1)) {
-      const replay = !s.playing && s.progress >= 1;
+    if (s.stage !== L.stage || s.progress !== L.progress) {
+      this.stepFill.forEach((f, i) => { f.style.transform = `scaleX(${i < s.stage ? 1 : i === s.stage ? s.progress : 0})`; });
+    }
+    if (s.playing !== L.playing || (s.progress >= 1) !== ((L.progress ?? 0) >= 1)) {
+      const label = s.playing ? t('btn.pause') : s.progress >= 1 ? t('btn.replay') : t('btn.play');
       this.playBtn.innerHTML = s.playing ? ICON.pause : ICON.play;
-      this.playBtn.setAttribute('aria-label', s.playing ? '暂停' : replay ? '重新播放' : '播放');
-      this.playBtn.title = `${s.playing ? '暂停' : '播放'} (空格)`;
+      this.playBtn.setAttribute('aria-label', label);
+      this.playBtn.title = `${label} (Space)`;
     }
     if (s.speed !== L.speed) for (const [v, b] of this.speedBtns) { b.classList.toggle('on', v === s.speed); b.setAttribute('aria-pressed', String(v === s.speed)); }
     if (!this.scrubbing && s.progress !== L.progress) this.scrub.value = String(Math.round(s.progress * 1000));
     if (s.phase !== L.phase || s.progress !== L.progress) {
-      this.phaseText.textContent = `${s.phase} · ${Math.round(s.progress * 100)}%`;
-      this.scrub.setAttribute('aria-valuetext', `${s.phase}，${Math.round(s.progress * 100)}%`);
+      const pct = Math.round(s.progress * 100);
+      this.phaseText.textContent = `${s.phase} · ${pct}%`;
+      this.scrub.setAttribute('aria-valuetext', `${s.phase}，${pct}%`);
     }
+    if (s.guided !== L.guided) this.guidedChip.classList.toggle('show', s.guided);
     if (s.cameraMode !== L.cameraMode) this.camChip.classList.toggle('show', s.cameraMode === 'free');
     if (s.torch !== L.torch) {
       this.torchBtn.classList.toggle('on', s.torch);
       this.torchBtn.setAttribute('aria-pressed', String(s.torch));
-      this.showToast(s.torch ? `打灯观察：${stage('lighting').cautions[0]}` : '');
     }
-    Object.assign(this.last, s, { knowledgeId: kid });
+    const showToast = s.stage === 2 && (s.torch || (s.progress > 0.28 && s.progress < 0.88));
+    if (showToast !== this.toast.classList.contains('show')) {
+      this.toast.textContent = t('torch.note');
+      this.toast.classList.toggle('show', showToast);
+    }
+    if (s.sound !== L.sound) {
+      this.soundBtn.classList.toggle('on', s.sound);
+      this.soundBtn.querySelector('span')!.textContent = s.sound ? t('btn.soundOn') : t('btn.soundOff');
+      this.soundBtn.setAttribute('aria-pressed', String(s.sound));
+      this.soundBtn.setAttribute('aria-label', s.sound ? t('btn.soundOn') : t('btn.soundOff'));
+    }
+    if (s.lightMode !== L.lightMode) for (const [m, b] of this.lightBtns) { b.classList.toggle('on', m === s.lightMode); b.setAttribute('aria-pressed', String(m === s.lightMode)); }
+    if (s.compare !== L.compare && document.activeElement !== this.compareInput) this.compareInput.value = String(Math.round(s.compare * 100));
+    this.root.classList.toggle('showcase-ready', s.stage === STAGES.length - 1 && s.progress >= 1);
+    Object.assign(this.last, s);
   }
 
   private renderKnowledge(c: StageContent): void {
     this.story.innerHTML = `
-      <div class="kicker">STAGE ${String(c.no).padStart(2, '0')} / 12</div>
+      <div class="kicker">STAGE ${pad(c.no)} / 12</div>
       <h1>${c.title}<small>${c.en}</small></h1>
       <p>${c.summary}</p>
-      <div class="simp"><b>演示简化</b>${c.simplification}</div>`;
+      <div class="simp"><b>${t('card.simplified')}</b>${c.simplification}</div>`;
     this.know.innerHTML = `
-      <div class="kh"><span>知识卡片</span><span class="grade g${c.evidence}" title="证据等级">证据 ${c.evidence}</span></div>
+      <div class="kh"><span>${t('card.title')}</span><span class="grade g${c.evidence}">${t('card.evidence')} ${c.evidence}</span></div>
       <dl>
-        <dt>专业术语</dt><dd>${c.terms.map((t) => `<b>${t.zh}</b> ${t.en !== '—' ? `<i>${t.en}</i>` : ''}<br/><span>${t.def}</span>`).join('<br/>')}</dd>
-        <dt>加工目的</dt><dd>${c.purpose}</dd>
-        <dt>设备</dt><dd>${c.equipment.join('、')}</dd>
-        <dt>注意事项</dt><dd>${c.cautions.join('<br/>')}</dd>
-        <dt>参考来源</dt><dd class="src">${c.sources.map((id) => `<a href="${SOURCES[id].url}" target="_blank" rel="noopener">${SOURCES[id].title}</a><em>${SOURCES[id].grade}</em>`).join('')}</dd>
+        <dt>${t('card.terms')}</dt><dd>${c.terms.map((x) => `<b>${x.zh}</b> ${x.en !== '—' ? `<i>${x.en}</i>` : ''}<br/><span>${x.def}</span>`).join('<br/>')}</dd>
+        <dt>${t('card.purpose')}</dt><dd>${c.purpose}</dd>
+        <dt>${t('card.equipment')}</dt><dd>${c.equipment.join('、')}</dd>
+        <dt>${t('card.cautions')}</dt><dd>${c.cautions.join('<br/>')}</dd>
+        <dt>${t('card.sources')}</dt><dd class="src">${c.sources.map((id) => `<a href="${SOURCES[id].url}" target="_blank" rel="noopener">${SOURCES[id].title}</a><em>${SOURCES[id].grade}</em>`).join('')}</dd>
       </dl>`;
   }
 
   setHotspots(list: ScreenHotspot[]): void {
     const seen = new Set<string>();
-    // pins never sit underneath a panel
-    const blockers = [this.story, this.know, this.dock, this.knowToggle]
-      .filter((el) => el.offsetParent !== null)
+    const blockers = this.panels
+      .filter((el) => el.offsetParent !== null && getComputedStyle(el).opacity !== '0')
       .map((el) => el.getBoundingClientRect())
       .filter((r) => r.width > 0 && r.height > 0);
     const covered = (x: number, y: number) => blockers.some((r) => x > r.left - 12 && x < r.right + 12 && y > r.top - 12 && y < r.bottom + 12);
@@ -242,12 +323,14 @@ export class Ui {
       let pin = this.pins.get(hs.id);
       if (!pin) {
         const c = hotspot(hs.id);
-        pin = h('button', 'pin', `<span class="dot" aria-hidden="true"></span><span class="lbl"><b>${c.label}</b><i>${c.sub}</i></span>`);
-        pin.setAttribute('aria-label', `${c.label}：查看说明`);
-        pin.dataset.id = hs.id;
-        pin.addEventListener('click', (e) => { e.stopPropagation(); this.showInfo(hs.id, pin!.offsetLeft, pin!.offsetTop); });
-        this.hotLayer.append(pin);
-        this.pins.set(hs.id, pin);
+        const p = h('button', 'pin', `<span class="dot" aria-hidden="true"></span><span class="lbl"><b>${c.label}</b><i>${c.sub}</i></span>`);
+        p.type = 'button';
+        p.setAttribute('aria-label', c.label);
+        p.dataset.id = hs.id;
+        p.addEventListener('click', (e) => { e.stopPropagation(); const r = p.getBoundingClientRect(); this.showInfo(hs.id, r.left, r.top); });
+        this.hotLayer.append(p);
+        this.pins.set(hs.id, p);
+        pin = p;
       }
       pin.hidden = !hs.visible || covered(hs.x, hs.y);
       pin.style.transform = `translate(${hs.x.toFixed(1)}px, ${hs.y.toFixed(1)}px)`;
@@ -258,32 +341,25 @@ export class Ui {
   showInfo(id: string, x: number, y: number): void {
     const c = hotspot(id);
     const st = stage(c.stage);
-    this.popover.innerHTML = `<button class="x" aria-label="关闭">${ICON.close}</button>
-      <div class="kicker">STAGE ${String(st.no).padStart(2, '0')} · ${st.title}</div>
+    this.popover.innerHTML = `<button class="x" type="button" aria-label="close">${ICON.close}</button>
+      <div class="kicker">STAGE ${pad(st.no)} · ${st.title}</div>
       <h2>${c.label}<small>${c.sub}</small></h2><p>${c.body}</p>`;
     this.popover.querySelector('.x')!.addEventListener('click', () => this.closePopover());
     this.popover.hidden = false;
     this.popover.dataset.id = id;
     const pw = Math.min(300, window.innerWidth - 32);
-    const left = Math.min(Math.max(16, x + 18), window.innerWidth - pw - 16);
-    const top = Math.min(Math.max(72, y - 20), window.innerHeight - 220);
-    this.popover.style.left = `${left}px`;
-    this.popover.style.top = `${top}px`;
+    this.popover.style.left = `${Math.min(Math.max(16, x + 18), window.innerWidth - pw - 16)}px`;
+    this.popover.style.top = `${Math.min(Math.max(72, y - 20), window.innerHeight - 240)}px`;
   }
 
   closePopover(): void {
     this.popover.hidden = true;
   }
 
-  private showToast(text: string): void {
-    this.toast.textContent = text;
-    this.toast.classList.toggle('show', !!text);
-  }
-
   showFallback(title: string, body: string, retry?: () => void): void {
     let el = document.querySelector<HTMLElement>('.fallback');
     if (!el) { el = h('div', 'fallback'); el.setAttribute('role', 'alert'); document.body.append(el); }
-    el.innerHTML = `<div class="card"><div class="kicker">JADE GENESIS</div><h1>${title}</h1><p>${body}</p>${retry ? '<button class="pill primary">重试</button>' : ''}</div>`;
+    el.innerHTML = `<div class="card"><div class="kicker">JADE GENESIS</div><h1>${title}</h1><p>${body}</p>${retry ? `<button class="pill primary" type="button">${t('fallback.retry')}</button>` : ''}</div>`;
     el.hidden = false;
     if (retry) el.querySelector('button')!.addEventListener('click', retry);
   }

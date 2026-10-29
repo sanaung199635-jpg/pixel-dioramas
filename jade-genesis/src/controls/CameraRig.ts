@@ -9,7 +9,7 @@ import { damp } from '../utils/math';
 export type CameraMode = 'auto' | 'free';
 
 /** World box the orbit target may move within. */
-const TARGET_BOX = new THREE.Box3(new THREE.Vector3(-3, 0.3, -4), new THREE.Vector3(12, 4, 4));
+const TARGET_BOX = new THREE.Box3(new THREE.Vector3(-25, 0.3, -6), new THREE.Vector3(44, 5, 5));
 
 export class CameraRig {
   readonly camera: THREE.PerspectiveCamera;
@@ -17,6 +17,7 @@ export class CameraRig {
   private modeValue: CameraMode = 'auto';
   private snapNext = true;
   private listeners = new Set<(m: CameraMode) => void>();
+  private readonly box = new THREE.Box3();
 
   constructor(canvas: HTMLCanvasElement) {
     this.camera = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
@@ -49,6 +50,12 @@ export class CameraRig {
     this.listeners.forEach((fn) => fn(m));
   }
 
+  /** Per-stage zoom limits (the showcase allows a closer look). */
+  setDistanceLimits(min: number, max: number): void {
+    this.controls.minDistance = min;
+    this.controls.maxDistance = max;
+  }
+
   /** Return to the guided camera. */
   reset(snap = false): void {
     this.setMode('auto');
@@ -69,7 +76,8 @@ export class CameraRig {
     cam.updateProjectionMatrix();
   }
 
-  update(dt: number, shot: Shot): void {
+  /** `anchor`: the active station; in free view the target may not wander far from it. */
+  update(dt: number, shot: Shot, anchor?: THREE.Vector3): void {
     if (this.modeValue === 'auto') {
       const k = this.snapNext ? 1 : damp(3.2, dt);
       this.snapNext = false;
@@ -77,6 +85,11 @@ export class CameraRig {
       this.controls.target.lerp(shot.target, k);
     }
     this.controls.target.clamp(TARGET_BOX.min, TARGET_BOX.max);
+    if (anchor && this.modeValue === 'free') {
+      this.box.min.set(anchor.x - 6, 0.3, anchor.z - 5);
+      this.box.max.set(anchor.x + 6, 4, anchor.z + 5);
+      this.controls.target.clamp(this.box.min, this.box.max);
+    }
     this.controls.update();
     if (this.camera.position.y < 0.4) this.camera.position.y = 0.4;
   }
