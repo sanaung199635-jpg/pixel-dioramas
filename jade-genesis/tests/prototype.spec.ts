@@ -23,7 +23,8 @@ const state = (page: Page) => page.evaluate(() => window.__jade!.state() as unkn
 const frames = (page: Page, n: number) => page.evaluate((k) => window.__jade!.frames(k), n);
 
 async function capture(page: Page, name: string, project: string): Promise<void> {
-  await page.evaluate(() => window.__jade!.freeze(3));
+  // snap the guided camera so the picture shows the shot, not the glide towards it
+  await page.evaluate(async () => { const j = window.__jade!; j.resetView(); await j.freeze(3); });
   fs.mkdirSync(SHOTS, { recursive: true });
   await page.screenshot({ path: path.join(SHOTS, `${project}-${name}.png`), timeout: 240_000 });
   await page.evaluate(() => window.__jade!.unfreeze());
