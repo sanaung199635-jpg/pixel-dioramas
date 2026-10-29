@@ -1,0 +1,176 @@
+{
+  "locale": "zh-CN",
+  "status": "phase-2-draft · awaiting user review",
+  "stages": [
+    {
+      "id": "mining", "no": 1, "title": "开采", "en": "Mining",
+      "summary": "缅甸帕敢（Hpakant）一带是宝石级硬玉翡翠的主要产地。如今的开采以次生矿为主：翡翠以巨砾形式埋在乌鲁河沿岸的砾岩层里，大型露天矿用挖掘机等重型机械剥土、挖掘。",
+      "terms": [
+        { "zh": "原生矿", "en": "primary deposit", "def": "产于蛇纹石化橄榄岩中的硬玉岩岩脉。" },
+        { "zh": "次生矿", "en": "secondary deposit", "def": "原生矿体经风化、搬运后沉积在砾岩或河床中的巨砾与砾石。" }
+      ],
+      "purpose": "获得翡翠原石。",
+      "equipment": ["挖掘机", "运输车"],
+      "cautions": [
+        "实际矿区既有大型机械化露天开采，也有手工开采，方式差异很大。",
+        "露天矿边坡风险高，帕敢曾发生严重滑坡事故。本作品只呈现示意性的开采，不美化矿区环境。"
+      ],
+      "sources": ["GG-BURMA", "HPK-2021", "IGC-2019"],
+      "evidence": "B",
+      "simplification": "沙盘为示意，地形、比例与设备都不对应任何真实矿区；不展示爆破、排水与手工采矿。"
+    },
+    {
+      "id": "washing", "no": 2, "title": "清洗", "en": "Washing",
+      "summary": "用水冲去原石表面的泥沙，让皮壳的颜色、颗粒和裂纹更容易看清。",
+      "terms": [{ "zh": "皮壳 / 石皮", "en": "rind / skin", "def": "原石表面因风化形成的外层，会遮挡内部的真实品质。" }],
+      "purpose": "看清原石外表，为后续观察做准备。",
+      "equipment": ["水枪", "毛刷"],
+      "cautions": ["清洗只改善表面观察，不会改变原石本身。"],
+      "sources": ["GG-BURMA", "ZH-TRADE"],
+      "evidence": "C",
+      "simplification": "资料中很少单独描述这一步。它属于合理的示意性步骤，并非标准化工序。"
+    },
+    {
+      "id": "lighting", "no": 3, "title": "打灯观察", "en": "Lighting",
+      "summary": "用强光手电贴住皮壳或擦口，观察光线透入的深浅与颜色。",
+      "terms": [{ "zh": "打灯", "en": "torch inspection", "def": "以强光照射原石表面，观察局部透光与颜色的经验方法。" }],
+      "purpose": "初步了解局部的透明度与颜色。",
+      "equipment": ["强光手电"],
+      "cautions": [
+        "光线只能进入靠近表面的一小部分，看到的只是局部。",
+        "内部的裂、颜色变化和整体品质无法通过打灯完整判断。"
+      ],
+      "sources": ["GG-BURMA", "ZH-TRADE"],
+      "evidence": "C",
+      "simplification": "画面中的透光光晕是视觉示意，不代表真实的透光范围。"
+    },
+    {
+      "id": "window", "no": 4, "title": "开窗", "en": "Windowing",
+      "summary": "在皮壳上磨出一小块（擦口），或切磨出一个平面（开窗，行内也叫“门子”），露出内部石质，便于观察颜色与质地。",
+      "terms": [
+        { "zh": "擦口", "en": "polished spot", "def": "在皮壳上擦磨出的小口。" },
+        { "zh": "开窗 / 门子", "en": "window", "def": "在原石外皮上磨出、用来观察内部的切口。" }
+      ],
+      "purpose": "暴露局部内部，便于观察颜色、透明度与质地。",
+      "equipment": ["角磨机", "砂轮"],
+      "cautions": ["窗口所见只代表这一个位置，不能推断整块原石。"],
+      "sources": ["ZH-TRADE", "EN-TRADE"],
+      "evidence": "C",
+      "simplification": "本作只开一个窗。实际操作中窗口的数量和位置因人而异。"
+    },
+    {
+      "id": "planning", "no": 5, "title": "切割规划", "en": "Cut planning",
+      "summary": "根据窗口与外观所见的颜色、裂纹和尺寸，决定下刀位置。本作选择的路线是：先对半剖开，再从其中一半切取板料。",
+      "terms": [{ "zh": "绺裂", "en": "fracture", "def": "原石中的裂隙，会影响取料位置与成品价值。" }],
+      "purpose": "尽量保留颜色、避开裂隙、提高出材率。",
+      "equipment": ["记号笔 / 粉笔", "卡尺"],
+      "cautions": ["切割路线因原石形态和工厂经验而不同；“先对半、再取板”是本作的示意路线。"],
+      "sources": ["GIA-HSU", "ZH-TRADE"],
+      "evidence": "C",
+      "simplification": "真实的规划往往需要反复试切与讨论，本作把它压缩为一次性画线。"
+    },
+    {
+      "id": "slabbing", "no": 6, "title": "水冷切片", "en": "Slabbing",
+      "summary": "用镶有金刚石的锯片剖开原石、切出平整的板料。切割时持续加水，既降温又带走岩粉。",
+      "terms": [
+        { "zh": "金刚石锯片", "en": "diamond blade", "def": "刃口镶有金刚石的圆锯片。" },
+        { "zh": "板料", "en": "slab", "def": "从原石上切下的平板，手镯将从板料中取出。" }
+      ],
+      "purpose": "剖开原石，并获得厚度合适的板料。",
+      "equipment": ["水冷切割机（金刚石锯片）"],
+      "cautions": [
+        "切开后，只能看到切面所在平面的内部结构。",
+        "板料厚度会限制镯子的条宽（行业资料，待核实）。"
+      ],
+      "sources": ["GIA-HSU", "EN-TRADE"],
+      "evidence": "B",
+      "simplification": "大型原石可能采用其他切割设备；本作统一用圆锯片表现。"
+    },
+    {
+      "id": "marking", "no": 7, "title": "画圈", "en": "Marking",
+      "summary": "在板料上评估裂纹与颜色分布，按不同的手镯尺寸画出轮廓。画面中的两组圆圈刻意避开了那条贯穿裂隙。",
+      "terms": [{ "zh": "圈口", "en": "inner diameter", "def": "手镯的内径，决定佩戴尺寸。" }],
+      "purpose": "确定取镯位置与尺寸。",
+      "equipment": ["灯箱 / 光源", "记号笔"],
+      "cautions": ["尺寸选择受裂纹、颜色和板料大小共同限制。"],
+      "sources": ["GIA-HSU", "ZH-TRADE"],
+      "evidence": "B",
+      "simplification": "画面中的圈口为示意比例，不作为尺码建议。"
+    },
+    {
+      "id": "coring", "no": 8, "title": "套取镯坯", "en": "Coring",
+      "summary": "钻床先沿外轮廓切出圆形，再换用较小的圆形钻头切出内径。中间切下的圆柱是镯芯，四周剩下余料。",
+      "terms": [
+        { "zh": "镯坯", "en": "bangle blank", "def": "切出后、尚未修形的环形毛坯。" },
+        { "zh": "镯芯", "en": "core", "def": "内圈切下的圆柱料，可另作吊坠等。" },
+        { "zh": "余料", "en": "offcut", "def": "取镯后剩下的板料边角。" }
+      ],
+      "purpose": "从板料中取出环形毛坯。",
+      "equipment": ["钻床 / 套料机", "管状金刚石钻头"],
+      "cautions": [
+        "不同资料对内外圈的先后顺序说法不一；本作依据 GIA 对平洲工厂的描述（先外后内）。",
+        "钻切过程需要加水冷却（行业资料）。"
+      ],
+      "sources": ["GIA-HSU", "ZH-TRADE", "EN-TRADE"],
+      "evidence": "B",
+      "simplification": "两次钻切在画面中会被加速。"
+    },
+    {
+      "id": "shaping", "no": 9, "title": "粗加工", "en": "Rough shaping",
+      "summary": "去除镯坯上的瑕疵与绺裂（打顶），磨掉方形截面的棱角（拍边），粗磨出内外圈与条形轮廓。",
+      "terms": [
+        { "zh": "打顶", "en": "—", "def": "去除镯坯上的瑕疵与绺裂（行业术语）。" },
+        { "zh": "拍边", "en": "edge rounding", "def": "磨去镯坯截面的棱角（行业术语）。" }
+      ],
+      "purpose": "定出手镯的基本形状。",
+      "equipment": ["粗砂轮 / 磨轮"],
+      "cautions": ["术语与做法因地区和工厂而异。"],
+      "sources": ["ZH-TRADE"],
+      "evidence": "C",
+      "simplification": "截面由方变圆的过程在画面中是连续变形，实际是多次磨削。"
+    },
+    {
+      "id": "fine-grinding", "no": 10, "title": "精磨", "en": "Fine grinding",
+      "summary": "逐级换用更细的磨料，去除粗磨痕迹，使表面平整。",
+      "terms": [{ "zh": "细磨", "en": "fine grinding", "def": "用更细的磨料修整表面。" }],
+      "purpose": "提高表面平整度，为抛光做准备。",
+      "equipment": ["细磨轮 / 磨筒", "冷却水"],
+      "cautions": ["不同工厂使用的磨料种类和目数顺序不同，本作不给出具体数值。"],
+      "sources": ["EN-TRADE", "ZH-TRADE"],
+      "evidence": "C",
+      "simplification": "画面用“粗糙 → 平整”的连续过渡表现多道工序。"
+    },
+    {
+      "id": "polishing", "no": 11, "title": "抛光", "en": "Polishing",
+      "summary": "用极细的磨料与抛光工具打出光泽，使表面反射清晰、不变形。",
+      "terms": [{ "zh": "抛光", "en": "polishing", "def": "在表面形成光泽的最后一道磨削工序。" }],
+      "purpose": "形成光泽，让颜色与透明度得以展现。",
+      "equipment": ["抛光轮"],
+      "cautions": [
+        "抛光是正常加工，不属于“优化处理”。",
+        "资料中提到竹、氧化铈等材料，但各厂做法不同，本作不指定具体材料。"
+      ],
+      "sources": ["GIA-QF", "EN-TRADE"],
+      "evidence": "C",
+      "simplification": "画面以高光由模糊变锐利来表现抛光效果。"
+    },
+    {
+      "id": "showcase", "no": 12, "title": "检查展示", "en": "Inspection & showcase",
+      "summary": "检查裂纹、尺寸、抛光与整体完整性，然后在展台上呈现完整的手镯。GIA 评价翡翠时，最看重颜色，其次是透明度和质地，同时也看净度与做工。",
+      "terms": [
+        { "zh": "A 货", "en": "Type A", "def": "未经漂白、充填或染色的天然翡翠（表面打蜡通常被接受，待以 GIA 原文核对）。" },
+        { "zh": "B 货", "en": "Type B", "def": "经酸洗漂白、再注入聚合物充填的翡翠。" },
+        { "zh": "C 货", "en": "Type C", "def": "经染色的翡翠。" }
+      ],
+      "purpose": "检验成品，并展示最终效果。",
+      "equipment": ["光源", "卡尺"],
+      "cautions": [
+        "天然与否只能由实验室检测确定，不能凭外观判断。",
+        "本作展示的是概念中的天然翡翠，不代表任何真实商品。"
+      ],
+      "sources": ["GIA-QF", "GG-DYED", "GG-COAT"],
+      "evidence": "A",
+      "simplification": "画面中的颜色与纹理是程序化生成的，用于教学示意。"
+    }
+  ]
+}

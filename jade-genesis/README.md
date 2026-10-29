@@ -2,7 +2,16 @@
 
 一个 3D 互动网页项目：带观众亲眼看着一块硬玉翡翠原石，经过开采、清洗、观察、切片、取圈、打磨和抛光，最终成为一只绿色翡翠手镯。
 
-## 当前状态：Phase 1（视觉概念）· 等待方案确认
+## 当前状态：Phase 2（知识审核）· 等待确认
+
+已选定视觉方案 **A · WHITE JADE GALLERY**。
+
+- 研究报告、对 Phase 1 的修正和待确认问题：[`docs/RESEARCH.md`](docs/RESEARCH.md)
+- 12 工序知识表（自动生成）：[`docs/KNOWLEDGE_TABLE.md`](docs/KNOWLEDGE_TABLE.md)
+- 场景脚本：[`docs/SCENE_SCRIPT.md`](docs/SCENE_SCRIPT.md)
+- 知识数据（单一数据源）：[`content/`](content)，校验并生成知识表：`node jade-genesis/tools/build-knowledge.cjs`
+
+### Phase 1 成果
 
 - 报告与审查意见：[`design/PHASE1_REPORT.md`](design/PHASE1_REPORT.md)
 - 方案 A / B 对比：[`design/concepts/ab-board.png`](design/concepts/ab-board.png)
