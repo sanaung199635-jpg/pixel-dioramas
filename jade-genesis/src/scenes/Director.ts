@@ -5,12 +5,12 @@
 // machine time and carry no story state.
 import * as THREE from 'three';
 import { SAW } from '../props/SlabSaw';
-import { FLOOR_Y, WINDOW_DEPTH, WINDOW_DIR, fissureOnWindow, radiusAlong } from '../stone/StoneSolid';
+import { CUT_X, FLOOR_Y, WINDOW_DEPTH, WINDOW_DIR, fissureOnWindow, radiusAlong } from '../stone/StoneSolid';
 import { RING, SITES, SLAB, SLAB_C, SLAB_T, shapeAt } from '../stone/Production';
 import { easeInOut, lerp, segment } from '../utils/math';
 import { Rx, Ry, Rz, S, T, Tv, apply, blend, mul, origin, place } from '../utils/pose';
 import { SITE0_AXIS } from './JadePieces';
-import { MINE_LIFT, PLINTH, STATION, type World } from './World';
+import { MINE_LIFT, PLINTH, STATION, type StationName, type World } from './World';
 import type { Shot } from './shots';
 
 export interface Hotspot { id: string; world: THREE.Vector3 }
@@ -23,6 +23,12 @@ const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const at = (st: THREE.Vector3, x: number, y: number, z: number) => st.clone().add(V(x, y, z));
 const E = easeInOut;
 const seg = segment;
+/** Stations each stage can see: its own, plus the one the material comes from. */
+const STAGE_STATIONS: readonly (readonly StationName[])[] = [
+  ['mine'], ['mine', 'wash'], ['wash', 'plinth'], ['plinth'], ['plinth'], ['plinth', 'saw'],
+  ['saw', 'lightbox'], ['lightbox', 'drill'], ['drill', 'grind'], ['grind'], ['grind'], ['grind', 'showcase'],
+];
+const ALL_STATIONS = Object.keys(STATION) as StationName[];
 const QUIET: SoundMix = { wind: 0.25, motor: 0, water: 0, grind: 0, buff: 0 };
 
 // ---------- fixed poses ----------
@@ -61,6 +67,8 @@ export class Director {
   lightMode: LightMode = 'gallery';
   /** Showcase before/after slider: 0 = freshly ground surface, 1 = polished. */
   compare = 1;
+  /** Draw only the stations a stage needs (debug switch for measuring). */
+  cullStations = true;
   /** Gallery light level used for the last frame (1 = normal, 0 = dark room). */
   lastExposure = 1;
 
@@ -76,7 +84,10 @@ export class Director {
     this.dust = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthWrite: false, transparent: true }));
     this.dust.visible = false;
     w.scene.add(this.dust);
-    this.dimLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x2b7351, depthTest: false }));
+    const dimGeo = new THREE.BufferGeometry();
+    dimGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+    this.dimLine = new THREE.Line(dimGeo, new THREE.LineBasicMaterial({ color: 0x2b7351, depthTest: false }));
+    this.dimLine.frustumCulled = false;
     this.dimLine.renderOrder = 10;
     this.dimLine.visible = false;
     w.scene.add(this.dimLine);
@@ -93,12 +104,13 @@ export class Director {
     this.idleMachines();
     const st = Director.stationOf(stage);
     w.studio.focus(st.x, st.z);
+    w.showStations(this.cullStations ? STAGE_STATIONS[stage] : ALL_STATIONS);
     w.studio.setMode(stage === 11 ? this.lightMode : 'gallery');
     let exposure = 1;
     let sound: SoundMix = { ...QUIET };
     let hot: Hotspot[] = [];
-    // leftovers stay where they were made
-    if (stage >= 6) this.showLeftovers(stage);
+    // leftovers stay where they were made (drawn only while their station is in use)
+    if ((stage === 6 && p < 0.4) || stage === 8) this.showLeftovers(stage);
 
     switch (stage) {
       case 0: { // 01 mining
@@ -354,13 +366,26 @@ export class Director {
     const bCut = local(-lerp(SLAB.x0, SLAB.x1, shift), 0, 0);
     const bLocal = blend(bOpen, bCut, rearr);
 
+    // the kerf opens from the top as the blade goes down, and stays open until the pieces part
+    const rootY = SAW.carriageTop + FLOOR_Y;
+    const kerf = (a: number, b: number) => lerp(SAW.bladeParkedY, SAW.bladeDownY, E(seg(p, a, b))) - SAW.bladeRadius - rootY;
     if (open <= 0) {
       this.showIntact(root, { reveal: 1, flat: 1 });
-      P.setPlanLines([1, 1, 1]);
+      // the chalk line under the blade is cut away; the two slab lines remain
+      P.setPlanLines([p > 0.2 ? 0 : 1, 1, 1]);
+      if (p > 0.2) P.setSlot(P.intact, CUT_X, kerf(0.2, 0.38));
     } else {
       this.showPiece(P.A, mul(root, aLocal));
-      if (p < 0.72) this.showPiece(P.B, mul(root, bLocal));
-      else if (p < 0.84) { this.showPiece(P.B1, mul(root, bLocal)); this.showPiece(P.BR, mul(root, bLocal)); }
+      if (p < 0.72) {
+        this.showPiece(P.B, mul(root, bLocal));
+        P.setLinesOn(P.B.shell, [SLAB.x0, SLAB.x1], [p > 0.66 ? 0 : 1, 1]);
+        if (p > 0.66) P.setSlot(P.B.shell, SLAB.x0, kerf(0.66, 0.72));
+      } else if (p < 0.84) {
+        this.showPiece(P.B1, mul(root, bLocal));
+        this.showPiece(P.BR, mul(root, bLocal));
+        P.setLinesOn(P.BR.shell, [SLAB.x1], [p > 0.78 ? 0 : 1]);
+        if (p > 0.78) P.setSlot(P.BR.shell, SLAB.x1, kerf(0.78, 0.84));
+      }
       else {
         this.showPiece(P.B1, mul(root, bLocal, local(-0.35 * sep, 0, 0)));
         this.showPiece(P.S, mul(root, bLocal, local(0, 0, 0.6 * sep)));
@@ -400,11 +425,13 @@ export class Director {
   /** Pieces that stay behind at earlier stations once the stone has moved on. */
   private showLeftovers(stage: number): void {
     const s = this.sixEndPoses(), P = this.w.pieces;
-    this.showPiece(P.A, s.A);
-    this.showPiece(P.B1, s.B1);
-    this.showPiece(P.B2, s.B2);
-    this.w.saw.carriage.position.set(0, 0, CUT_Z);
-    if (stage >= 8) {
+    if (stage === 6) {
+      this.showPiece(P.A, s.A);
+      this.showPiece(P.B1, s.B1);
+      this.showPiece(P.B2, s.B2);
+      this.w.saw.carriage.position.set(0, 0, CUT_Z);
+    }
+    if (stage === 8) {
       // the drilled slab (offcut) and the core stay on the drill table
       this.showPiece(P.S, ON_DRILL);
       P.setMarks(1);
@@ -546,7 +573,11 @@ export class Director {
     if (p > 0.2 && p < 0.5) {
       const grow = E(dim);
       const a = apply(pose, -ri * grow, 0, 0), b = apply(pose, ri * grow, 0, 0);
-      this.dimLine.geometry.setFromPoints([a, b]);
+      // update the existing buffer in place (replacing it would leak a GPU buffer per frame)
+      const pos = this.dimLine.geometry.getAttribute('position') as THREE.BufferAttribute;
+      pos.setXYZ(0, a.x, a.y, a.z);
+      pos.setXYZ(1, b.x, b.y, b.z);
+      pos.needsUpdate = true;
       this.dimLine.visible = true;
     }
     const lamp = seg(p, 0.36, 0.5);

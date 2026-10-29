@@ -12,7 +12,7 @@ export function addJadeAttributes(geo: THREE.BufferGeometry, rim = 0): THREE.Buf
 }
 
 /** Outer shell of the stone, optionally with the polished window. */
-export function shellGeometry(withWindow: boolean, detail = 48): THREE.BufferGeometry {
+export function shellGeometry(withWindow: boolean, detail = 36): THREE.BufferGeometry {
   let g: THREE.BufferGeometry = new THREE.IcosahedronGeometry(1, detail);
   g.deleteAttribute('normal');
   g.deleteAttribute('uv');
@@ -42,7 +42,7 @@ export function shellGeometry(withWindow: boolean, detail = 48): THREE.BufferGeo
  * Flat cut face at plane x = c. sign = +1 faces +x.
  * The outer ~5% is rind, except where the edge lies on the window.
  */
-export function capGeometry(c: number, sign: 1 | -1, withWindow: boolean, rings = 30, segs = 200, rindBand = 0.05): THREE.BufferGeometry {
+export function capGeometry(c: number, sign: 1 | -1, withWindow: boolean, rings = 22, segs = 160, rindBand = 0.05): THREE.BufferGeometry {
   const rho: number[] = [], edgeWin: boolean[] = [];
   const p = new THREE.Vector3();
   for (let j = 0; j < segs; j++) {
@@ -83,7 +83,7 @@ export function capGeometry(c: number, sign: 1 | -1, withWindow: boolean, rings 
  * the ground window (uFlat = 1). `position`/`normal`/`jpos` are the original
  * surface; `wpos`/`wnormal` the flattened one; `rim` marks the window area.
  */
-export function shellMorphGeometry(detail = 48): THREE.BufferGeometry {
+export function shellMorphGeometry(detail = 36): THREE.BufferGeometry {
   const orig = shellGeometry(false, detail);
   const flat = shellGeometry(true, detail);
   orig.setAttribute('wpos', flat.attributes.position.clone());
@@ -184,4 +184,28 @@ export function discProfile(r: number, t: number, n = 24): [number, number][] {
     out.push([pts[i][0] + (pts[i + 1][0] - pts[i][0]) * t0, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * t0]);
   }
   return out;
+}
+
+/**
+ * A view of `shell` with only the triangles that can survive clipping to
+ * [lo, hi] (plus a margin). Attributes are shared, so the GPU holds the
+ * vertices once; only a smaller index buffer is added per piece.
+ */
+export function sliceOfShell(shell: THREE.BufferGeometry, lo: number | null, hi: number | null, margin = 0.04): THREE.BufferGeometry {
+  if (lo === null && hi === null) return shell;
+  const pos = shell.getAttribute('position'), wpos = shell.getAttribute('wpos') ?? pos;
+  const index = shell.getIndex()!;
+  const keep: number[] = [];
+  const xs = (i: number) => [pos.getX(i), wpos.getX(i)];
+  for (let t = 0; t < index.count; t += 3) {
+    const v = [index.getX(t), index.getX(t + 1), index.getX(t + 2)];
+    const x = v.flatMap(xs);
+    const min = Math.min(...x), max = Math.max(...x);
+    if ((lo === null || max >= lo - margin) && (hi === null || min <= hi + margin)) keep.push(...v);
+  }
+  const g = new THREE.BufferGeometry();
+  for (const [name, attr] of Object.entries(shell.attributes)) g.setAttribute(name, attr);
+  g.setIndex(keep);
+  g.computeBoundingSphere();
+  return g;
 }

@@ -41,6 +41,8 @@ export type JadeUniforms = {
   uReveal: THREE.IUniform<number>;
   /** Window centre (stone frame) and radius the reveal spreads over. */
   uWin: THREE.IUniform<THREE.Vector4>;
+  /** Saw slot while a cut is in progress: (plane x, half width, depth y, on). */
+  uSlot: THREE.IUniform<THREE.Vector4>;
   /** 0 = original surface, 1 = window ground flat. */
   uFlat: THREE.IUniform<number>;
   uTorch: THREE.IUniform<THREE.Vector4>;
@@ -82,7 +84,8 @@ export class JadeMaterial extends THREE.MeshPhysicalMaterial {
       uKerfs: { value: v3() }, uKerfN: { value: 0 },
       uReveal: { value: 1 }, uFlat: { value: 1 },
       uWin: { value: new THREE.Vector4(WIN_C.x, WIN_C.y, WIN_C.z, 0.95) },
-      uTorch: { value: new THREE.Vector4() },
+      uSlot: { value: new THREE.Vector4(0, 0, 0, 0) }, // note: Vector4() defaults w to 1
+      uTorch: { value: new THREE.Vector4(0, 0, 0, 0) }, // w = strength; 0 = off
     };
   }
 

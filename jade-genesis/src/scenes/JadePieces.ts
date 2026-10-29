@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { JadeMaterial, type JadeOptions } from '../materials/JadeMaterial';
 import { CUT_X } from '../stone/StoneSolid';
-import { TurnedPiece, axisMatrix, capGeometry, discProfile, ringProfile, shellMorphGeometry } from '../stone/StoneGeometry';
+import { TurnedPiece, axisMatrix, capGeometry, discProfile, ringProfile, shellMorphGeometry, sliceOfShell } from '../stone/StoneGeometry';
 import { RING, SITES, SLAB, SLAB_T, shapeAt, siteFrame, surfaceAt } from '../stone/Production';
 
 const SHELL_MAT: JadeOptions = { thickness: 1.4, attenuationDistance: 0.45, transmission: 0.42, roughness: 0.24, wave: 1, morph: true };
@@ -27,7 +27,7 @@ export class ClipPiece {
   private readonly local: THREE.Plane[] = [];
 
   constructor(shell: THREE.BufferGeometry, readonly lo: number | null, readonly hi: number | null, capOpts: JadeOptions = CAP_MAT) {
-    this.shell = new THREE.Mesh(shell, new JadeMaterial(SHELL_MAT));
+    this.shell = new THREE.Mesh(sliceOfShell(shell, lo, hi), new JadeMaterial(SHELL_MAT));
     this.shell.material.clipShadows = true;
     this.shell.userData.info = 'stone';
     this.group.add(this.shell);
@@ -121,6 +121,7 @@ export class JadePieces {
     this.bangleGroup.visible = false;
     this.core.visible = this.holeWall.visible = false;
     const u = this.intact.material.jade;
+    for (const m of [this.intact, this.B.shell, this.BR.shell]) { m.material.jade.uSlot.value.w = 0; m.material.jade.uPlanN.value = 0; }
     u.uPlanN.value = 0;
     u.uTorch.value.w = 0;
     u.uWet.value = 0;
@@ -128,6 +129,11 @@ export class JadePieces {
       const j = c.material.jade;
       j.uMarkN.value = 0; j.uKerfN.value = 0; j.uHoleN.value = 0;
     }
+  }
+
+  /** Open a saw slot in a piece's shell: at plane x, from the top down to depth y (stone frame). */
+  setSlot(mesh: THREE.Mesh<THREE.BufferGeometry, JadeMaterial>, x: number, depthY: number | null): void {
+    mesh.material.jade.uSlot.value.set(x, 0.012, depthY ?? 0, depthY === null ? 0 : 1);
   }
 
   /** Window grinding: 0 = covered by rind, 1 = flat polished window. */
@@ -139,12 +145,17 @@ export class JadePieces {
 
   setWet(w: number): void { this.intact.material.jade.uWet.value = w; }
 
-  /** Chalk lines on the intact stone: one per cut plane, each with its own draw progress. */
+  /** Chalk lines on the intact stone: one per cut plane, each with its own draw progress (0 hides it). */
   setPlanLines(sweeps: [number, number, number]): void {
-    const u = this.intact.material.jade;
-    [CUT_X, SLAB.x0, SLAB.x1].forEach((x, i) => u.uPlans.value[i].set(1, 0, 0, x));
-    u.uPlanN.value = 3;
-    u.uPlanSweep.value.set(sweeps[0], sweeps[1], sweeps[2], 0);
+    this.setLinesOn(this.intact, [CUT_X, SLAB.x0, SLAB.x1], sweeps);
+  }
+
+  /** Chalk lines on any piece's shell (the slab lines stay on half B until they are cut). */
+  setLinesOn(mesh: THREE.Mesh<THREE.BufferGeometry, JadeMaterial>, xs: number[], sweeps: number[]): void {
+    const u = mesh.material.jade;
+    xs.forEach((x, i) => u.uPlans.value[i].set(1, 0, 0, x));
+    u.uPlanN.value = xs.length;
+    u.uPlanSweep.value.set(sweeps[0] ?? 0, sweeps[1] ?? 0, sweeps[2] ?? 0, 0);
   }
 
   /** Marker circles on the slab (outer & inner circle at both sites), drawn as sweep goes 0 → 1. */

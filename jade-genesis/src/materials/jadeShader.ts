@@ -37,6 +37,8 @@ uniform vec4 uPlans[4]; uniform int uPlanN; uniform vec4 uPlanSweep;
 uniform vec3 uHoles[2]; uniform int uHoleN;
 uniform vec3 uKerfs[4]; uniform int uKerfN;
 uniform float uReveal;
+// saw slot: plane x (stone frame), half width, depth (cut where y > depth), on/off
+uniform vec4 uSlot;
 uniform vec4 uWin; // window centre (xyz) and radius (w): grinding spreads outward from the centre
 uniform vec4 uTorch;
 varying vec3 vJ; varying float vRim;
@@ -113,6 +115,10 @@ export const COLOR_GLSL = /* glsl */ `#include <color_fragment>
   col = mix(col, vec3(0.78,0.16,0.12), gMark);
   col = mix(col, vec3(0.97,0.96,0.92), chalk*0.92);
   col = mix(col, vec3(0.22,0.24,0.22), kerf*0.85);
+  // saw slot in progress: a narrow, shadowed groove from the top down to the blade
+  float slot = uSlot.w * (1.-smoothstep(uSlot.y*0.6, uSlot.y, abs(vJ.x - uSlot.x))) * smoothstep(uSlot.z - 0.01, uSlot.z, vJ.y);
+  col = mix(col, vec3(0.07,0.075,0.07), slot);
+  kerf = max(kerf, slot);
   gMark = max(max(gMark, chalk), kerf);
   gJade = toLinear(jc);
   diffuseColor.rgb = toLinear(col);`;

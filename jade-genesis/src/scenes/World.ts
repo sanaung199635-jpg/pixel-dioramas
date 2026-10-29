@@ -22,6 +22,8 @@ export const STATION = {
   showcase: new THREE.Vector3(39, 0, 0),
 };
 
+export type StationName = keyof typeof STATION;
+
 export const PLINTH = { r: 1.7, h: 0.75 };
 /** The mine diorama sits on its own base; its terrain top is at this height. */
 export const MINE_LIFT = 1.0;
@@ -43,13 +45,18 @@ export class World {
   readonly washWater = new Coolant();
   readonly drillWater = new Coolant();
   readonly benchWater = new Coolant();
+  private readonly stationObjects = new Map<StationName, THREE.Object3D[]>();
 
   constructor(renderer: THREE.WebGLRenderer) {
     this.studio = new Studio(this.scene, renderer);
     const add = (o: THREE.Object3D, at: THREE.Vector3, shadow?: number) => {
       o.position.add(at);
       this.scene.add(o);
-      if (shadow) { const s = contactShadow(shadow, 0.22); s.position.x += at.x; s.position.z += at.z; this.scene.add(s); }
+      const key = (Object.keys(STATION) as StationName[]).find((k) => STATION[k] === at)!;
+      const list = this.stationObjects.get(key) ?? [];
+      list.push(o);
+      if (shadow) { const s = contactShadow(shadow, 0.22); s.position.x += at.x; s.position.z += at.z; this.scene.add(s); list.push(s); }
+      this.stationObjects.set(key, list);
     };
 
     this.mine = mineDiorama();
@@ -89,6 +96,14 @@ export class World {
     this.torch.visible = false;
     this.handGrinder.visible = false;
     this.scene.add(this.torch, this.handGrinder);
+  }
+
+  /** Draw only the stations a stage can see (the others are far away in fog anyway). */
+  showStations(names: readonly StationName[]): void {
+    for (const [k, objs] of this.stationObjects) {
+      const on = names.includes(k);
+      for (const o of objs) o.visible = on;
+    }
   }
 
   get pickables(): THREE.Object3D[] {

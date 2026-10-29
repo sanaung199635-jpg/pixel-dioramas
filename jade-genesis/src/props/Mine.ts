@@ -49,13 +49,15 @@ function truck(): THREE.Group {
   g.add(at(rbox(0.18, 0.1, 0.31, 0.02, MAT.glass), 0.32, 0.31, 0));
   g.add(at(rbox(0.48, 0.16, 0.34, 0.03, ochre), -0.1, 0.25, 0));
   const rnd = mulberry(9);
-  const rock = new THREE.MeshStandardMaterial({ color: 0x8b7358, roughness: 1 });
+  const rocks = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ color: 0x8b7358, roughness: 1 }), 9);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion();
   for (let i = 0; i < 9; i++) {
-    const r = new THREE.Mesh(new THREE.DodecahedronGeometry(0.05 + rnd() * 0.03, 0), rock);
-    r.position.set(-0.25 + rnd() * 0.3, 0.34 + rnd() * 0.04, -0.1 + rnd() * 0.2);
-    r.castShadow = true;
-    g.add(r);
+    const r = 0.05 + rnd() * 0.03;
+    q.setFromEuler(new THREE.Euler(rnd() * 3, rnd() * 3, 0));
+    rocks.setMatrixAt(i, m.compose(new THREE.Vector3(-0.25 + rnd() * 0.3, 0.34 + rnd() * 0.04, -0.1 + rnd() * 0.2), q, new THREE.Vector3(r, r, r)));
   }
+  rocks.castShadow = true;
+  g.add(rocks);
   return g;
 }
 
@@ -70,7 +72,7 @@ export interface MineDiorama {
 export function mineDiorama(): MineDiorama {
   const root = new THREE.Group();
   root.name = 'mine';
-  const S = 6, N = 140, top = 1.0, bottomY = -0.7;
+  const S = 6, N = 100, top = 1.0, bottomY = -0.7;
   const pit = new THREE.Vector2(0.35, 0.1);
   const steps = 5, stepH = 0.27, stepW = 0.32, R0 = 2.15;
   const height = (x: number, z: number) => {
@@ -139,20 +141,23 @@ export function mineDiorama(): MineDiorama {
   pool.position.set(pit.x + 0.35, top - steps * stepH + 0.03, pit.y - 0.25);
   root.add(pool);
 
+  // trees: two instanced meshes (trunks, crowns) instead of 2 meshes per tree
   const rnd = mulberry(3);
-  const leaf = new THREE.MeshStandardMaterial({ color: 0x5f7a52, roughness: 0.9 });
-  const bark = new THREE.MeshStandardMaterial({ color: 0x6d5642, roughness: 0.9 });
+  const spots: { x: number; z: number; s: number }[] = [];
   for (let i = 0; i < 26; i++) {
-    const x = -H + 0.25 + rnd() * (S - 0.5), z = -H + 0.25 + rnd() * (S - 0.5);
-    if (height(x, z) < top - 0.02) continue;
-    const s = 0.6 + rnd() * 0.6, t = new THREE.Group();
-    const tr = cyl(0.025 * s, 0.03 * s, 0.12 * s, bark, 8); tr.position.y = 0.06 * s;
-    const cn = new THREE.Mesh(new THREE.IcosahedronGeometry(0.16 * s, 1), leaf);
-    cn.position.y = 0.24 * s; cn.scale.y = 1.25; cn.castShadow = true;
-    t.add(tr, cn);
-    t.position.set(x, height(x, z), z);
-    root.add(t);
+    const x = -H + 0.25 + rnd() * (S - 0.5), z = -H + 0.25 + rnd() * (S - 0.5), s = 0.6 + rnd() * 0.6;
+    if (height(x, z) >= top - 0.02) spots.push({ x, z, s });
   }
+  const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.025, 0.03, 0.12, 8), new THREE.MeshStandardMaterial({ color: 0x6d5642, roughness: 0.9 }), spots.length);
+  const crowns = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.16, 1), new THREE.MeshStandardMaterial({ color: 0x5f7a52, roughness: 0.9 }), spots.length);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion();
+  spots.forEach(({ x, z, s }, i) => {
+    const y = height(x, z);
+    trunks.setMatrixAt(i, m.compose(new THREE.Vector3(x, y + 0.06 * s, z), q, new THREE.Vector3(s, s, s)));
+    crowns.setMatrixAt(i, m.compose(new THREE.Vector3(x, y + 0.24 * s, z), q, new THREE.Vector3(s, s * 1.25, s)));
+  });
+  crowns.castShadow = true;
+  root.add(trunks, crowns);
   const tk = truck();
   tk.position.set(-2.1, height(-2.1, 1.9), 1.9);
   tk.rotation.y = -0.7;

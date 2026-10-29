@@ -319,3 +319,34 @@ test('without WebGL 2 the page explains what is needed', async ({ page }) => {
   await expect(page.locator('.fallback h1')).toContainText('无法启动三维场景');
   expect(await page.evaluate(() => document.documentElement.dataset.webgl)).toBe('unavailable');
 });
+
+test('GPU memory stops growing after the first passes through the journey', async ({ page }, info) => {
+  test.skip(info.project.name === 'mobile', 'same renderer and scene on both viewports; run once');
+  test.setTimeout(1_200_000);
+  const errors = await boot(page);
+  await page.setViewportSize({ width: 800, height: 500 });
+  const cycle = async () => {
+    for (let i = 0; i < 12; i++) {
+      await page.evaluate(async ([k, m]) => { const j = window.__jade!; j.goTo(k, false); j.seek(m); await j.frames(2); }, [i, MOMENTS[i]] as const);
+    }
+    const r = await page.evaluate(() => (window.__jade!.state() as unknown as { render: { geometries: number; textures: number; programs: number } }).render);
+    return { geometries: r.geometries, textures: r.textures, programs: r.programs };
+  };
+  await cycle(); // first pass uploads everything; the second compiles any late shader variants
+  const second = await cycle();
+  const third = await cycle();
+  expect(third).toEqual(second);
+  expect(errors).toEqual([]);
+});
+
+test('the saw opens a kerf as it descends', async ({ page }) => {
+  const errors = await boot(page);
+  // the cut appears gradually: a groove at mid-descent, the halves only once the blade has passed through
+  await page.evaluate(() => { const j = window.__jade!; j.goTo(5, false); j.seek(0.3); });
+  await frames(page, 2);
+  expect((await state(page)).phase).toBe('下切 · 水冷');
+  const ids = (await page.evaluate(() => window.__jade!.hotspots())).map((h) => h.id);
+  expect(ids).not.toContain('cutface');
+  expect(ids).toContain('coolant');
+  expect(errors).toEqual([]);
+});

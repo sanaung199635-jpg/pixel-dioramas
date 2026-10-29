@@ -23,6 +23,8 @@ export interface JadeDebug {
   state(): JourneySnapshot & {
     stageId: string; cameraMode: string; torch: boolean; exposure: number; sound: boolean;
     lightMode: LightMode; compare: number; quality: string; dpr: number; frames: number; avgFrameMs: number; phase: string; intro: boolean;
+    /** renderer.info of the last frame: draw calls, triangles, live GPU objects. */
+    render: { calls: number; triangles: number; geometries: number; textures: number; programs: number };
   };
   start(): void;
   goTo(stage: number, play?: boolean): void;
@@ -41,6 +43,8 @@ export interface JadeDebug {
   freeze(settle?: number): Promise<void>;
   unfreeze(): void;
   field(x: number, y: number, z: number): void;
+  /** Dev: turn per-stage station culling on/off (for measurements). */
+  cull(on: boolean): void;
 }
 
 declare global {
@@ -77,6 +81,8 @@ export class App {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.localClippingEnabled = true;
+    // count every pass of a frame (shadow, transmission, main), not just the last one
+    this.renderer.info.autoReset = false;
 
     this.world = new World(this.renderer);
     this.director = new Director(this.world);
@@ -171,6 +177,7 @@ export class App {
     this.sound.setMix(f.sound);
 
     this.rig.update(dt, f.shot, Director.stationOf(s.stage));
+    this.renderer.info.reset();
     this.renderer.render(this.world.scene, this.rig.camera);
     this.projectHotspots(f.hotspots);
     this.pushUi();
@@ -292,6 +299,13 @@ export class App {
           avgFrameMs: Math.round(this.quality.avgFrameMs * 10) / 10,
           phase: t(phaseKey(s.stage, s.progress)),
           intro: this.intro,
+          render: {
+            calls: this.renderer.info.render.calls,
+            triangles: this.renderer.info.render.triangles,
+            geometries: this.renderer.info.memory.geometries,
+            textures: this.renderer.info.memory.textures,
+            programs: this.renderer.info.programs?.length ?? 0,
+          },
         };
       },
       start: () => { this.leaveIntro(); this.journey.startJourney(); },
@@ -315,6 +329,7 @@ export class App {
       },
       unfreeze: () => this.start(),
       field: (x, y, z) => JadeMaterial.field.set(x, y, z),
+      cull: (on) => { this.director.cullStations = on; },
     };
   }
 }
