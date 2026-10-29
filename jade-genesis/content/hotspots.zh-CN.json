@@ -1,0 +1,15 @@
+{
+  "locale": "zh-CN",
+  "hotspots": {
+    "rind": { "label": "石皮", "sub": "Rind", "body": "原石表面因风化形成的外层。它会遮挡内部的真实品质。", "stage": "washing" },
+    "window": { "label": "开窗", "sub": "Window", "body": "磨去一小块皮壳露出的内部石质。窗口所见只代表这一个位置。", "stage": "window" },
+    "fissure": { "label": "裂隙", "sub": "Fissure", "body": "一条贯穿原石的裂隙。它会在窗口、切面和板料上的同一位置出现，决定后面从哪里取镯。", "stage": "planning" },
+    "stone": { "label": "翡翠原石", "sub": "Jadeite rough", "body": "本作中的原石是程序化生成的教学示意，并非真实标本。", "stage": "lighting" },
+    "saw": { "label": "水冷切割机", "sub": "Slab saw", "body": "用镶有金刚石的圆锯片剖开原石。工作台可前后进给，锯头可升降。", "stage": "slabbing" },
+    "blade": { "label": "金刚石锯片", "sub": "Diamond blade", "body": "锯片刃口镶有金刚石。切割时锯片高速旋转，并持续加冷却水。", "stage": "slabbing" },
+    "coolant": { "label": "冷却水", "sub": "Coolant", "body": "持续冲向切口的水流：降温，并带走切割产生的岩粉。", "stage": "slabbing" },
+    "cutface": { "label": "切面", "sub": "Cut face", "body": "两个切面互为镜像。它们的色带、棉絮和裂隙都来自同一块原石的内部。", "stage": "slabbing" },
+    "fissure-cut": { "label": "裂隙在切面上", "sub": "Same fissure", "body": "窗口上看到的那条裂隙，在切面上出现在对应的位置。", "stage": "planning" },
+    "plinth": { "label": "展台", "sub": "Plinth", "body": "原石观察工位。", "stage": "lighting" }
+  }
+}
