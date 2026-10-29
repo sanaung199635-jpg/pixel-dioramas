@@ -137,7 +137,8 @@ export class Director {
         exposure = this.torchMode ? 0 : 1 - seg(p, 0.2, 0.3) + seg(p, 0.86, 0.96);
         const torchOn = this.torchMode || (p > 0.28 && p < 0.88);
         if (torchOn) this.placeTorch(pose, p);
-        hot = !torchOn && p > 0.2 ? [{ id: 'rind', world: apply(pose, -0.9, 0.55, 0.55) }] : [];
+        hot = torchOn ? [{ id: 'torch', world: w.torch.position.clone() }]
+          : p > 0.2 ? [{ id: 'rind', world: apply(pose, -0.9, 0.55, 0.55) }] : [];
         break;
       }
       case 3: { // 04 window
