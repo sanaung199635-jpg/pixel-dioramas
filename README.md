@@ -7,7 +7,7 @@
 | [`lake-fishing-diorama`](./lake-fishing-diorama) | [打开 ▶](https://sanaung199635-jpg.github.io/pixel-dioramas/lake-fishing-diorama/) | 湖边钓鱼：木屋、码头、小船、三位钓鱼人（抛竿 / 等待 / 收竿）、游鱼与涟漪，四个时段切换 |
 | [`shwedagon-diorama`](./shwedagon-diorama) | [打开 ▶](https://sanaung199635-jpg.github.io/pixel-dioramas/shwedagon-diorama/) | 仰光大金塔：阶梯金塔、环塔佛龛、跪拜信众；可旋转视角、点击人物与建筑查看介绍（中英双语），人物互动动画 |
 | [`convenience-store-diorama`](./convenience-store-diorama) | [打开 ▶](https://sanaung199635-jpg.github.io/pixel-dioramas/convenience-store-diorama/) | 便利店：透过玻璃可见的店内陈设、晴天 / 下雨 / 下雪天气系统、白天 / 夜晚、“透视”揭开屋顶 |
-| [`jade-genesis`](./jade-genesis) | 设计阶段（未开发） | 翡翠诞生记：从原石到手镯的 3D 工艺旅程。目前为 Phase 1 视觉概念：方案 A/B 效果图与 12 镜头故事板 |
+| [`jade-genesis`](./jade-genesis) | [打开 ▶](https://sanaung199635-jpg.github.io/pixel-dioramas/jade-genesis/play/)（合并到 Pages 分支后生效） | 翡翠诞生记：一块硬玉翡翠原石经 12 道工序成为手镯的 3D 互动工艺馆（Vite + TypeScript + Three.js） |
 
 ## 运行
 

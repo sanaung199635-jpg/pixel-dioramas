@@ -8,7 +8,7 @@ type State = {
   frames: number; phase: string; intro: boolean;
 };
 
-const SHOTS = path.resolve('docs/qa/phase4');
+const SHOTS = path.resolve('docs/qa/phase5');
 /** Representative moment of each stage for the screenshot record. */
 const MOMENTS = [0.7, 0.6, 0.6, 0.6, 0.9, 0.55, 0.85, 1, 0.6, 0.6, 0.6, 1];
 const TITLES = ['开采', '清洗', '打灯观察', '开窗', '切割规划', '水冷切片', '画圈', '套取镯坯', '粗加工', '精磨', '抛光', '检查展示'];
