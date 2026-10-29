@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { Ui } from '../components/Ui';
 import { JadeMaterial } from '../materials/JadeMaterial';
 import { CameraRig } from '../controls/CameraRig';
-import { CuttingScene } from '../scenes/CuttingScene';
+import { CuttingScene, phaseAt } from '../scenes/CuttingScene';
 import { ROUGH_SHOT, RoughStoneScene } from '../scenes/RoughStoneScene';
 import { World } from '../scenes/World';
 import { Journey, type JourneySnapshot, type StageId } from './Journey';
@@ -85,8 +85,10 @@ export class App {
       toggle: () => this.journey.toggle(),
       speed: (s) => this.journey.setSpeed(s),
       seek: (p) => this.journey.seek(p),
+      step: (d) => { if (this.journey.state.stage === 'cut') this.journey.seek(this.journey.state.progress + d); },
       resetView: () => this.rig.reset(),
       torch: (on) => this.setTorch(on),
+      toggleTorch: () => this.setTorch(!this.rough.torchMode),
     });
 
     this.journey.subscribe((s) => { if (s.stage !== 'rough' && this.rough.torchMode) this.setTorch(false); });
@@ -155,7 +157,7 @@ export class App {
 
   private pushUi(): void {
     const s = this.journey.state;
-    this.ui.update({ ...s, phase: this.cutting.phaseLabel(), cameraMode: this.rig.mode, torch: this.rough.torchMode });
+    this.ui.update({ ...s, phase: phaseAt(s.progress), cameraMode: this.rig.mode, torch: this.rough.torchMode });
   }
 
   private projectHotspots(): void {
@@ -243,7 +245,7 @@ export class App {
         dpr: this.renderer.getPixelRatio(),
         frames: this.frameCount,
         avgFrameMs: Math.round(this.quality.avgFrameMs * 10) / 10,
-        phase: this.cutting.phaseLabel(),
+        phase: phaseAt(this.journey.state.progress),
       }),
       setStage: (s) => this.setStage(s),
       seek: (p) => this.journey.seek(p),

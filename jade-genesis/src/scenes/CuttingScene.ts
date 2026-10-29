@@ -28,6 +28,13 @@ export const PHASE_LABELS: { at: number; label: string }[] = [
   { at: PHASES.open[0], label: '打开切面' },
 ];
 
+/** Phase name for a timeline position (pure: no dependency on the last rendered frame). */
+export function phaseAt(progress: number): string {
+  let label = PHASE_LABELS[0].label;
+  for (const ph of PHASE_LABELS) if (progress >= ph.at) label = ph.label;
+  return label;
+}
+
 const CARRIAGE_LOAD_Z = 1.1;
 const CARRIAGE_CUT_Z = 0.2;
 
@@ -99,12 +106,6 @@ export class CuttingScene {
     while (i < KEYS.length - 2 && p > KEYS[i + 1].at) i++;
     const a = KEYS[i], b = KEYS[i + 1];
     return lerpShot(a.shot, b.shot, easeInOut(segment(p, a.at, b.at)), this.tmpShot);
-  }
-
-  phaseLabel(): string {
-    let label = PHASE_LABELS[0].label;
-    for (const ph of PHASE_LABELS) if (this.progress >= ph.at) label = ph.label;
-    return label;
   }
 
   hotspots(): Hotspot[] {

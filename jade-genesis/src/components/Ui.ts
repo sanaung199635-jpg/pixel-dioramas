@@ -9,8 +9,11 @@ export interface UiHandlers {
   toggle(): void;
   speed(s: Speed): void;
   seek(p: number): void;
+  /** Move the timeline by d (only in the cutting station). */
+  step(d: number): void;
   resetView(): void;
   torch(on: boolean): void;
+  toggleTorch(): void;
 }
 
 export interface UiState {
@@ -127,7 +130,7 @@ export class Ui {
     this.phaseText = h('div', 'phase');
     scrubWrap.append(this.phaseText, this.scrub, ticks);
     this.torchBtn = h('button', 'pill', `${ICON.torch}<span>打灯观察</span>`);
-    this.torchBtn.addEventListener('click', () => this.on.torch(!this.last.torch));
+    this.torchBtn.addEventListener('click', () => this.on.toggleTorch());
     this.startBtn = h('button', 'pill primary', `<span>开始切割</span>${ICON.play}`);
     this.startBtn.addEventListener('click', () => this.on.stage('cut'));
     const resetBtn = h('button', 'round', ICON.reset);
@@ -161,13 +164,12 @@ export class Ui {
     if (target && (target.tagName === 'INPUT' && e.key !== ' ')) return;
     if (e.key === ' ') { e.preventDefault(); this.on.toggle(); }
     else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-      if (this.last.stage !== 'cut') return;
       e.preventDefault();
-      this.on.seek((this.last.progress ?? 0) + (e.key === 'ArrowRight' ? 0.02 : -0.02));
+      this.on.step(e.key === 'ArrowRight' ? 0.02 : -0.02);
     } else if (e.key === '1') this.on.stage('rough');
     else if (e.key === '2') this.on.stage('cut');
     else if (e.key === 'r' || e.key === 'R') this.on.resetView();
-    else if ((e.key === 't' || e.key === 'T') && this.last.stage === 'rough') this.on.torch(!this.last.torch);
+    else if (e.key === 't' || e.key === 'T') this.on.toggleTorch();
     else if (e.key === 'Escape') this.closePopover();
   }
 
