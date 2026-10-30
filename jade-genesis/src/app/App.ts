@@ -48,6 +48,8 @@ export interface JadeDebug {
   cull(on: boolean): void;
   /** Dev: tone mapping / reflection environment, for A/B comparison and fallback. */
   look(l: Partial<Look>): Look;
+  /** Whether the active station sits inside the key light's shadow box. */
+  shadowCovers(): boolean;
 }
 
 declare global {
@@ -333,6 +335,7 @@ export class App {
       field: (x, y, z) => JadeMaterial.field.set(x, y, z),
       cull: (on) => { this.director.cullStations = on; },
       look: (l) => { this.world.studio.setLook(l); return this.world.studio.look; },
+      shadowCovers: () => this.world.studio.shadowCovers(Director.stationOf(this.journey.state.stage).clone().setY(0.8)),
     };
   }
 }

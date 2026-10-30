@@ -143,12 +143,22 @@ export class Studio {
     const zA = KEY_OFFSET.clone().normalize();
     const xA = new THREE.Vector3(0, 1, 0).cross(zA).normalize();
     const yA = zA.clone().cross(xA);
-    const t = new THREE.Vector3(x, 0, z);
+    const p = new THREE.Vector3(x, 0, z);
     const snap = (v: number) => Math.round(v / texel) * texel;
-    t.copy(xA.multiplyScalar(snap(t.dot(xA)))).add(yA.multiplyScalar(snap(t.dot(yA)))).addScaledVector(zA, t.dot(zA));
+    // read all three light-space coordinates before building the snapped point
+    const u = snap(p.dot(xA)), v = snap(p.dot(yA)), w = p.dot(zA);
+    const t = new THREE.Vector3().addScaledVector(xA, u).addScaledVector(yA, v).addScaledVector(zA, w);
     this.key.target.position.copy(t);
     this.key.position.copy(t).add(KEY_OFFSET);
     this.key.target.updateMatrixWorld();
+  }
+
+  /** Whether a world point falls inside the key light's shadow box (regression guard). */
+  shadowCovers(p: THREE.Vector3): boolean {
+    this.key.updateMatrixWorld();
+    this.key.target.updateMatrixWorld();
+    this.key.shadow.updateMatrices(this.key);
+    return this.key.shadow.getFrustum().containsPoint(p);
   }
 
   /** Showcase lighting presets. */
