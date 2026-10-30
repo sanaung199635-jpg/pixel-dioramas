@@ -8,9 +8,9 @@ import { CUT_X } from '../stone/StoneSolid';
 import { TurnedPiece, axisMatrix, capGeometry, discProfile, ringProfile, shellMorphGeometry, sliceOfShell } from '../stone/StoneGeometry';
 import { RING, SITES, SLAB, SLAB_T, shapeAt, siteFrame, surfaceAt } from '../stone/Production';
 
-const SHELL_MAT: JadeOptions = { thickness: 1.4, attenuationDistance: 0.38, transmission: 0.5, roughness: 0.2, wave: 1, morph: true };
-const CAP_MAT: JadeOptions = { thickness: 1.2, attenuationDistance: 0.6, transmission: 0.45, roughness: 0.38, wave: 0.4 };
-const SLAB_MAT: JadeOptions = { thickness: SLAB_T, attenuationDistance: 0.35, transmission: 0.5, roughness: 0.38, wave: 0.3 };
+const SHELL_MAT: JadeOptions = { thickness: 1.4, attenuationDistance: 0.38, transmission: 0.62, roughness: 0.2, wave: 1, morph: true };
+const CAP_MAT: JadeOptions = { thickness: 1.2, attenuationDistance: 0.6, transmission: 0.56, roughness: 0.38, wave: 0.4 };
+const SLAB_MAT: JadeOptions = { thickness: SLAB_T, attenuationDistance: 0.35, transmission: 0.6, roughness: 0.38, wave: 0.3 };
 
 const capCache = new Map<string, THREE.BufferGeometry>();
 function cap(x: number, sign: 1 | -1): THREE.BufferGeometry {

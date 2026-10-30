@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { WINDOW_DEPTH, WINDOW_DIR } from '../stone/StoneSolid';
-import { COLOR_GLSL, EMISSIVE_GLSL, JADE_PARS_GLSL, NORMAL_GLSL, ROUGHNESS_GLSL, TRANSMISSION_GLSL } from './jadeShader';
+import { COLOR_GLSL, EMISSIVE_GLSL, JADE_PARS_GLSL, NORMAL_GLSL, ROUGHNESS_GLSL, TRANSMISSION_MASK_GLSL } from './jadeShader';
 
 export interface JadeOptions {
   /** 0 = no rind anywhere, 1 = rind wherever the geometry's rim attribute says so. */
@@ -104,10 +104,11 @@ export class JadeMaterial extends THREE.MeshPhysicalMaterial {
       .replace('#include <roughnessmap_fragment>', ROUGHNESS_GLSL)
       .replace('#include <normal_fragment_maps>', NORMAL_GLSL)
       .replace('#include <emissivemap_fragment>', EMISSIVE_GLSL)
-      .replace('#include <lights_physical_fragment>', TRANSMISSION_GLSL);
+      .replace('#include <transmission_fragment>', THREE.ShaderChunk.transmission_fragment.replace(
+        'material.transmission = transmission;', 'material.transmission = transmission;' + TRANSMISSION_MASK_GLSL));
   }
 
   override customProgramCacheKey(): string {
-    return this.morph ? 'jade-v3-morph' : 'jade-v3';
+    return this.morph ? 'jade-v4-morph' : 'jade-v4';
   }
 }

@@ -80,6 +80,9 @@ vec3 skinColor(vec3 p){
   c = mix(c, vec3(0.30,0.27,0.22), smoothstep(0.62,0.85,snoise(p*4.2+20.))*0.5);
   // sand grains: dense fine speckle instead of large blotches
   c *= 0.92 + 0.09*snoise(p*55.)*aaFade(p,55.) + 0.12*snoise(p*170.)*aaFade(p,170.);
+  // the rind is opaque (see TRANSMISSION_MASK_GLSL); 0.8 keeps the tone approved
+  // in Phase 7, when ~45% of a darker backdrop still showed through it
+  c *= 0.8;
   return c;
 }
 vec3 bumpNormal(vec3 surfPos, vec3 surfNorm, float h){
@@ -152,7 +155,11 @@ export const EMISSIVE_GLSL = /* glsl */ `#include <emissivemap_fragment>
   // (approximation, not a volumetric model); cotton and cracks block it
   totalEmissiveRadiance += uInner * gJade * gJade * (1.0 - gRind) * (1.0 - 0.6*gCotton) * (1.0 - gCrack);`;
 
-export const TRANSMISSION_GLSL = /* glsl */ `#include <lights_physical_fragment>
-  #ifdef USE_TRANSMISSION
-  material.transmission *= (1.-gRind)*(1.-0.45*gCotton)*(1.-0.6*gCrack)*(1.-gMark)*(1.-0.6*uRough);
-  #endif`;
+/**
+ * Rind, cotton, cracks and marks block transmitted light. Inserted right after
+ * three.js sets material.transmission inside transmission_fragment: until v1.1 this
+ * line ran earlier (after lights_physical_fragment) and was overwritten, so the
+ * rind let ~45% of the backdrop through and looked milky.
+ */
+export const TRANSMISSION_MASK_GLSL = /* glsl */ `
+  material.transmission *= (1.-gRind)*(1.-0.45*gCotton)*(1.-0.6*gCrack)*(1.-gMark)*(1.-0.6*uRough);`;
