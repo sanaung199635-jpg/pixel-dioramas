@@ -1,0 +1,18 @@
+{
+  "_note": "Evidence grades: A = GIA / Gems & Gemology primary text; B = peer-reviewed, museum or GIA field report; C = trade, forum or retailer material (use only with a 'simplified / varies by workshop' note). 'retrieved' = how the content was read in Phase 2: 'search-summary' means the page itself could not be opened from this environment and must be re-read directly before release.",
+  "sources": [
+    { "id": "GIA-ENC", "grade": "A", "retrieved": "search-summary", "title": "GIA Gem Encyclopedia — Jade (overview & properties)", "url": "https://www.gia.edu/jade" },
+    { "id": "GIA-DESC", "grade": "A", "retrieved": "not-retrieved", "title": "GIA — Jade description", "url": "https://www.gia.edu/jade-description" },
+    { "id": "GIA-QF", "grade": "A", "retrieved": "search-summary", "title": "GIA — Jadeite jade quality factors", "url": "https://www.gia.edu/jade-quality-factor" },
+    { "id": "GIA-BUY", "grade": "A", "retrieved": "not-retrieved", "title": "GIA — Jade buyer's guide", "url": "https://www.gia.edu/jade/buyers-guide" },
+    { "id": "GIA-HSU", "grade": "B", "retrieved": "search-summary", "title": "Hsu, T. (2013) Jadeite Manufacturing and Trading Hubs in Guangdong, China — GIA News from Research (Pingzhou bangle factory visit)", "url": "https://www.gia.edu/gia-news-research-jadeite-trading-centers-hsu" },
+    { "id": "GG-BURMA", "grade": "B", "retrieved": "search-summary", "title": "Hughes, R.W. et al. (2000) Burmese Jade: The Inscrutable Gem — Gems & Gemology, Spring 2000", "url": "https://www.gia.edu/dam/jcr:4b5d009c-53ed-464a-a8cd-4d5ab23f56c6/SP00.pdf" },
+    { "id": "GG-DYED", "grade": "A", "retrieved": "search-summary", "title": "Gems & Gemology Lab Notes (Fall 2015) — Dyed and natural green jadeite", "url": "https://www.gia.edu/gems-gemology/fall-2015-labnotes-dyed-natural-green-jadeite" },
+    { "id": "GG-COAT", "grade": "A", "retrieved": "search-summary", "title": "Gems & Gemology — Gemological characteristics of coated jadeite jade", "url": "https://www.gia.edu/gems-gemology/gemological-characteristics-coated-jadeite-jade" },
+    { "id": "PENN", "grade": "B", "retrieved": "search-summary", "title": "Penn Museum, Expedition — jade (specific gravity of jadeite vs nephrite)", "url": "https://www.penn.museum/sites/expedition/jade/" },
+    { "id": "HPK-2021", "grade": "B", "retrieved": "search-summary", "title": "The 2020 Hpakant jade mine disaster: a multi-sensor investigation for slope failure (ISPRS J. Photogramm. Remote Sens., 2021)", "url": "https://sciencedirect.com/science/article/pii/S0924271621001489" },
+    { "id": "IGC-2019", "grade": "B", "retrieved": "search-summary", "title": "Loiacono et al. (2019) Artisanal jade mining in Myanmar — International Growth Centre report", "url": "https://www.theigc.org/sites/default/files/2020/04/Loiacono-et-al-2019-Final-Report-1-1.pdf" },
+    { "id": "ZH-TRADE", "grade": "C", "retrieved": "search-summary", "title": "中文行业科普文章（知乎：翡翠赌石三大法宝；手镯加工流程；翡翠手镯制作全过程）", "url": "https://zhuanlan.zhihu.com/p/38353244" },
+    { "id": "EN-TRADE", "grade": "C", "retrieved": "search-summary", "title": "English trade articles on bangle making (Mays Gems; Jade Bangle Co.; Jade Fiend)", "url": "https://mays.us/blogs/jade-education/how-jade-bangle-is-made-traditionally" }
+  ]
+}

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JADE GENESIS · 12 镜头故事板</title>
+<style>
+  :root { --ink:#1d2420; --muted:#7b837e; --hair:rgba(29,36,32,.12); --jade:#2b7351; --warn:#9a6b2f; --paper:#f4f2ee; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:"Noto Sans SC","WenQuanYi Zen Hei",system-ui,sans-serif; padding:56px 56px 64px; width:1920px; }
+  header { display:flex; align-items:flex-end; gap:40px; margin-bottom:28px; }
+  h1 { font-size:40px; font-weight:500; letter-spacing:.08em; margin:6px 0 0; }
+  .kick { font-size:12px; letter-spacing:.3em; color:var(--jade); font-weight:600; }
+  .legend { margin-left:auto; display:flex; gap:22px; font-size:13px; color:var(--muted); align-items:center; }
+  .legend i { display:inline-block; vertical-align:middle; margin-right:6px; }
+  .lg-card { width:22px; height:14px; border:1.5px dashed var(--jade); border-radius:3px; }
+  .lg-cam { width:24px; height:2px; background:#d0622f; position:relative; }
+  .lg-hit { width:12px; height:12px; border-radius:50%; border:2px solid #2f6bd0; }
+  .note { font-size:13px; color:var(--warn); margin:0 0 26px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+  .p { background:#fff; border:1px solid var(--hair); border-radius:16px; overflow:hidden; }
+  .frame { position:relative; aspect-ratio:16/10; background:#eee; }
+  .frame img { width:100%; height:100%; display:block; object-fit:cover; }
+  .frame svg { position:absolute; inset:0; width:100%; height:100%; }
+  .num { position:absolute; left:14px; top:12px; font-size:12px; letter-spacing:.2em; background:rgba(255,255,255,.88); padding:5px 10px; border-radius:999px; font-weight:600; }
+  .card { position:absolute; border:2px dashed var(--jade); border-radius:8px; background:rgba(43,115,81,.07); font-size:11px; color:var(--jade); padding:4px 6px; letter-spacing:.1em; }
+  .body { padding:16px 20px 18px; }
+  .body h2 { margin:0 0 10px; font-size:20px; font-weight:600; letter-spacing:.08em; }
+  .body h2 small { font-size:11px; color:var(--muted); letter-spacing:.2em; margin-left:8px; font-weight:400; text-transform:uppercase; }
+  dl { display:grid; grid-template-columns:62px 1fr; gap:6px 10px; margin:0; font-size:12.5px; line-height:1.6; }
+  dt { color:var(--muted); }
+  dd { margin:0; }
+  .cam { color:#b8501f; }
+  .hit { color:#2f5fb8; }
+  footer { margin-top:28px; font-size:12px; color:var(--muted); line-height:1.8; }
+</style>
+</head>
+<body>
+<header>
+  <div><div class="kick">JADE GENESIS · PHASE 1 · STORYBOARD</div><h1>12 镜头交互故事板</h1></div>
+  <div class="legend"><span><i class="lg-cam"></i>镜头运动</span><span><i class="lg-hit"></i>主要互动区</span><span><i class="lg-card"></i>知识卡片位置</span></div>
+</header>
+<p class="note">画面为方案 A 的实时 3D 概念渲染（同一块程序化原石贯穿全程）。所有工艺描述均为待 Phase 2 审核的草案；镜头与界面位置为设计计划，非最终实现。</p>
+<div class="grid" id="grid"></div>
+<footer>
+  转场原则：每一镜的结束机位 = 下一镜的起始机位（或经由“原石飞入展台”这类有空间逻辑的过渡），不使用硬切；所有动画由同一条时间轴驱动，可暂停/倍速/跳转。<br/>
+  材料连续性：01→12 使用同一个石头坐标系。切面、板料、镯芯与手镯的纹理和那条贯穿裂隙都来自同一个三维纹理场，画圈环节可看到两只镯圈主动避开裂隙。
+</footer>
+<script>
+// cam: SVG path in a 100x62.5 box + label; hit: [x,y,r] in %; card: [x,y,w,h] in %
+const S = [
+  { f:'sb01-mine', t:'开采', en:'Mining', cam:['M20 50 Q50 64 82 46', '等距俯瞰 · 环绕 30°'], hit:[[60,47,7]], card:[70,6,27,20],
+    move:'等距俯瞰沙盘，缓慢环绕约 30°，再推近挖斗', subj:'微缩露天矿沙盘、挖掘机、运输车、原石', act:'挖斗抬起原石；转场时原石“飞入”展台', ui:'点击挖掘机 / 矿坑 / 原石 → 说明' },
+  { f:'sb02-wash', t:'清洗', en:'Washing', cam:['M50 8 L50 26', '下降 · 跟随'], hit:[[57,30,9]], card:[72,24,25,24],
+    move:'由沙盘高位下降至清洗台 45° 中景', subj:'原石、木格栅、水枪、水流', act:'石皮由干变湿、颜色加深，泥水流下', ui:'拖动水枪改变冲洗位置' },
+  { f:'sb03-inspect', t:'打灯观察', en:'Lighting', cam:['M30 50 L44 36', '暗场 · 推近'], hit:[[42,24,7]], card:[4,58,30,24],
+    move:'环境光渐暗，推近至手电贴皮处特写', subj:'原石、强光手电、局部透光光晕', act:'手电沿表面移动，光晕跟随', ui:'用户拖动手电位置；固定提示“打灯有局限”' },
+  { f:'sb04-window', t:'开窗', en:'Window', cam:['M14 30 Q24 20 36 22', '侧前方 · 微推'], hit:[[42,40,10]], card:[4,6,28,22],
+    move:'侧前方中近景，缓慢推近窗口', subj:'原石、角磨机、粉尘', act:'砂轮磨去局部石皮，露出内部', ui:'点击窗口 → 放大镜视图' },
+  { f:'sb05-plan', t:'切割规划', en:'Planning', cam:['M18 54 A30 12 0 1 0 82 54', '360° 慢环绕 + 正交'], hit:[[30,30,8]], card:[72,8,25,24],
+    move:'360° 慢速环绕，可切换俯视 / 侧视正交', subj:'原石、粉笔切割线、贯穿裂隙', act:'切割线依次绘出：先对半，再取板料', ui:'切换视图；悬停切割线看说明' },
+  { f:'sb06-saw', t:'水冷切片', en:'Slabbing', cam:['M84 10 L62 36', '全景 → 接触点特写'], hit:[[48,38,9]], card:[72,6,25,20],
+    move:'机器全景 → 推近锯片接触点 → 分离后拉远', subj:'切割机、金刚石锯片、冷却水、两半原石', act:'锯片下切、水雾；两半如书页打开', ui:'点击切割机 / 锯片 / 冷却水；切面放大' },
+  { f:'sb07-slab', t:'画圈', en:'Marking', cam:['M50 4 L50 14', '俯视正交'], hit:[[46,48,9]], card:[72,30,25,26],
+    move:'板料正上方俯视（正交），轻微呼吸缩放', subj:'灯箱、板料、记号笔、裂隙', act:'透光显示内部；画出两组同心圆并避开裂隙', ui:'悬停圆圈 → 圈口 / 条宽示意' },
+  { f:'sb08-core', t:'套取镯坯', en:'Coring', cam:['M14 20 Q22 34 30 42', '侧向 · 剖视'], hit:[[34,58,8],[60,36,7]], card:[70,60,27,22],
+    move:'侧向剖视（钻头半透明剖开显示内部）', subj:'套料机、双层管钻、板料', act:'管钻下行，抬起后分离为镯坯 / 镯芯 / 余料', ui:'点击三件分别标注' },
+  { f:'sb09-rough', t:'粗加工', en:'Shaping', cam:['M80 54 Q60 46 46 52', '中景 · 跟随'], hit:[[27,56,8]], card:[4,6,28,24],
+    move:'跟随镯坯旋转的中景', subj:'方截面镯坯、粗砂轮', act:'方形截面逐渐修成圆角条形', ui:'截面剖视切换（方 → 圆）' },
+  { f:'sb10-fine', t:'精磨', en:'Fine grind', cam:['M82 52 Q70 40 60 36', '近景跟随'], hit:[[42,50,9]], card:[72,6,25,22],
+    move:'近景跟随，镜头与镯子同步慢转', subj:'细砂轮、冷却水、镯坯', act:'表面由磨砂逐渐变平整', ui:'前后对比滑块' },
+  { f:'sb11-polish', t:'抛光', en:'Polishing', cam:['M10 20 L30 30', '极近 · 高光掠过'], hit:[[22,44,10]], card:[72,40,25,24],
+    move:'极近特写，光源掠过形成高光扫动', subj:'抛光轮、镯子', act:'高光由模糊变锐利', ui:'拖动光源角度；对比滑块' },
+  { f:'sb12-showcase', t:'检查展示', en:'Showcase', cam:['M20 56 A30 10 0 1 0 80 56', '慢速 360°'], hit:[[52,40,10]], card:[70,8,27,30],
+    move:'慢速 360° 环绕，推近细节', subj:'手镯、天鹅绒托、展台、聚光', act:'检查（灯照 / 卡尺）后陈列', ui:'360° 旋转、缩放、聚光切换、材质说明' },
+];
+document.getElementById('grid').innerHTML = S.map((s, i) => `
+  <div class="p">
+    <div class="frame">
+      <img src="frames/${s.f}.png" />
+      <svg viewBox="0 0 100 62.5" preserveAspectRatio="none">
+        <defs><marker id="ar${i}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#d0622f"/></marker></defs>
+        <path d="${s.cam[0]}" fill="none" stroke="#d0622f" stroke-width=".7" stroke-dasharray="1.6 1" marker-end="url(#ar${i})" vector-effect="non-scaling-stroke" style="stroke-width:2.5px"/>
+        ${s.hit.map(([x, y, r]) => `<ellipse cx="${x}" cy="${y * 0.625}" rx="${r}" ry="${r * 0.62}" fill="rgba(47,107,208,.08)" stroke="#2f6bd0" style="stroke-width:2px" vector-effect="non-scaling-stroke"/>`).join('')}
+      </svg>
+      <div class="card" style="left:${s.card[0]}%;top:${s.card[1]}%;width:${s.card[2]}%;height:${s.card[3]}%">知识卡</div>
+      <span class="num">镜头 ${String(i + 1).padStart(2, '0')}</span>
+    </div>
+    <div class="body">
+      <h2>${s.t}<small>${s.en}</small></h2>
+      <dl><dt>镜头运动</dt><dd class="cam">${s.move}</dd><dt>三维主体</dt><dd>${s.subj}</dd><dt>工艺动作</dt><dd>${s.act}</dd><dt>互动区域</dt><dd class="hit">${s.ui}</dd></dl>
+    </div>
+  </div>`).join('');
+</script>
+</body>
+</html>
