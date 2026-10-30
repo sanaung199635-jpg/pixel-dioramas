@@ -1,0 +1,685 @@
+{
+ "p320": {
+  "size": "320x568",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 42,
+    "stage": "mining",
+    "frame": {
+     "left": 6,
+     "top": 56,
+     "right": 314,
+     "bottom": 353.8125
+    }
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 53,
+    "stage": "mining",
+    "frame": {
+     "left": 6,
+     "top": 132.82687572508965,
+     "right": 314,
+     "bottom": 400.75628124675035
+    }
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 53,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 162.5926142092209,
+     "right": 314,
+     "bottom": 418.94413937399054
+    }
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 53,
+    "stage": "slabbing",
+    "frame": {
+     "left": 6,
+     "top": 167.04198605233444,
+     "right": 314,
+     "bottom": 421.6628538409952
+    }
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 53,
+    "stage": "coring",
+    "frame": {
+     "left": 6,
+     "top": 167.59375,
+     "right": 314,
+     "bottom": 422
+    }
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 73,
+    "stage": "showcase",
+    "frame": {
+     "left": 6,
+     "top": 190.87481675150374,
+     "right": 314,
+     "bottom": 335.7738268462825
+    }
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 72,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 71.08392676288715,
+     "right": 314,
+     "bottom": 242.32065887016273
+    },
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 125,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 56.27505409755278,
+     "right": 314,
+     "bottom": 418.90104620078836
+    },
+    "knowTap": "ok/ok"
+   }
+  },
+  "errors": []
+ },
+ "p390": {
+  "size": "390x844",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 26,
+    "stage": "mining",
+    "frame": {
+     "left": 6,
+     "top": 56,
+     "right": 384,
+     "bottom": 651.90625
+    }
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 35,
+    "stage": "mining",
+    "frame": {
+     "left": 6,
+     "top": 120.97676103324682,
+     "right": 384,
+     "bottom": 678.744872941484
+    }
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 35,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 159.67237307570267,
+     "right": 384,
+     "bottom": 694.728078699709
+    }
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 35,
+    "stage": "slabbing",
+    "frame": {
+     "left": 6,
+     "top": 166.6623206667444,
+     "right": 384,
+     "bottom": 697.6152735181877
+    }
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 35,
+    "stage": "coring",
+    "frame": {
+     "left": 6,
+     "top": 167.59375,
+     "right": 384,
+     "bottom": 698
+    }
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 46,
+    "stage": "showcase",
+    "frame": {
+     "left": 6,
+     "top": 167.59375,
+     "right": 384,
+     "bottom": 610.2542177761587
+    }
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 61,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 73.2647188236843,
+     "right": 384,
+     "bottom": 452.3395779493779
+    },
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 116,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 56,
+     "right": 384,
+     "bottom": 698
+    },
+    "knowTap": "ok/ok"
+   }
+  },
+  "errors": []
+ },
+ "p430": {
+  "size": "430x932",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 23,
+    "stage": "mining",
+    "frame": {
+     "left": 6,
+     "top": 56,
+     "right": 424,
+     "bottom": 739.90625
+    }
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 32,
+    "stage": "mining",
+    "frame": {
+     "left": 6,
+     "top": 122.29565200270824,
+     "right": 424,
+     "bottom": 767.2896402839526
+    }
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 32,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 160.61014649658551,
+     "right": 424,
+     "bottom": 783.1154256041624
+    }
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 32,
+    "stage": "slabbing",
+    "frame": {
+     "left": 6,
+     "top": 166.77774512943904,
+     "right": 424,
+     "bottom": 785.6629495424035
+    }
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 32,
+    "stage": "coring",
+    "frame": {
+     "left": 6,
+     "top": 167.59375,
+     "right": 424,
+     "bottom": 786
+    }
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 41,
+    "stage": "showcase",
+    "frame": {
+     "left": 6,
+     "top": 167.59375,
+     "right": 424,
+     "bottom": 698.2542177761584
+    }
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 59,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 71.34922593070715,
+     "right": 424,
+     "bottom": 503.1629045056494
+    },
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 115,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 56,
+     "right": 424,
+     "bottom": 786
+    },
+    "knowTap": "ok/ok"
+   }
+  },
+  "errors": []
+ },
+ "land": {
+  "size": "844x390",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 30,
+    "stage": "mining",
+    "frame": {
+     "left": 376,
+     "top": 48,
+     "right": 838,
+     "bottom": 384
+    }
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 43,
+    "stage": "mining",
+    "frame": {
+     "left": 332.7916802725366,
+     "top": 48,
+     "right": 838,
+     "bottom": 340.2278925712798
+    }
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 39,
+    "stage": "washing",
+    "frame": {
+     "left": 306.61472920355,
+     "top": 48,
+     "right": 838,
+     "bottom": 313.7093812851365
+    }
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 41,
+    "stage": "slabbing",
+    "frame": {
+     "left": 303.43301486869086,
+     "top": 48,
+     "right": 838,
+     "bottom": 310.4861515332877
+    }
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 41,
+    "stage": "coring",
+    "frame": {
+     "left": 302.953125,
+     "top": 48,
+     "right": 838,
+     "bottom": 310
+    }
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 61,
+    "stage": "showcase",
+    "frame": {
+     "left": 302.953125,
+     "top": 48,
+     "right": 838,
+     "bottom": 249.63493197890338
+    }
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 61,
+    "stage": "washing",
+    "frame": {
+     "left": 18.725072986064035,
+     "top": 48,
+     "right": 476.1910532313017,
+     "bottom": 308.7071520476844
+    },
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 79,
+    "stage": "washing",
+    "frame": {
+     "left": 6.102237599026562,
+     "top": 48,
+     "right": 837.1344565733942,
+     "bottom": 309.99875491627216
+    },
+    "knowTap": "ok/ok"
+   }
+  },
+  "errors": []
+ },
+ "tab": {
+  "size": "768x1024",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 42,
+    "stage": "mining",
+    "frame": {
+     "left": 6,
+     "top": 497.5,
+     "right": 762,
+     "bottom": 856
+    }
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 37,
+    "stage": "mining",
+    "frame": {
+     "left": 6,
+     "top": 499.28955786333546,
+     "right": 762,
+     "bottom": 856
+    }
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 33,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 417.5565269198356,
+     "right": 762,
+     "bottom": 856
+    }
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 34,
+    "stage": "slabbing",
+    "frame": {
+     "left": 6,
+     "top": 425.4473718022745,
+     "right": 762,
+     "bottom": 856
+    }
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 33,
+    "stage": "coring",
+    "frame": {
+     "left": 6,
+     "top": 409.165184404229,
+     "right": 762,
+     "bottom": 856
+    }
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 39,
+    "stage": "showcase",
+    "frame": {
+     "left": 6,
+     "top": 447.4310264856846,
+     "right": 762,
+     "bottom": 856
+    }
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 51,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 403.6041171835415,
+     "right": 762,
+     "bottom": 856
+    },
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [],
+    "uiCoverPct": 51,
+    "stage": "washing",
+    "frame": {
+     "left": 6,
+     "top": 400.359375,
+     "right": 762,
+     "bottom": 856
+    },
+    "knowTap": "ok/missing"
+   }
+  },
+  "errors": []
+ },
+ "desk": {
+  "size": "1440x900",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "\u58f0\u97f3 \u00b7 \u5173 102x36",
+     "\u81ea\u7531\u89c6\u89d2 \u00b7 \u70b9\u51fb\u56de\u5230\u5bfc\u89c8 160x33",
+     "0.5\u00d7 44x36",
+     "1\u00d7 44x36",
+     "2\u00d7 44x36"
+    ],
+    "uiCoverPct": 39,
+    "stage": "mining",
+    "frame": null
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "\u58f0\u97f3 \u00b7 \u5173 102x36",
+     "\u81ea\u7531\u89c6\u89d2 \u00b7 \u70b9\u51fb\u56de\u5230\u5bfc\u89c8 160x33",
+     "0.5\u00d7 44x36",
+     "1\u00d7 44x36",
+     "2\u00d7 44x36"
+    ],
+    "uiCoverPct": 46,
+    "stage": "mining",
+    "frame": null
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "\u58f0\u97f3 \u00b7 \u5173 102x36",
+     "\u81ea\u7531\u89c6\u89d2 \u00b7 \u70b9\u51fb\u56de\u5230\u5bfc\u89c8 160x33",
+     "0.5\u00d7 44x36",
+     "1\u00d7 44x36",
+     "2\u00d7 44x36"
+    ],
+    "uiCoverPct": 42,
+    "stage": "washing",
+    "frame": null
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "\u58f0\u97f3 \u00b7 \u5173 102x36",
+     "\u81ea\u7531\u89c6\u89d2 \u00b7 \u70b9\u51fb\u56de\u5230\u5bfc\u89c8 160x33",
+     "0.5\u00d7 44x36",
+     "1\u00d7 44x36",
+     "2\u00d7 44x36"
+    ],
+    "uiCoverPct": 44,
+    "stage": "slabbing",
+    "frame": null
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "\u58f0\u97f3 \u00b7 \u5173 102x36",
+     "\u81ea\u7531\u89c6\u89d2 \u00b7 \u70b9\u51fb\u56de\u5230\u5bfc\u89c8 160x33",
+     "0.5\u00d7 44x36",
+     "1\u00d7 44x36",
+     "2\u00d7 44x36"
+    ],
+    "uiCoverPct": 44,
+    "stage": "coring",
+    "frame": null
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "\u58f0\u97f3 \u00b7 \u5173 102x36",
+     "\u81ea\u7531\u89c6\u89d2 \u00b7 \u70b9\u51fb\u56de\u5230\u5bfc\u89c8 160x33",
+     "\u805a\u5149 48x36",
+     "\u67d4\u5149 48x36",
+     "\u80cc\u5149 48x36",
+     "0.5\u00d7 44x36",
+     "1\u00d7 44x36",
+     "2\u00d7 44x36"
+    ],
+    "uiCoverPct": 48,
+    "stage": "showcase",
+    "frame": null
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "\u58f0\u97f3 \u00b7 \u5173 102x36",
+     "\u81ea\u7531\u89c6\u89d2 \u00b7 \u70b9\u51fb\u56de\u5230\u5bfc\u89c8 160x33",
+     "0.5\u00d7 44x36",
+     "1\u00d7 44x36",
+     "2\u00d7 44x36"
+    ],
+    "uiCoverPct": 42,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "missing"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "\u58f0\u97f3 \u00b7 \u5173 102x36",
+     "\u81ea\u7531\u89c6\u89d2 \u00b7 \u70b9\u51fb\u56de\u5230\u5bfc\u89c8 160x33",
+     "0.5\u00d7 44x36",
+     "1\u00d7 44x36",
+     "2\u00d7 44x36"
+    ],
+    "uiCoverPct": 42,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "missing/missing"
+   }
+  },
+  "errors": []
+ }
+}

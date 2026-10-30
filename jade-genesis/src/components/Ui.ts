@@ -38,6 +38,19 @@ export interface UiState {
 
 export interface ScreenHotspot { id: string; x: number; y: number; visible: boolean }
 
+/** Area of the canvas (CSS px) not covered by docked UI panels. */
+export interface FrameRect { left: number; top: number; right: number; bottom: number }
+export type SheetState = 'closed' | 'half' | 'full';
+
+/**
+ * Compact layout: phones in portrait (narrow) and in landscape (short). Chosen from
+ * the content: below 760 px the desktop side panels no longer fit beside the scene,
+ * and below 500 px of height the dock plus story card leave too little scene.
+ */
+export const COMPACT_QUERY = '(max-width: 759px), (max-height: 500px)';
+/** Tablets in portrait keep the regular panels but frame the scene below them. */
+export const TABLET_PORTRAIT_QUERY = '(min-width: 760px) and (max-width: 1179px) and (min-height: 501px) and (orientation: portrait)';
+
 const ICON = {
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="fill" d="M7 5l12 7-12 7z"/></svg>',
   pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="fill" d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg>',
@@ -47,6 +60,9 @@ const ICON = {
   torch: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 6h-4z"/><path d="M10 9v11h4V9"/><path d="M18 4l2-1M18 8h2"/></svg>',
   book: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg>',
   close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  more: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle class="fill" cx="5" cy="12" r="1.8"/><circle class="fill" cx="12" cy="12" r="1.8"/><circle class="fill" cx="19" cy="12" r="1.8"/></svg>',
+  expand: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>',
+  fold: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
   sound: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/><path class="mute" d="M17 9l4 6M21 9l-4 6"/></svg>',
 };
 
@@ -94,6 +110,24 @@ export class Ui {
   private readonly toast: HTMLElement;
   private readonly live: HTMLElement;
   private readonly panels: HTMLElement[];
+  private readonly storyBody: HTMLElement;
+  private readonly storyFold: HTMLButtonElement;
+  private readonly knowHead: HTMLElement;
+  private readonly knowBody: HTMLElement;
+  private readonly knowGrade: HTMLElement;
+  private readonly knowBtn: HTMLButtonElement;
+  private readonly sheetSizeBtn: HTMLButtonElement;
+  private readonly sheetCloseBtn: HTMLButtonElement;
+  private readonly moreBtn: HTMLButtonElement;
+  private readonly morePanel: HTMLElement;
+  private readonly navBtns: HTMLButtonElement[] = [];
+  private readonly dock: HTMLElement;
+  private readonly top: HTMLElement;
+  private readonly compactMq = window.matchMedia(COMPACT_QUERY);
+  private readonly tabletMq = window.matchMedia(TABLET_PORTRAIT_QUERY);
+  private readonly knowTitle: HTMLElement;
+  private sheet: SheetState = 'closed';
+  private opener: HTMLElement | null = null;
   private last: Partial<UiState> = {};
   private scrubbing = false;
 
@@ -104,6 +138,7 @@ export class Ui {
 
     // ---- top bar
     const top = h('header', 'top');
+    this.top = top;
     top.innerHTML = `<div class="brand"><span class="mark" aria-hidden="true"></span><b>JADE GENESIS</b><i>${t('brand.sub')}</i></div>`;
     this.guidedChip = h('span', 'guided', `<i aria-hidden="true"></i>${t('guided')}`);
     this.soundBtn = btn('chip sound', `${ICON.sound}<span>${t('btn.soundOff')}</span>`, t('btn.soundOff'), () => this.on.toggleSound());
@@ -113,7 +148,7 @@ export class Ui {
 
     // ---- intro
     this.intro = h('section', 'intro');
-    this.intro.innerHTML = `<div class="kicker">${t('intro.kicker')}</div><h1>${t('intro.title')}</h1><p class="lead">${t('intro.lead')}</p>`;
+    this.intro.innerHTML = `<div class="kicker">${t('intro.kicker')}</div><h1>${t('intro.title')}</h1><p class="lead">${t('intro.lead')}</p><p class="lead-short">${t('intro.leadShort')}</p>`;
     const cta = h('div', 'cta-row');
     cta.append(
       btn('pill primary big', `<span>${t('intro.start')}</span>${ICON.play}`, t('intro.start'), () => this.on.start()),
@@ -123,15 +158,44 @@ export class Ui {
 
     // ---- story + knowledge
     this.story = h('section', 'story');
+    this.storyBody = h('div', 'story-body');
+    this.storyFold = btn('story-fold', ICON.fold, t('story.fold'), () => this.setStoryFolded(!this.story.classList.contains('folded')));
+    this.storyFold.setAttribute('aria-expanded', 'true');
+    this.story.append(this.storyBody, this.storyFold);
+
+    // knowledge: a side card on desktop, a bottom sheet (closed / half / full) on phones
     this.know = h('aside', 'know');
     this.know.id = 'knowledge';
-    this.know.setAttribute('aria-label', t('card.title'));
-    this.knowToggle = btn('know-toggle', `${ICON.book}<span>${t('btn.knowledge')}</span>`, t('btn.knowledge'), () => this.setKnowOpen(!this.know.classList.contains('open')));
+    this.know.dataset.sheet = 'closed';
+    this.know.setAttribute('aria-labelledby', 'know-title');
+    this.knowHead = h('div', 'kh');
+    this.knowGrade = h('span', 'grade');
+    this.sheetSizeBtn = btn('sheet-btn', ICON.expand, t('sheet.expand'), () => this.setSheet(this.sheet === 'full' ? 'half' : 'full'));
+    this.sheetSizeBtn.dataset.action = 'sheet-size';
+    this.sheetCloseBtn = btn('sheet-btn', ICON.close, t('sheet.close'), () => this.setSheet('closed'));
+    this.sheetCloseBtn.dataset.action = 'sheet-close';
+    const grip = h('span', 'grip');
+    grip.setAttribute('aria-hidden', 'true');
+    const title = h('h2', 'kt', t('card.title'));
+    this.knowTitle = title;
+    title.id = 'know-title';
+    title.tabIndex = -1;
+    this.knowHead.append(grip, title, this.knowGrade, this.sheetSizeBtn, this.sheetCloseBtn);
+    this.knowBody = h('div', 'kb');
+    this.know.append(this.knowHead, this.knowBody);
+    this.bindSheetDrag();
+    const toggleKnow = (from: HTMLElement) => { this.opener = from; this.setSheet(this.sheet === 'closed' ? 'half' : 'closed'); };
+    this.knowToggle = btn('know-toggle', `${ICON.book}<span>${t('btn.knowledge')}</span>`, t('btn.knowledge'), () => toggleKnow(this.knowToggle));
     this.knowToggle.setAttribute('aria-controls', 'knowledge');
     this.knowToggle.setAttribute('aria-expanded', 'false');
+    this.knowBtn = btn('round know-btn', ICON.book, t('btn.knowledge'), () => toggleKnow(this.knowBtn));
+    this.knowBtn.dataset.action = 'knowledge';
+    this.knowBtn.setAttribute('aria-controls', 'knowledge');
+    this.knowBtn.setAttribute('aria-expanded', 'false');
 
     // ---- dock: timeline row + controls row
     const dock = h('div', 'dock');
+    this.dock = dock;
     const tl = h('nav', 'timeline');
     tl.setAttribute('aria-label', t('tl.label'));
     STAGE_CONTENT.forEach((c, i) => {
@@ -142,9 +206,9 @@ export class Ui {
       tl.append(b);
     });
     const ctl = h('div', 'controls');
-    this.prevBtn = btn('round', ICON.prev, t('btn.prev'), () => this.on.prev());
+    this.prevBtn = btn('round prev', ICON.prev, t('btn.prev'), () => this.on.prev());
     this.playBtn = btn('round primary play', ICON.play, t('btn.play'), () => this.on.toggle());
-    this.nextBtn = btn('round', ICON.next, t('btn.next'), () => this.on.next());
+    this.nextBtn = btn('round next', ICON.next, t('btn.next'), () => this.on.next());
     const speeds = h('div', 'speed');
     speeds.setAttribute('role', 'group');
     speeds.setAttribute('aria-label', t('speed.label'));
@@ -167,8 +231,25 @@ export class Ui {
     this.phaseText = h('div', 'phase');
     scrubWrap.append(this.phaseText, this.scrub, this.ticks);
     this.torchBtn = btn('pill torch', `${ICON.torch}<span>${t('btn.torch')}</span>`, t('btn.torch'), () => this.on.toggleTorch());
-    const resetBtn = btn('round', ICON.reset, t('btn.reset'), () => this.on.resetView());
-    ctl.append(this.prevBtn, this.playBtn, this.nextBtn, speeds, scrubWrap, this.torchBtn, resetBtn);
+    const resetBtn = btn('round reset', ICON.reset, t('btn.reset'), () => this.on.resetView());
+    // secondary controls: inline on desktop, a panel behind "more" on phones
+    this.moreBtn = btn('round more-btn', ICON.more, t('btn.more'), () => this.setMoreOpen(!this.morePanel.classList.contains('open')));
+    this.moreBtn.setAttribute('aria-controls', 'more-panel');
+    this.moreBtn.setAttribute('aria-expanded', 'false');
+    this.morePanel = h('div', 'secondary');
+    this.morePanel.id = 'more-panel';
+    this.morePanel.setAttribute('role', 'group');
+    this.morePanel.setAttribute('aria-label', t('more.title'));
+    const nav = h('div', 'nav-grid');
+    nav.setAttribute('role', 'group');
+    nav.setAttribute('aria-label', t('more.stages'));
+    STAGE_CONTENT.forEach((c, i) => {
+      const b = btn('nav-step', `<span class="n">${pad(c.no)}</span><span class="zh">${c.title}</span>`, `${pad(c.no)} ${c.title}`, () => { this.on.goTo(i); this.setMoreOpen(false); });
+      this.navBtns.push(b);
+      nav.append(b);
+    });
+    this.morePanel.append(h('div', 'more-h', t('more.speed')), speeds, this.torchBtn, resetBtn, h('div', 'more-h stages-h', t('more.stages')), nav);
+    ctl.append(this.knowBtn, this.prevBtn, this.playBtn, this.nextBtn, scrubWrap, this.moreBtn, this.morePanel);
     dock.append(tl, ctl);
 
     // ---- showcase controls (stage 12)
@@ -203,13 +284,129 @@ export class Ui {
     this.live.setAttribute('aria-live', 'polite');
     const hint = h('div', 'hint', t('hint'));
 
-    this.root.append(top, this.intro, this.story, this.knowToggle, this.know, this.hotLayer, this.popover, this.toast, this.camChip, this.showcaseBar, hint, dock, this.live);
-    this.panels = [this.story, this.know, dock, this.knowToggle, this.intro, this.showcaseBar];
+    this.root.append(top, this.intro, this.story, this.knowToggle, this.hotLayer, this.popover, this.toast, this.camChip, this.showcaseBar, hint, dock, this.know, this.live);
+    this.panels = [this.story, this.know, dock, this.knowToggle, this.intro, this.showcaseBar, this.morePanel];
 
     window.addEventListener('keydown', (e) => this.onKey(e));
     document.addEventListener('pointerdown', (e) => {
-      if (!this.popover.hidden && !this.popover.contains(e.target as Node) && !(e.target as HTMLElement).closest('.pin')) this.closePopover();
+      const el = e.target as HTMLElement;
+      if (!this.popover.hidden && !this.popover.contains(el) && !el.closest('.pin')) this.closePopover();
+      if (this.morePanel.classList.contains('open') && !this.morePanel.contains(el) && !this.moreBtn.contains(el)) this.setMoreOpen(false);
     });
+    // layout mode and the measured size of the docked bars (CSS uses them for the sheet)
+    const layout = () => {
+      this.root.dataset.layout = this.compactMq.matches ? 'compact' : 'regular';
+      this.root.dataset.orient = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+      this.setMoreOpen(false);
+    };
+    this.compactMq.addEventListener('change', layout);
+    window.addEventListener('resize', layout);
+    layout();
+    const measure = () => {
+      this.root.style.setProperty('--dock-h', `${Math.round(window.innerHeight - this.dock.getBoundingClientRect().top)}px`);
+      this.root.style.setProperty('--top-h', `${Math.round(this.top.getBoundingClientRect().bottom)}px`);
+    };
+    new ResizeObserver(measure).observe(this.dock);
+    window.addEventListener('resize', measure);
+    measure();
+  }
+
+  get compact(): boolean {
+    return this.compactMq.matches;
+  }
+
+  /**
+   * Free area for the 3D subject on compact layouts: the canvas minus the panels
+   * docked at its edges. Each panel says which edge it occupies with the CSS custom
+   * property --avoid (top / bottom / left / right), so the layout rules stay in CSS.
+   * Returns null on the regular (desktop / tablet) layout.
+   */
+  frameRect(): FrameRect | null {
+    if (!this.compact && !this.tabletMq.matches) return null;
+    const W = window.innerWidth, H = window.innerHeight;
+    const r: FrameRect = { left: 0, top: 0, right: W, bottom: H };
+    const apply = (el: HTMLElement, guard: boolean) => {
+      if (el.offsetParent === null) return;
+      const side = getComputedStyle(el).getPropertyValue('--avoid').trim();
+      if (!side) return;
+      const b = el.getBoundingClientRect();
+      const next = { ...r };
+      if (side === 'top') next.top = Math.max(next.top, b.bottom);
+      else if (side === 'bottom') next.bottom = Math.min(next.bottom, b.top);
+      else if (side === 'left') next.left = Math.max(next.left, b.right);
+      else if (side === 'right') next.right = Math.min(next.right, b.left);
+      // a fully opened sheet would leave a sliver: keep framing for the area above it
+      if (guard && (next.bottom - next.top < H * 0.25 || next.right - next.left < W * 0.35)) return;
+      Object.assign(r, next);
+    };
+    for (const el of [this.top, this.story, this.intro, this.dock, this.showcaseBar]) apply(el, false);
+    apply(this.know, true);
+    const m = 6;
+    return { left: r.left + m, top: r.top + m, right: r.right - m, bottom: r.bottom - m };
+  }
+
+  get sheetState(): SheetState {
+    return this.sheet;
+  }
+
+  /** Knowledge sheet: closed, half (above the dock) or full (covers the dock). */
+  setSheet(state: SheetState): void {
+    const was = this.sheet;
+    this.sheet = state;
+    this.know.dataset.sheet = state;
+    this.know.classList.toggle('open', state !== 'closed');
+    for (const b of [this.knowToggle, this.knowBtn]) b.setAttribute('aria-expanded', String(state !== 'closed'));
+    const full = state === 'full';
+    this.sheetSizeBtn.setAttribute('aria-label', full ? t('sheet.half') : t('sheet.expand'));
+    this.sheetSizeBtn.title = full ? t('sheet.half') : t('sheet.expand');
+    this.sheetSizeBtn.classList.toggle('down', full);
+    this.root.dataset.sheet = state;
+    if (state !== 'closed' && was === 'closed') {
+      this.setMoreOpen(false);
+      (this.know.querySelector('#know-title') as HTMLElement).focus({ preventScroll: true });
+    }
+    if (state === 'closed' && was !== 'closed' && this.know.contains(document.activeElement)) {
+      (this.opener && this.opener.offsetParent !== null ? this.opener : this.compact ? this.knowBtn : this.knowToggle).focus({ preventScroll: true });
+    }
+  }
+
+  private setMoreOpen(open: boolean): void {
+    if (!this.morePanel) return;
+    this.morePanel.classList.toggle('open', open);
+    this.moreBtn.setAttribute('aria-expanded', String(open));
+    if (open) this.setSheet('closed');
+  }
+
+  private setStoryFolded(folded: boolean): void {
+    this.story.classList.toggle('folded', folded);
+    this.storyFold.setAttribute('aria-expanded', String(!folded));
+    this.storyFold.setAttribute('aria-label', folded ? t('story.unfold') : t('story.fold'));
+    this.storyFold.title = folded ? t('story.unfold') : t('story.fold');
+  }
+
+  /** Drag the sheet's header: up opens it fully, down shrinks or closes it. */
+  private bindSheetDrag(): void {
+    let start: { y: number; id: number } | null = null;
+    this.knowHead.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('button') || !this.compact) return;
+      start = { y: e.clientY, id: e.pointerId };
+      this.knowHead.setPointerCapture(e.pointerId);
+    });
+    this.knowHead.addEventListener('pointermove', (e) => {
+      if (!start || e.pointerId !== start.id) return;
+      const dy = e.clientY - start.y;
+      this.know.style.setProperty('--drag', `${Math.max(-80, dy)}px`);
+    });
+    const end = (e: PointerEvent) => {
+      if (!start || e.pointerId !== start.id) return;
+      const dy = e.clientY - start.y;
+      start = null;
+      this.know.style.removeProperty('--drag');
+      if (dy < -40) this.setSheet('full');
+      else if (dy > 60) this.setSheet(this.sheet === 'full' ? 'half' : 'closed');
+    };
+    this.knowHead.addEventListener('pointerup', end);
+    this.knowHead.addEventListener('pointercancel', end);
   }
 
   hideIntro(): void {
@@ -229,13 +426,8 @@ export class Ui {
       case 'r': case 'R': this.on.resetView(); break;
       case 't': case 'T': this.on.toggleTorch(); break;
       case 'm': case 'M': this.on.toggleSound(); break;
-      case 'Escape': this.closePopover(); this.setKnowOpen(false); break;
+      case 'Escape': this.closePopover(); this.setMoreOpen(false); this.setSheet('closed'); break;
     }
-  }
-
-  private setKnowOpen(open: boolean): void {
-    this.know.classList.toggle('open', open);
-    this.knowToggle.setAttribute('aria-expanded', String(open));
   }
 
   update(s: UiState): void {
@@ -246,6 +438,10 @@ export class Ui {
       this.steps.forEach((b, i) => {
         b.classList.toggle('on', i === s.stage);
         b.classList.toggle('done', i < s.stage);
+        if (i === s.stage) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      });
+      this.navBtns.forEach((b, i) => {
+        b.classList.toggle('on', i === s.stage);
         if (i === s.stage) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
       });
       this.root.dataset.stage = String(s.stage);
@@ -295,13 +491,18 @@ export class Ui {
   }
 
   private renderKnowledge(c: StageContent): void {
-    this.story.innerHTML = `
+    this.storyBody.innerHTML = `
       <div class="kicker">STAGE ${pad(c.no)} / 12</div>
       <h1>${c.title}<small>${c.en}</small></h1>
       <p>${c.summary}</p>
       <div class="simp"><b>${t('card.simplified')}</b>${c.simplification}</div>`;
-    this.know.innerHTML = `
-      <div class="kh"><span>${t('card.title')}</span><span class="grade g${c.evidence}">${t('card.evidence')} ${c.evidence}</span></div>
+    // the sheet names its stage: on phones the story card steps aside while it is open
+    this.knowTitle.innerHTML = `<span class="kt-stage">${pad(c.no)} ${c.title}<span class="kt-sep"> · </span></span><span class="kt-card">${t('card.title')}</span>`;
+    this.knowGrade.className = `grade g${c.evidence}`;
+    this.knowGrade.textContent = `${t('card.evidence')} ${c.evidence}`;
+    // the gist comes first on phones (the half sheet); every field below is kept
+    this.knowBody.innerHTML = `
+      <div class="gist"><b>${t('card.gist')}</b>${c.purpose}<span class="gist-simp">${t('card.simplified')}：${c.simplification}</span></div>
       <dl>
         <dt>${t('card.terms')}</dt><dd>${c.terms.map((x) => `<b>${x.zh}</b> ${x.en !== '—' ? `<i>${x.en}</i>` : ''}<br/><span>${x.def}</span>`).join('<br/>')}</dd>
         <dt>${t('card.purpose')}</dt><dd>${c.purpose}</dd>

@@ -50,6 +50,10 @@ export interface JadeDebug {
   look(l: Partial<Look>): Look;
   /** Whether the active station sits inside the key light's shadow box. */
   shadowCovers(): boolean;
+  /** Compact layouts: the free canvas area the camera frames into (null on desktop). */
+  frameRect(): { left: number; top: number; right: number; bottom: number } | null;
+  /** Knowledge sheet state (closed / half / full), for tests. */
+  sheet(state?: 'closed' | 'half' | 'full'): string;
   /** Dev: force a quality level (0 = low … 3 = ultra) to check the tiers. */
   setQuality(level: number): void;
 }
@@ -124,7 +128,11 @@ export class App {
 
     this.bindPointer();
     this.bindContextLoss();
+    // Safari's toolbars, rotation and split view change the visible size without
+    // always firing window resize: watch the canvas and the visual viewport too
     window.addEventListener('resize', () => this.resize());
+    window.visualViewport?.addEventListener('resize', () => this.resize());
+    new ResizeObserver(() => this.resize()).observe(this.canvas);
     // never keep playing sound in a background tab
     document.addEventListener('visibilitychange', () => { if (document.hidden && this.sound.enabled) void this.sound.disable(); });
     this.applyQuality(this.quality.current.dprCap, this.quality.current.shadow);
@@ -182,6 +190,7 @@ export class App {
     this.exposure = this.director.lastExposure;
     this.sound.setMix(f.sound);
 
+    this.rig.setFrame(this.ui.frameRect());
     this.rig.update(dt, f.shot, Director.stationOf(s.stage));
     this.renderer.info.reset();
     this.renderer.render(this.world.scene, this.rig.camera);
@@ -217,8 +226,12 @@ export class App {
     this.ui.setHotspots(this.hotspots);
   }
 
+  private lastSize = '';
   private resize(): void {
     const w = window.innerWidth, h = window.innerHeight;
+    const key = `${w}x${h}@${window.devicePixelRatio}`;
+    if (key === this.lastSize) return;
+    this.lastSize = key;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.quality.current.dprCap));
     this.renderer.setSize(w, h, false);
     this.canvas.style.width = `${w}px`;
@@ -340,6 +353,8 @@ export class App {
       cull: (on) => { this.director.cullStations = on; },
       look: (l) => { this.world.studio.setLook(l); return this.world.studio.look; },
       setQuality: (level) => this.quality.set(level),
+      frameRect: () => this.rig.frame,
+      sheet: (state) => { if (state) this.ui.setSheet(state); return this.ui.sheetState; },
       shadowCovers: () => this.world.studio.shadowCovers(Director.stationOf(this.journey.state.stage).clone().setY(0.8)),
     };
   }
