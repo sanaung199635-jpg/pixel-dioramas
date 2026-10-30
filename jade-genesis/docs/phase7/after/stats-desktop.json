@@ -1,7 +1,7 @@
 {
   "viewport": "desktop",
   "size": "1440x900",
-  "loadMs": 9314,
+  "loadMs": 8430,
   "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
   "states": {
     "intro": {

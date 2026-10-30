@@ -1,7 +1,7 @@
 {
   "viewport": "mobile",
   "size": "390x844",
-  "loadMs": 4365,
+  "loadMs": 6687,
   "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
   "states": {
     "intro": {
