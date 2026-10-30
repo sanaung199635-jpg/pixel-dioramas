@@ -2,9 +2,9 @@
 
 一个 3D 互动网页项目：带观众亲眼看着一块硬玉翡翠原石，经过开采、清洗、观察、切片、取圈、打磨和抛光，最终成为一只绿色翡翠手镯。
 
-## 当前状态：v1.1 · Phase 7 工业级视觉升级（待审核）
+## 当前状态：v1.1.1 · Phase 7.7 性能优化（待审核）
 
-- **在线版本：** `https://sanaung199635-jpg.github.io/pixel-dioramas/jade-genesis/play/`（v1.0；Phase 7 合并后更新）
+- **在线版本：** `https://sanaung199635-jpg.github.io/pixel-dioramas/jade-genesis/play/`（v1.1 已合并到 main；v1.1.1 待审核）
 - **发布构建：** `npm run release` → `play/`（纯静态文件，部署方式见 [`docs/DEPLOY.md`](docs/DEPLOY.md)）
 - **Phase 7：** 计划 [`docs/PHASE7_PLAN.md`](docs/PHASE7_PLAN.md) · 视觉验收 [`docs/PHASE7_VISUAL_REPORT.md`](docs/PHASE7_VISUAL_REPORT.md) · 性能 [`docs/PHASE7_PERFORMANCE.md`](docs/PHASE7_PERFORMANCE.md) · 迭代记录 [`docs/PHASE7_ITERATION_LOG.md`](docs/PHASE7_ITERATION_LOG.md)
 - **前后对比图：** [`docs/phase7/compare/`](docs/phase7/compare)（同一状态、同一镜头）

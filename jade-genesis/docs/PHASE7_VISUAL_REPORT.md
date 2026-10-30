@@ -1,3 +1,76 @@
+# Phase 7.7 性能优化后的视觉验收（提交 cde2576）
+
+## 对比方法
+
+- **基线：** PR #2 合并后的 Phase 7，即 `docs/phase7/after/`。它与 `main` 上的代码相同，所以没有重新截图。
+- **优化后：** `docs/phase7/optimized/`，使用同一截图工具、同一状态、同一导览镜头、同一尺寸。
+- **对比图：** `docs/phase7/compare-opt/`（Phase 7 对比优化后），以及 `docs/phase7/compare-v1-opt/`（v1.0 对比优化后）。
+- **差异指标：** 逐像素计算亮度差的平均值（0–255），以及差值大于 24 级的像素所占比例。原始数据在 `compare-opt/diff.json`。
+
+**判定标准：** 差值大于 24 级的像素少于 0.5% 记为“一致”，0.5%–3% 记为“轻微差异”；超过 3% 需要逐张解释。
+
+## 结果（33 张，全部 ≤ 2.2%）
+
+| 状态 | 平均差 | > 24 级像素 | 图 | 结论 |
+|---|---|---|---|---|
+| 桌面 intro | 0.3 | 0.28% | [对比](phase7/compare-opt/desktop-intro.png) | 一致 |
+| 桌面 s01 | 0.29 | 0.21% | [对比](phase7/compare-opt/desktop-s01.png) | 一致 |
+| 桌面 s02 | 0.91 | 0.12% | [对比](phase7/compare-opt/desktop-s02.png) | 一致 |
+| 桌面 s03 | 0.62 | 0.06% | [对比](phase7/compare-opt/desktop-s03.png) | 一致 |
+| 桌面 s04 | 2.25 | 1.11% | [对比](phase7/compare-opt/desktop-s04.png) | 轻微差异 |
+| 桌面 s05 | 1.91 | 0.23% | [对比](phase7/compare-opt/desktop-s05.png) | 一致 |
+| 桌面 s06 | 0.71 | 0.05% | [对比](phase7/compare-opt/desktop-s06.png) | 一致 |
+| 桌面 s07 | 1.87 | 0.57% | [对比](phase7/compare-opt/desktop-s07.png) | 轻微差异 |
+| 桌面 s08 | 0.54 | 0.03% | [对比](phase7/compare-opt/desktop-s08.png) | 一致 |
+| 桌面 s09 | 0.4 | 0.17% | [对比](phase7/compare-opt/desktop-s09.png) | 一致 |
+| 桌面 s10 | 0.56 | 0.38% | [对比](phase7/compare-opt/desktop-s10.png) | 一致 |
+| 桌面 s11 | 0.14 | 0.08% | [对比](phase7/compare-opt/desktop-s11.png) | 一致 |
+| 桌面 s12 | 0.0 | 0.0% | [对比](phase7/compare-opt/desktop-s12.png) | 一致 |
+| 桌面 s12-back | 0.01 | 0.0% | [对比](phase7/compare-opt/desktop-s12-back.png) | 一致 |
+| 桌面 d-pit | 1.43 | 1.08% | [对比](phase7/compare-opt/desktop-d-pit.png) | 轻微差异 |
+| 桌面 d-digger | 1.86 | 1.49% | [对比](phase7/compare-opt/desktop-d-digger.png) | 轻微差异 |
+| 桌面 d-stone | 11.18 | 0.55% | [对比](phase7/compare-opt/desktop-d-stone.png) | 轻微差异 |
+| 桌面 d-cut | 3.52 | 0.01% | [对比](phase7/compare-opt/desktop-d-cut.png) | 一致 |
+| 桌面 d-bangle | 0.03 | 0.0% | [对比](phase7/compare-opt/desktop-d-bangle.png) | 一致 |
+| 移动 intro | 0.17 | 0.14% | [对比](phase7/compare-opt/mobile-intro.png) | 一致 |
+| 移动 s01 | 0.44 | 0.32% | [对比](phase7/compare-opt/mobile-s01.png) | 一致 |
+| 移动 s02 | 1.91 | 0.84% | [对比](phase7/compare-opt/mobile-s02.png) | 轻微差异 |
+| 移动 s03 | 1.61 | 0.74% | [对比](phase7/compare-opt/mobile-s03.png) | 轻微差异 |
+| 移动 s04 | 4.32 | 2.17% | [对比](phase7/compare-opt/mobile-s04.png) | 轻微差异 |
+| 移动 s05 | 3.11 | 0.34% | [对比](phase7/compare-opt/mobile-s05.png) | 一致 |
+| 移动 s06 | 1.11 | 0.08% | [对比](phase7/compare-opt/mobile-s06.png) | 一致 |
+| 移动 s07 | 2.88 | 0.25% | [对比](phase7/compare-opt/mobile-s07.png) | 一致 |
+| 移动 s08 | 0.9 | 0.11% | [对比](phase7/compare-opt/mobile-s08.png) | 一致 |
+| 移动 s09 | 0.76 | 0.66% | [对比](phase7/compare-opt/mobile-s09.png) | 轻微差异 |
+| 移动 s10 | 1.28 | 1.34% | [对比](phase7/compare-opt/mobile-s10.png) | 轻微差异 |
+| 移动 s11 | 0.31 | 0.18% | [对比](phase7/compare-opt/mobile-s11.png) | 一致 |
+| 移动 s12 | 0.01 | 0.0% | [对比](phase7/compare-opt/mobile-s12.png) | 一致 |
+| 移动 s12-back | 0.01 | 0.0% | [对比](phase7/compare-opt/mobile-s12-back.png) | 一致 |
+
+## 差异来源（逐项说明）
+
+- **第 01 幕和矿场局部图（d-pit 1.1%，d-digger 1.5%）：**
+  - 地形网格改为沿台阶排行后，坎顶的明暗过渡略有不同。
+  - 灌木改为单团。
+  - 小碎石改成 20 面，并且不再投影。
+  - 台阶、坡道、岩层、挖掘机、树木的造型和颜色都没有变化。
+- **第 02–05 幕和原石局部图（d-stone 平均差 11.2，但 > 24 级的像素只有 0.05%）：**
+  - 透射遮挡修正后，石皮不再透光，是真正的不透明。
+  - 石皮的反照率因此重新校准：整体色调相差几个灰阶，纹理没有变化。
+  - 开窗面和切面上细小的棉絮点现在会挡住透射，显出淡淡的白点。这正是材质最初设计的效果。
+- **第 03–05 幕放大镜：** 镜片改为无透射玻璃，失去了对背后物体的折射扭曲。镜片很小，截图中看不出区别（第 03 幕 0.3%）。
+- **第 06–12 幕：** `rbox` 圆角分段减少后，几何边缘的差异小于 1 个像素。第 12 幕展厅完全一致（0.0%）。
+
+## 结论
+
+优化没有造成明显的视觉退化：
+
+- 所有状态 > 24 级的像素都不超过 2.2%。
+- 最终展厅（第 12 幕和背光）与 Phase 7 完全一致。
+- 唯一有意的观感变化是石皮从“略透光”变成不透明。这是修正一个从 v1.0 就存在的着色器错误，色调已经校准到与之前接近。
+
+---
+
 # Phase 7 视觉验收报告
 
 ## 截图条件

@@ -1,0 +1,164 @@
+{
+  "viewport": "mobile",
+  "size": "390x844",
+  "loadMs": 2617,
+  "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "states": {
+    "intro": {
+      "stage": "mining",
+      "phase": "沙盘全景",
+      "calls": 78,
+      "triangles": 127933,
+      "geometries": 41,
+      "textures": 3,
+      "programs": 16,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s01": {
+      "stage": "mining",
+      "phase": "提起原石",
+      "calls": 78,
+      "triangles": 127933,
+      "geometries": 41,
+      "textures": 3,
+      "programs": 16,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s02": {
+      "stage": "washing",
+      "phase": "冲洗",
+      "calls": 52,
+      "triangles": 145720,
+      "geometries": 54,
+      "textures": 6,
+      "programs": 19,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s03": {
+      "stage": "lighting",
+      "phase": "打灯",
+      "calls": 44,
+      "triangles": 81422,
+      "geometries": 67,
+      "textures": 9,
+      "programs": 21,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s04": {
+      "stage": "window",
+      "phase": "磨窗",
+      "calls": 56,
+      "triangles": 86112,
+      "geometries": 71,
+      "textures": 13,
+      "programs": 32,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s05": {
+      "stage": "planning",
+      "phase": "完成",
+      "calls": 41,
+      "triangles": 80370,
+      "geometries": 71,
+      "textures": 13,
+      "programs": 32,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s06": {
+      "stage": "slabbing",
+      "phase": "打开切面",
+      "calls": 118,
+      "triangles": 176204,
+      "geometries": 109,
+      "textures": 14,
+      "programs": 38,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s07": {
+      "stage": "marking",
+      "phase": "画圈",
+      "calls": 61,
+      "triangles": 71124,
+      "geometries": 120,
+      "textures": 15,
+      "programs": 40,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s08": {
+      "stage": "coring",
+      "phase": "取出镯坯",
+      "calls": 60,
+      "triangles": 159882,
+      "geometries": 138,
+      "textures": 16,
+      "programs": 42,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s09": {
+      "stage": "shaping",
+      "phase": "粗磨修形",
+      "calls": 86,
+      "triangles": 154781,
+      "geometries": 163,
+      "textures": 18,
+      "programs": 42,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s10": {
+      "stage": "fine-grinding",
+      "phase": "精磨",
+      "calls": 37,
+      "triangles": 117124,
+      "geometries": 165,
+      "textures": 20,
+      "programs": 42,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s11": {
+      "stage": "polishing",
+      "phase": "抛光",
+      "calls": 35,
+      "triangles": 104486,
+      "geometries": 167,
+      "textures": 20,
+      "programs": 45,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s12": {
+      "stage": "showcase",
+      "phase": "陈列",
+      "calls": 38,
+      "triangles": 106594,
+      "geometries": 172,
+      "textures": 21,
+      "programs": 45,
+      "quality": "medium",
+      "dpr": 1
+    },
+    "s12-back": {
+      "stage": "showcase",
+      "phase": "陈列",
+      "calls": 38,
+      "triangles": 106594,
+      "geometries": 172,
+      "textures": 21,
+      "programs": 45,
+      "quality": "medium",
+      "dpr": 1
+    }
+  },
+  "jsHeapMB": 21,
+  "errors": []
+}

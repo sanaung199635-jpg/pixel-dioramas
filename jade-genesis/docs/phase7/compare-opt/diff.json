@@ -1,0 +1,134 @@
+{
+ "desktop/d-bangle.png": {
+  "meanAbsDiff": 0.03,
+  "pctOver24": 0.0
+ },
+ "desktop/d-cut.png": {
+  "meanAbsDiff": 3.52,
+  "pctOver24": 0.01
+ },
+ "desktop/d-digger.png": {
+  "meanAbsDiff": 1.86,
+  "pctOver24": 1.49
+ },
+ "desktop/d-pit.png": {
+  "meanAbsDiff": 1.43,
+  "pctOver24": 1.08
+ },
+ "desktop/d-stone.png": {
+  "meanAbsDiff": 11.18,
+  "pctOver24": 0.55
+ },
+ "desktop/intro.png": {
+  "meanAbsDiff": 0.3,
+  "pctOver24": 0.28
+ },
+ "desktop/s01.png": {
+  "meanAbsDiff": 0.29,
+  "pctOver24": 0.21
+ },
+ "desktop/s02.png": {
+  "meanAbsDiff": 0.91,
+  "pctOver24": 0.12
+ },
+ "desktop/s03.png": {
+  "meanAbsDiff": 0.62,
+  "pctOver24": 0.06
+ },
+ "desktop/s04.png": {
+  "meanAbsDiff": 2.25,
+  "pctOver24": 1.11
+ },
+ "desktop/s05.png": {
+  "meanAbsDiff": 1.91,
+  "pctOver24": 0.23
+ },
+ "desktop/s06.png": {
+  "meanAbsDiff": 0.71,
+  "pctOver24": 0.05
+ },
+ "desktop/s07.png": {
+  "meanAbsDiff": 1.87,
+  "pctOver24": 0.57
+ },
+ "desktop/s08.png": {
+  "meanAbsDiff": 0.54,
+  "pctOver24": 0.03
+ },
+ "desktop/s09.png": {
+  "meanAbsDiff": 0.4,
+  "pctOver24": 0.17
+ },
+ "desktop/s10.png": {
+  "meanAbsDiff": 0.56,
+  "pctOver24": 0.38
+ },
+ "desktop/s11.png": {
+  "meanAbsDiff": 0.14,
+  "pctOver24": 0.08
+ },
+ "desktop/s12-back.png": {
+  "meanAbsDiff": 0.01,
+  "pctOver24": 0.0
+ },
+ "desktop/s12.png": {
+  "meanAbsDiff": 0.0,
+  "pctOver24": 0.0
+ },
+ "mobile/intro.png": {
+  "meanAbsDiff": 0.17,
+  "pctOver24": 0.14
+ },
+ "mobile/s01.png": {
+  "meanAbsDiff": 0.44,
+  "pctOver24": 0.32
+ },
+ "mobile/s02.png": {
+  "meanAbsDiff": 1.91,
+  "pctOver24": 0.84
+ },
+ "mobile/s03.png": {
+  "meanAbsDiff": 1.61,
+  "pctOver24": 0.74
+ },
+ "mobile/s04.png": {
+  "meanAbsDiff": 4.32,
+  "pctOver24": 2.17
+ },
+ "mobile/s05.png": {
+  "meanAbsDiff": 3.11,
+  "pctOver24": 0.34
+ },
+ "mobile/s06.png": {
+  "meanAbsDiff": 1.11,
+  "pctOver24": 0.08
+ },
+ "mobile/s07.png": {
+  "meanAbsDiff": 2.88,
+  "pctOver24": 0.25
+ },
+ "mobile/s08.png": {
+  "meanAbsDiff": 0.9,
+  "pctOver24": 0.11
+ },
+ "mobile/s09.png": {
+  "meanAbsDiff": 0.76,
+  "pctOver24": 0.66
+ },
+ "mobile/s10.png": {
+  "meanAbsDiff": 1.28,
+  "pctOver24": 1.34
+ },
+ "mobile/s11.png": {
+  "meanAbsDiff": 0.31,
+  "pctOver24": 0.18
+ },
+ "mobile/s12-back.png": {
+  "meanAbsDiff": 0.01,
+  "pctOver24": 0.0
+ },
+ "mobile/s12.png": {
+  "meanAbsDiff": 0.01,
+  "pctOver24": 0.0
+ }
+}
