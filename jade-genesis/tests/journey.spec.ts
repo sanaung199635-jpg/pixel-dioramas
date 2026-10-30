@@ -77,7 +77,10 @@ test('timeline steps and prev / next jump between stages', async ({ page }) => {
   const errors = await boot(page);
   await page.locator('.timeline .step').nth(5).click();
   let s = await state(page);
-  expect(s).toMatchObject({ stage: 5, progress: 0, playing: true, intro: false });
+  expect(s).toMatchObject({ stage: 5, playing: true, intro: false });
+  // the jump lands at the start of the stage; it is already playing, so a frame
+  // rendered between the click and this read may have advanced it slightly
+  expect(s.progress).toBeLessThan(0.02);
   await expect(page.locator('.story h1')).toContainText('水冷切片');
   await expect(page.locator('.timeline .step').nth(5)).toHaveAttribute('aria-current', 'step');
   await page.getByRole('button', { name: '下一道工序' }).click();

@@ -30,7 +30,7 @@ float fbm(vec3 p){ float a=.5, s=0.; for(int i=0;i<4;i++){ s+=a*snoise(p); p=p*2
 `;
 
 export const JADE_PARS_GLSL = /* glsl */ `
-uniform float uRindAmt, uRough, uWet, uBump, uGreen, uEdgeGlow, uWave;
+uniform float uRindAmt, uRough, uWet, uBump, uGreen, uEdgeGlow, uWave, uInner;
 uniform vec3 uField;
 uniform vec3 uMarks[4]; uniform int uMarkN; uniform float uMarkSweep;
 uniform vec4 uPlans[4]; uniform int uPlanN; uniform vec4 uPlanSweep;
@@ -147,7 +147,10 @@ export const EMISSIVE_GLSL = /* glsl */ `#include <emissivemap_fragment>
   totalEmissiveRadiance += uTorch.w * gJade * vec3(0.75,1.0,0.8) * exp(-td*td/0.09) * mix(1.0, 0.25, gRind);
   // edge translucency: thin grazing edges let scattered light through
   float edge = pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 3.0);
-  totalEmissiveRadiance += uEdgeGlow * gJade * edge * (1.0 - gRind) * (1.0 - 0.5*gCotton);`;
+  totalEmissiveRadiance += uEdgeGlow * gJade * edge * (1.0 - gRind) * (1.0 - 0.5*gCotton);
+  // body glow: light that entered elsewhere and scatters back out, tinted by the jade
+  // (approximation, not a volumetric model); cotton and cracks block it
+  totalEmissiveRadiance += uInner * gJade * gJade * (1.0 - gRind) * (1.0 - 0.6*gCotton) * (1.0 - gCrack);`;
 
 export const TRANSMISSION_GLSL = /* glsl */ `#include <lights_physical_fragment>
   #ifdef USE_TRANSMISSION
