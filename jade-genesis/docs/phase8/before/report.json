@@ -1,0 +1,1039 @@
+{
+ "p320": {
+  "size": "320x568",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 22x29",
+     "02 清洗 22x29",
+     "03 打灯观察 22x29",
+     "04 开窗 22x29",
+     "05 切割规划 22x29",
+     "06 水冷切片 22x29",
+     "07 画圈 22x29",
+     "08 套取镯坯 22x29",
+     "09 粗加工 22x29",
+     "10 精磨 22x29",
+     "11 抛光 22x29",
+     "12 检查展示 22x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 105,
+    "stage": "mining",
+    "frame": null
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [
+     "翡翠原石"
+    ],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 22x29",
+     "02 清洗 22x29",
+     "03 打灯观察 22x29",
+     "04 开窗 22x29",
+     "05 切割规划 22x29",
+     "06 水冷切片 22x29",
+     "07 画圈 22x29",
+     "08 套取镯坯 22x29",
+     "09 粗加工 22x29",
+     "10 精磨 22x29",
+     "11 抛光 22x29",
+     "12 检查展示 22x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 70,
+    "stage": "mining",
+    "frame": null
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 22x29",
+     "02 清洗 22x29",
+     "03 打灯观察 22x29",
+     "04 开窗 22x29",
+     "05 切割规划 22x29",
+     "06 水冷切片 22x29",
+     "07 画圈 22x29",
+     "08 套取镯坯 22x29",
+     "09 粗加工 22x29",
+     "10 精磨 22x29",
+     "11 抛光 22x29",
+     "12 检查展示 22x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 70,
+    "stage": "washing",
+    "frame": null
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 22x29",
+     "02 清洗 22x29",
+     "03 打灯观察 22x29",
+     "04 开窗 22x29",
+     "05 切割规划 22x29",
+     "06 水冷切片 22x29",
+     "07 画圈 22x29",
+     "08 套取镯坯 22x29",
+     "09 粗加工 22x29",
+     "10 精磨 22x29",
+     "11 抛光 22x29",
+     "12 检查展示 22x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 70,
+    "stage": "slabbing",
+    "frame": null
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [
+     "镯坯"
+    ],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 22x29",
+     "02 清洗 22x29",
+     "03 打灯观察 22x29",
+     "04 开窗 22x29",
+     "05 切割规划 22x29",
+     "06 水冷切片 22x29",
+     "07 画圈 22x29",
+     "08 套取镯坯 22x29",
+     "09 粗加工 22x29",
+     "10 精磨 22x29",
+     "11 抛光 22x29",
+     "12 检查展示 22x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 70,
+    "stage": "coring",
+    "frame": null
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "聚光 48x36",
+     "柔光 48x36",
+     "背光 48x36",
+     "01 开采 22x29",
+     "02 清洗 22x29",
+     "03 打灯观察 22x29",
+     "04 开窗 22x29",
+     "05 切割规划 22x29",
+     "06 水冷切片 22x29",
+     "07 画圈 22x29",
+     "08 套取镯坯 22x29",
+     "09 粗加工 22x29",
+     "10 精磨 22x29",
+     "11 抛光 22x29",
+     "12 检查展示 22x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 89,
+    "stage": "showcase",
+    "frame": null
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 22x29",
+     "02 清洗 22x29",
+     "03 打灯观察 22x29",
+     "04 开窗 22x29",
+     "05 切割规划 22x29",
+     "06 水冷切片 22x29",
+     "07 画圈 22x29",
+     "08 套取镯坯 22x29",
+     "09 粗加工 22x29",
+     "10 精磨 22x29",
+     "11 抛光 22x29",
+     "12 检查展示 22x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 132,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "covered"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 22x29",
+     "02 清洗 22x29",
+     "03 打灯观察 22x29",
+     "04 开窗 22x29",
+     "05 切割规划 22x29",
+     "06 水冷切片 22x29",
+     "07 画圈 22x29",
+     "08 套取镯坯 22x29",
+     "09 粗加工 22x29",
+     "10 精磨 22x29",
+     "11 抛光 22x29",
+     "12 检查展示 22x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 132,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "covered/missing"
+   }
+  },
+  "errors": []
+ },
+ "p390": {
+  "size": "390x844",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 28x29",
+     "02 清洗 28x29",
+     "03 打灯观察 28x29",
+     "04 开窗 28x29",
+     "05 切割规划 28x29",
+     "06 水冷切片 28x29",
+     "07 画圈 28x29",
+     "08 套取镯坯 28x29",
+     "09 粗加工 28x29",
+     "10 精磨 28x29",
+     "11 抛光 28x29",
+     "12 检查展示 28x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 54,
+    "stage": "mining",
+    "frame": null
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [
+     "翡翠原石"
+    ],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 28x29",
+     "02 清洗 28x29",
+     "03 打灯观察 28x29",
+     "04 开窗 28x29",
+     "05 切割规划 28x29",
+     "06 水冷切片 28x29",
+     "07 画圈 28x29",
+     "08 套取镯坯 28x29",
+     "09 粗加工 28x29",
+     "10 精磨 28x29",
+     "11 抛光 28x29",
+     "12 检查展示 28x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 41,
+    "stage": "mining",
+    "frame": null
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 28x29",
+     "02 清洗 28x29",
+     "03 打灯观察 28x29",
+     "04 开窗 28x29",
+     "05 切割规划 28x29",
+     "06 水冷切片 28x29",
+     "07 画圈 28x29",
+     "08 套取镯坯 28x29",
+     "09 粗加工 28x29",
+     "10 精磨 28x29",
+     "11 抛光 28x29",
+     "12 检查展示 28x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 41,
+    "stage": "washing",
+    "frame": null
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [
+     "裂隙在切面上"
+    ],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 28x29",
+     "02 清洗 28x29",
+     "03 打灯观察 28x29",
+     "04 开窗 28x29",
+     "05 切割规划 28x29",
+     "06 水冷切片 28x29",
+     "07 画圈 28x29",
+     "08 套取镯坯 28x29",
+     "09 粗加工 28x29",
+     "10 精磨 28x29",
+     "11 抛光 28x29",
+     "12 检查展示 28x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 41,
+    "stage": "slabbing",
+    "frame": null
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 28x29",
+     "02 清洗 28x29",
+     "03 打灯观察 28x29",
+     "04 开窗 28x29",
+     "05 切割规划 28x29",
+     "06 水冷切片 28x29",
+     "07 画圈 28x29",
+     "08 套取镯坯 28x29",
+     "09 粗加工 28x29",
+     "10 精磨 28x29",
+     "11 抛光 28x29",
+     "12 检查展示 28x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 41,
+    "stage": "coring",
+    "frame": null
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "聚光 48x36",
+     "柔光 48x36",
+     "背光 48x36",
+     "01 开采 28x29",
+     "02 清洗 28x29",
+     "03 打灯观察 28x29",
+     "04 开窗 28x29",
+     "05 切割规划 28x29",
+     "06 水冷切片 28x29",
+     "07 画圈 28x29",
+     "08 套取镯坯 28x29",
+     "09 粗加工 28x29",
+     "10 精磨 28x29",
+     "11 抛光 28x29",
+     "12 检查展示 28x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 51,
+    "stage": "showcase",
+    "frame": null
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 28x29",
+     "02 清洗 28x29",
+     "03 打灯观察 28x29",
+     "04 开窗 28x29",
+     "05 切割规划 28x29",
+     "06 水冷切片 28x29",
+     "07 画圈 28x29",
+     "08 套取镯坯 28x29",
+     "09 粗加工 28x29",
+     "10 精磨 28x29",
+     "11 抛光 28x29",
+     "12 检查展示 28x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 89,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 28x29",
+     "02 清洗 28x29",
+     "03 打灯观察 28x29",
+     "04 开窗 28x29",
+     "05 切割规划 28x29",
+     "06 水冷切片 28x29",
+     "07 画圈 28x29",
+     "08 套取镯坯 28x29",
+     "09 粗加工 28x29",
+     "10 精磨 28x29",
+     "11 抛光 28x29",
+     "12 检查展示 28x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 89,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "ok/missing"
+   }
+  },
+  "errors": []
+ },
+ "p430": {
+  "size": "430x932",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 31x29",
+     "02 清洗 31x29",
+     "03 打灯观察 31x29",
+     "04 开窗 31x29",
+     "05 切割规划 31x29",
+     "06 水冷切片 31x29",
+     "07 画圈 31x29",
+     "08 套取镯坯 31x29",
+     "09 粗加工 31x29",
+     "10 精磨 31x29",
+     "11 抛光 31x29",
+     "12 检查展示 31x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 49,
+    "stage": "mining",
+    "frame": null
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 31x29",
+     "02 清洗 31x29",
+     "03 打灯观察 31x29",
+     "04 开窗 31x29",
+     "05 切割规划 31x29",
+     "06 水冷切片 31x29",
+     "07 画圈 31x29",
+     "08 套取镯坯 31x29",
+     "09 粗加工 31x29",
+     "10 精磨 31x29",
+     "11 抛光 31x29",
+     "12 检查展示 31x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 37,
+    "stage": "mining",
+    "frame": null
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 31x29",
+     "02 清洗 31x29",
+     "03 打灯观察 31x29",
+     "04 开窗 31x29",
+     "05 切割规划 31x29",
+     "06 水冷切片 31x29",
+     "07 画圈 31x29",
+     "08 套取镯坯 31x29",
+     "09 粗加工 31x29",
+     "10 精磨 31x29",
+     "11 抛光 31x29",
+     "12 检查展示 31x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 37,
+    "stage": "washing",
+    "frame": null
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 31x29",
+     "02 清洗 31x29",
+     "03 打灯观察 31x29",
+     "04 开窗 31x29",
+     "05 切割规划 31x29",
+     "06 水冷切片 31x29",
+     "07 画圈 31x29",
+     "08 套取镯坯 31x29",
+     "09 粗加工 31x29",
+     "10 精磨 31x29",
+     "11 抛光 31x29",
+     "12 检查展示 31x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 37,
+    "stage": "slabbing",
+    "frame": null
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 31x29",
+     "02 清洗 31x29",
+     "03 打灯观察 31x29",
+     "04 开窗 31x29",
+     "05 切割规划 31x29",
+     "06 水冷切片 31x29",
+     "07 画圈 31x29",
+     "08 套取镯坯 31x29",
+     "09 粗加工 31x29",
+     "10 精磨 31x29",
+     "11 抛光 31x29",
+     "12 检查展示 31x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 37,
+    "stage": "coring",
+    "frame": null
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "聚光 48x36",
+     "柔光 48x36",
+     "背光 48x36",
+     "01 开采 31x29",
+     "02 清洗 31x29",
+     "03 打灯观察 31x29",
+     "04 开窗 31x29",
+     "05 切割规划 31x29",
+     "06 水冷切片 31x29",
+     "07 画圈 31x29",
+     "08 套取镯坯 31x29",
+     "09 粗加工 31x29",
+     "10 精磨 31x29",
+     "11 抛光 31x29",
+     "12 检查展示 31x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 46,
+    "stage": "showcase",
+    "frame": null
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 31x29",
+     "02 清洗 31x29",
+     "03 打灯观察 31x29",
+     "04 开窗 31x29",
+     "05 切割规划 31x29",
+     "06 水冷切片 31x29",
+     "07 画圈 31x29",
+     "08 套取镯坯 31x29",
+     "09 粗加工 31x29",
+     "10 精磨 31x29",
+     "11 抛光 31x29",
+     "12 检查展示 31x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 78,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 38x36",
+     "自由视角 · 点击回到导览 160x33",
+     "01 开采 31x29",
+     "02 清洗 31x29",
+     "03 打灯观察 31x29",
+     "04 开窗 31x29",
+     "05 切割规划 31x29",
+     "06 水冷切片 31x29",
+     "07 画圈 31x29",
+     "08 套取镯坯 31x29",
+     "09 粗加工 31x29",
+     "10 精磨 31x29",
+     "11 抛光 31x29",
+     "12 检查展示 31x29",
+     "0.5× 40x36",
+     "1× 40x36",
+     "2× 40x36"
+    ],
+    "uiCoverPct": 78,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "ok/missing"
+   }
+  },
+  "errors": []
+ },
+ "land": {
+  "size": "844x390",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [
+     "开始旅程",
+     "自由探索"
+    ],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 90,
+    "stage": "mining",
+    "frame": null
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 82,
+    "stage": "mining",
+    "frame": null
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 82,
+    "stage": "washing",
+    "frame": null
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 82,
+    "stage": "slabbing",
+    "frame": null
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 82,
+    "stage": "coring",
+    "frame": null
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "聚光 48x36",
+     "柔光 48x36",
+     "背光 48x36",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 91,
+    "stage": "showcase",
+    "frame": null
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 90,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 90,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "ok/missing"
+   }
+  },
+  "errors": []
+ },
+ "tab": {
+  "size": "768x1024",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 41,
+    "stage": "mining",
+    "frame": null
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 36,
+    "stage": "mining",
+    "frame": null
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 33,
+    "stage": "washing",
+    "frame": null
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 34,
+    "stage": "slabbing",
+    "frame": null
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 33,
+    "stage": "coring",
+    "frame": null
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "聚光 48x36",
+     "柔光 48x36",
+     "背光 48x36",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 38,
+    "stage": "showcase",
+    "frame": null
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 50,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "ok"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 50,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "ok/missing"
+   }
+  },
+  "errors": []
+ },
+ "desk": {
+  "size": "1440x900",
+  "states": {
+   "intro": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 39,
+    "stage": "mining",
+    "frame": null
+   },
+   "s01": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 46,
+    "stage": "mining",
+    "frame": null
+   },
+   "s02": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 42,
+    "stage": "washing",
+    "frame": null
+   },
+   "s06": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 44,
+    "stage": "slabbing",
+    "frame": null
+   },
+   "s08": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 44,
+    "stage": "coring",
+    "frame": null
+   },
+   "s12": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "聚光 48x36",
+     "柔光 48x36",
+     "背光 48x36",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 48,
+    "stage": "showcase",
+    "frame": null
+   },
+   "s02-know": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 42,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "missing"
+   },
+   "s02-know-full": {
+    "overflowX": false,
+    "offscreen": [],
+    "smallTargets": [
+     "声音 · 关 102x36",
+     "自由视角 · 点击回到导览 160x33",
+     "0.5× 44x36",
+     "1× 44x36",
+     "2× 44x36"
+    ],
+    "uiCoverPct": 42,
+    "stage": "washing",
+    "frame": null,
+    "knowTap": "missing/missing"
+   }
+  },
+  "errors": []
+ }
+}

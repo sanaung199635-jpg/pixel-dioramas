@@ -90,8 +90,9 @@ test('knowledge sheet: half, full, scroll, close, Esc and focus', async ({ page 
     // (the sheet slides in: wait for it to come to rest before measuring)
     const dock = await rect(page, '.dock');
     await expect.poll(async () => (await rect(page, '#knowledge')).bottom).toBeLessThanOrEqual(dock.top + 1);
-    await page.getByRole('button', { name: '暂停' }).click();
-    expect((await page.evaluate(() => window.__jade!.state())).playing).toBe(false);
+    const was = (await page.evaluate(() => window.__jade!.state())).playing;
+    await page.locator('.controls .play').click();
+    expect((await page.evaluate(() => window.__jade!.state())).playing).toBe(!was);
     // full
     await page.locator('[data-action="sheet-size"]').click();
     expect(await page.evaluate(() => window.__jade!.sheet())).toBe('full');
@@ -111,6 +112,7 @@ test('knowledge sheet: half, full, scroll, close, Esc and focus', async ({ page 
   await open.click();
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => window.__jade!.sheet())).toBe('closed');
+  if (await compact(page)) await expect(page.locator('#knowledge')).toBeHidden(); // slid out
   await layoutSound(page);
   expect(errors).toEqual([]);
 });
