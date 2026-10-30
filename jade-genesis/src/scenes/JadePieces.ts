@@ -96,7 +96,7 @@ export class JadePieces {
     for (const m of [this.holeWall, this.core]) { m.castShadow = m.receiveShadow = true; m.visible = false; this.S.group.add(m); }
 
     this.bangleShape = new TurnedPiece(96, 220, f);
-    this.bangle = new THREE.Mesh(this.bangleShape.geometry, new JadeMaterial({ rind: 0, green: 0.18, thickness: 0.09, attenuationDistance: 0.18, transmission: 0.55, roughness: 0.1, bump: 0.02, edgeGlow: 0.22 }));
+    this.bangle = new THREE.Mesh(this.bangleShape.geometry, new JadeMaterial({ rind: 0, thickness: 0.09, attenuationDistance: 0.18, transmission: 0.55, roughness: 0.1, bump: 0.02, edgeGlow: 0.22 }));
     this.bangle.castShadow = this.bangle.receiveShadow = true;
     this.bangle.userData.info = 'bangle';
     this.bangleGroup.add(this.bangle);

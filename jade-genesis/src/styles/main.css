@@ -88,7 +88,7 @@ svg .fill { fill: currentColor; stroke: none; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .cam-chip { position: absolute; right: var(--gutter); bottom: 150px; border: 1px solid var(--hair); background: var(--panel); border-radius: 999px; padding: 7px 14px; font-size: 12px; color: var(--muted); opacity: 0; transform: translateY(6px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; }
 .cam-chip.show { opacity: 1; transform: none; pointer-events: auto; }
-.hint { position: absolute; left: var(--gutter); bottom: 150px; font-size: 12px; color: var(--muted); letter-spacing: 0.08em; }
+.hint { position: absolute; left: var(--gutter); bottom: 174px; font-size: 12px; color: var(--muted); letter-spacing: 0.08em; }
 
 /* dock: 12-step timeline + playback controls */
 .dock { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 20px; padding: 10px 14px 10px; background: var(--panel); border: 1px solid var(--hair); border-radius: 20px; backdrop-filter: blur(10px); }

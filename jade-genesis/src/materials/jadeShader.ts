@@ -54,11 +54,14 @@ vec3 jadeColor(vec3 p, out float cotton, out float crack){
   float g = fbm(vec3(q.x*0.55, q.y*1.25, q.z*1.1) + w*1.25);
   float green = smoothstep(0.08, 0.5, g + uGreen);
   float deep  = smoothstep(0.40, 0.78, g + uGreen + 0.10*snoise(p*5.5));
-  vec3 base = mix(vec3(0.74,0.82,0.70), vec3(0.58,0.71,0.56), smoothstep(-0.3,0.3,fbm(q*2.1+7.)));
-  vec3 c = mix(base, vec3(0.36,0.64,0.41), green*0.9);
-  c = mix(c, vec3(0.10,0.46,0.23), deep*0.85);
+  // body colour: translucent grey-green, never chalk white
+  vec3 base = mix(vec3(0.70,0.77,0.68), vec3(0.57,0.67,0.56), smoothstep(-0.3,0.3,fbm(q*2.1+7.)));
+  vec3 c = mix(base, vec3(0.39,0.62,0.43), green*0.9);
+  c = mix(c, vec3(0.13,0.44,0.25), deep*0.85);
   cotton = clamp(smoothstep(0.35,0.75, fbm(p*3.2+w*1.5+5.))*0.7 + smoothstep(0.55,0.85, snoise(p*11.+w*2.))*0.45, 0., 1.);
-  c = mix(c, vec3(0.90,0.93,0.88), cotton*0.28);
+  c = mix(c, vec3(0.86,0.89,0.84), cotton*0.22);
+  // interlocking crystal grain (an aggregate, not a glass): faint mottling
+  c *= 0.965 + 0.05*snoise(p*95.)*aaFade(p,95.);
   float inc = smoothstep(0.86,0.93, snoise(p*34.+2.)) * aaFade(p,34.);
   c *= 1.0 - inc*0.55;
   float f = abs(snoise(p*vec3(0.9,1.4,1.1)+vec3(3.1,0.,1.)));
@@ -71,10 +74,12 @@ vec3 jadeColor(vec3 p, out float cotton, out float crack){
 vec3 skinColor(vec3 p){
   float a = fbm(p*2.2+11.);
   float b = snoise(p*6.5+3.);
-  vec3 c = mix(vec3(0.66,0.53,0.36), vec3(0.47,0.37,0.25), smoothstep(-0.25,0.45,a));
-  c = mix(c, vec3(0.72,0.68,0.58), smoothstep(0.35,0.75,b)*0.55);
-  c = mix(c, vec3(0.25,0.24,0.20), smoothstep(0.6,0.82,snoise(p*4.2+20.))*0.65);
-  c *= 0.88 + 0.16*snoise(p*55.)*aaFade(p,55.) + 0.1*snoise(p*140.)*aaFade(p,140.);
+  // weathered sandy rind: yellow-brown with greyer, more leached patches
+  vec3 c = mix(vec3(0.69,0.56,0.39), vec3(0.52,0.41,0.29), smoothstep(-0.3,0.5,a));
+  c = mix(c, vec3(0.70,0.66,0.57), smoothstep(0.45,0.85,b)*0.35);
+  c = mix(c, vec3(0.30,0.27,0.22), smoothstep(0.62,0.85,snoise(p*4.2+20.))*0.5);
+  // sand grains: dense fine speckle instead of large blotches
+  c *= 0.92 + 0.09*snoise(p*55.)*aaFade(p,55.) + 0.12*snoise(p*170.)*aaFade(p,170.);
   return c;
 }
 vec3 bumpNormal(vec3 surfPos, vec3 surfNorm, float h){
@@ -129,7 +134,8 @@ export const ROUGHNESS_GLSL = /* glsl */ `#include <roughnessmap_fragment>
   roughnessFactor = mix(roughnessFactor, 0.85, gMark);`;
 
 export const NORMAL_GLSL = /* glsl */ `#include <normal_fragment_maps>
-  float hb = gRind*(0.6*snoise(vJ*13.)*bumpFade(vJ,13.)+0.35*snoise(vJ*31.)*bumpFade(vJ,31.))
+  // rind relief: broad weathering hollows plus fine grain, no worm-like ridges
+  float hb = gRind*(0.45*snoise(vJ*6.)*bumpFade(vJ,6.) + 0.22*snoise(vJ*18.)*bumpFade(vJ,18.) + 0.3*snoise(vJ*60.)*bumpFade(vJ,60.))
            + uRough*(0.35*snoise(vJ*vec3(60.,8.,60.))*bumpFade(vJ,60.) + 0.2*snoise(vJ*140.)*bumpFade(vJ,140.))
            + gCrack*0.25;
   // hand-ground faces are never optically flat: a gentle undulation keeps highlights local

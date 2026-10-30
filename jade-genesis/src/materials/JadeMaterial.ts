@@ -76,7 +76,7 @@ export class JadeMaterial extends THREE.MeshPhysicalMaterial {
     const v4 = (a?: [number, number, number, number][]) => Array.from({ length: 4 }, (_, i) => (a?.[i] ? new THREE.Vector4(...a[i]) : new THREE.Vector4()));
     this.jade = {
       uRindAmt: { value: o.rind ?? 1 }, uRough: { value: o.rough ?? 0 }, uWet: { value: o.wet ?? 0 },
-      uBump: { value: o.bump ?? 0.035 }, uGreen: { value: o.green ?? 0.08 }, uEdgeGlow: { value: o.edgeGlow ?? 0.18 },
+      uBump: { value: o.bump ?? 0.035 }, uGreen: { value: o.green ?? 0.12 }, uEdgeGlow: { value: o.edgeGlow ?? 0.18 },
       uField: { value: JadeMaterial.field }, uWave: { value: o.wave ?? 0 },
       uMarks: { value: v3(o.marks) }, uMarkN: { value: o.marks?.length ?? 0 }, uMarkSweep: { value: 1 },
       uPlans: { value: v4(o.plans) }, uPlanN: { value: o.plans?.length ?? 0 }, uPlanSweep: { value: new THREE.Vector4(1, 1, 1, 1) },
