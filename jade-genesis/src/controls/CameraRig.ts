@@ -127,7 +127,11 @@ export class CameraRig {
 
   /** `anchor`: the active station; in free view the target may not wander far from it. */
   update(dt: number, shot: Shot, anchor?: THREE.Vector3): void {
-    if (this.frameTarget && this.frameNow) {
+    if (this.frameTarget && this.frameNow && this.snapNext) {
+      // a snapped camera (explicit reset) lands on the final composition at once
+      Object.assign(this.frameNow, this.frameTarget);
+      this.applyFrame(this.frameNow);
+    } else if (this.frameTarget && this.frameNow) {
       const k = damp(7, dt), f = this.frameNow, g = this.frameTarget;
       const moved = Math.abs(f.left - g.left) + Math.abs(f.top - g.top) + Math.abs(f.right - g.right) + Math.abs(f.bottom - g.bottom);
       if (moved > 0.5) {

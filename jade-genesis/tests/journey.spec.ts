@@ -32,6 +32,9 @@ async function boot(page: Page): Promise<string[]> {
 const isCompact = (page: Page) => page.evaluate(() => document.querySelector('.ui')!.getAttribute('data-layout') === 'compact');
 async function openMore(page: Page): Promise<void> {
   if (!(await isCompact(page))) return;
+  // phones hide the dock on the intro screen: leave it the way a visitor would
+  const explore = page.getByRole('button', { name: '自由探索' });
+  if (await explore.isVisible()) await explore.click();
   const more = page.getByRole('button', { name: '更多控制' });
   if ((await more.getAttribute('aria-expanded')) !== 'true') await more.click();
 }
@@ -248,8 +251,12 @@ test('sound is off until the user turns it on', async ({ page }) => {
 test('camera drag switches to free view; reset returns to the guide', async ({ page }) => {
   await boot(page);
   await page.getByRole('button', { name: '自由探索' }).click();
-  const box = (await page.locator('#stage').boundingBox())!;
-  const cx = box.x + box.width * 0.62, cy = box.y + box.height * 0.45;
+  // start the drag on bare canvas (on phones hotspot pins sit near the middle)
+  const [cx, cy] = await page.evaluate(() => {
+    for (const [fx, fy] of [[0.62, 0.45], [0.3, 0.55], [0.7, 0.6], [0.5, 0.35], [0.25, 0.4], [0.75, 0.4]])
+      if (document.elementFromPoint(innerWidth * fx, innerHeight * fy)?.id === 'stage') return [innerWidth * fx, innerHeight * fy];
+    return [innerWidth * 0.5, innerHeight * 0.5];
+  });
   await page.mouse.move(cx, cy);
   await page.mouse.down();
   await page.mouse.move(cx + 120, cy + 10, { steps: 6 });
