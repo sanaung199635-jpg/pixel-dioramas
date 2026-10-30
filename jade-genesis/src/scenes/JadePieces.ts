@@ -8,9 +8,9 @@ import { CUT_X } from '../stone/StoneSolid';
 import { TurnedPiece, axisMatrix, capGeometry, discProfile, ringProfile, shellMorphGeometry, sliceOfShell } from '../stone/StoneGeometry';
 import { RING, SITES, SLAB, SLAB_T, shapeAt, siteFrame, surfaceAt } from '../stone/Production';
 
-const SHELL_MAT: JadeOptions = { thickness: 1.4, attenuationDistance: 0.38, transmission: 0.5, roughness: 0.2, wave: 1, morph: true };
-const CAP_MAT: JadeOptions = { thickness: 1.2, attenuationDistance: 0.6, transmission: 0.45, roughness: 0.38, wave: 0.4 };
-const SLAB_MAT: JadeOptions = { thickness: SLAB_T, attenuationDistance: 0.35, transmission: 0.5, roughness: 0.38, wave: 0.3 };
+const SHELL_MAT: JadeOptions = { thickness: 1.4, attenuationDistance: 0.38, transmission: 0.62, roughness: 0.2, wave: 1, morph: true };
+const CAP_MAT: JadeOptions = { thickness: 1.2, attenuationDistance: 0.6, transmission: 0.56, roughness: 0.38, wave: 0.4 };
+const SLAB_MAT: JadeOptions = { thickness: SLAB_T, attenuationDistance: 0.35, transmission: 0.6, roughness: 0.38, wave: 0.3 };
 
 const capCache = new Map<string, THREE.BufferGeometry>();
 function cap(x: number, sign: 1 | -1): THREE.BufferGeometry {
@@ -55,7 +55,10 @@ export class ClipPiece {
 
 export class JadePieces {
   readonly intact: THREE.Mesh<THREE.BufferGeometry, JadeMaterial>;
+  /** Same stone at low detail, same material: used while it is diorama-sized in the mine. */
+  readonly intactLow: THREE.Mesh<THREE.BufferGeometry, JadeMaterial>;
   readonly intactGroup = new THREE.Group();
+  private readonly intactTransmission: number;
   readonly A: ClipPiece; readonly B: ClipPiece;
   readonly B1: ClipPiece; readonly BR: ClipPiece;
   readonly S: ClipPiece; readonly B2: ClipPiece;
@@ -74,6 +77,12 @@ export class JadePieces {
     this.intact.castShadow = this.intact.receiveShadow = true;
     this.intact.userData.info = 'stone';
     this.intactGroup.add(this.intact);
+    this.intactTransmission = this.intact.material.transmission;
+    this.intactLow = new THREE.Mesh(shellMorphGeometry(14), this.intact.material);
+    this.intactLow.castShadow = this.intactLow.receiveShadow = true;
+    this.intactLow.userData.info = 'stone';
+    this.intactLow.visible = false;
+    this.intactGroup.add(this.intactLow);
 
     this.A = new ClipPiece(shell, null, CUT_X);
     this.B = new ClipPiece(shell, CUT_X, null);
@@ -111,7 +120,7 @@ export class JadePieces {
   }
 
   get pickables(): THREE.Object3D[] {
-    return [this.intact, ...this.clipPieces.flatMap((p) => [p.shell, ...p.caps]), this.core, this.bangle];
+    return [this.intact, this.intactLow, ...this.clipPieces.flatMap((p) => [p.shell, ...p.caps]), this.core, this.bangle];
   }
 
   /** Hide everything; the stage then shows what exists at its point in time. */
@@ -144,6 +153,21 @@ export class JadePieces {
   }
 
   setWet(w: number): void { this.intact.material.jade.uWet.value = w; }
+
+  /**
+   * While the rind still covers the whole stone the shader multiplies transmission
+   * by (1 - rind) = 0, so the transmission pass (a full extra render of the scene)
+   * adds nothing. Switch it off at the material level for those stages.
+   */
+  setIntactOpaque(opaque: boolean): void {
+    this.intact.material.transmission = opaque ? 0 : this.intactTransmission;
+  }
+
+  /** Low-detail mesh while the stone is small on screen (in the mine diorama). */
+  setIntactLod(low: boolean): void {
+    this.intact.visible = !low;
+    this.intactLow.visible = low;
+  }
 
   /** Chalk lines on the intact stone: one per cut plane, each with its own draw progress (0 hides it). */
   setPlanLines(sweeps: [number, number, number]): void {

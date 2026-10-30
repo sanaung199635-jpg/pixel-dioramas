@@ -1,0 +1,134 @@
+{
+ "desktop/d-bangle.png": {
+  "meanAbsDiff": 11.1,
+  "pctOver24": 16.42
+ },
+ "desktop/d-cut.png": {
+  "meanAbsDiff": 18.59,
+  "pctOver24": 36.04
+ },
+ "desktop/d-digger.png": {
+  "meanAbsDiff": 41.71,
+  "pctOver24": 66.07
+ },
+ "desktop/d-pit.png": {
+  "meanAbsDiff": 35.26,
+  "pctOver24": 60.6
+ },
+ "desktop/d-stone.png": {
+  "meanAbsDiff": 33.88,
+  "pctOver24": 57.19
+ },
+ "desktop/intro.png": {
+  "meanAbsDiff": 10.73,
+  "pctOver24": 15.31
+ },
+ "desktop/s01.png": {
+  "meanAbsDiff": 12.7,
+  "pctOver24": 19.17
+ },
+ "desktop/s02.png": {
+  "meanAbsDiff": 8.52,
+  "pctOver24": 8.35
+ },
+ "desktop/s03.png": {
+  "meanAbsDiff": 9.49,
+  "pctOver24": 4.76
+ },
+ "desktop/s04.png": {
+  "meanAbsDiff": 7.28,
+  "pctOver24": 9.44
+ },
+ "desktop/s05.png": {
+  "meanAbsDiff": 6.63,
+  "pctOver24": 7.65
+ },
+ "desktop/s06.png": {
+  "meanAbsDiff": 7.43,
+  "pctOver24": 9.18
+ },
+ "desktop/s07.png": {
+  "meanAbsDiff": 5.49,
+  "pctOver24": 3.42
+ },
+ "desktop/s08.png": {
+  "meanAbsDiff": 6.38,
+  "pctOver24": 6.51
+ },
+ "desktop/s09.png": {
+  "meanAbsDiff": 10.07,
+  "pctOver24": 8.36
+ },
+ "desktop/s10.png": {
+  "meanAbsDiff": 8.74,
+  "pctOver24": 7.23
+ },
+ "desktop/s11.png": {
+  "meanAbsDiff": 5.96,
+  "pctOver24": 5.15
+ },
+ "desktop/s12-back.png": {
+  "meanAbsDiff": 11.22,
+  "pctOver24": 6.24
+ },
+ "desktop/s12.png": {
+  "meanAbsDiff": 3.84,
+  "pctOver24": 3.67
+ },
+ "mobile/intro.png": {
+  "meanAbsDiff": 10.41,
+  "pctOver24": 15.14
+ },
+ "mobile/s01.png": {
+  "meanAbsDiff": 17.35,
+  "pctOver24": 28.71
+ },
+ "mobile/s02.png": {
+  "meanAbsDiff": 10.03,
+  "pctOver24": 10.23
+ },
+ "mobile/s03.png": {
+  "meanAbsDiff": 9.98,
+  "pctOver24": 8.68
+ },
+ "mobile/s04.png": {
+  "meanAbsDiff": 11.1,
+  "pctOver24": 15.09
+ },
+ "mobile/s05.png": {
+  "meanAbsDiff": 9.98,
+  "pctOver24": 11.63
+ },
+ "mobile/s06.png": {
+  "meanAbsDiff": 10.6,
+  "pctOver24": 13.95
+ },
+ "mobile/s07.png": {
+  "meanAbsDiff": 8.15,
+  "pctOver24": 5.15
+ },
+ "mobile/s08.png": {
+  "meanAbsDiff": 7.85,
+  "pctOver24": 8.7
+ },
+ "mobile/s09.png": {
+  "meanAbsDiff": 13.38,
+  "pctOver24": 13.12
+ },
+ "mobile/s10.png": {
+  "meanAbsDiff": 11.4,
+  "pctOver24": 9.66
+ },
+ "mobile/s11.png": {
+  "meanAbsDiff": 7.54,
+  "pctOver24": 6.07
+ },
+ "mobile/s12-back.png": {
+  "meanAbsDiff": 16.47,
+  "pctOver24": 11.9
+ },
+ "mobile/s12.png": {
+  "meanAbsDiff": 5.81,
+  "pctOver24": 6.06
+ }
+}

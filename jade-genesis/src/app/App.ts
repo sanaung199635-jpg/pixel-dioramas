@@ -50,6 +50,8 @@ export interface JadeDebug {
   look(l: Partial<Look>): Look;
   /** Whether the active station sits inside the key light's shadow box. */
   shadowCovers(): boolean;
+  /** Dev: force a quality level (0 = low … 3 = ultra) to check the tiers. */
+  setQuality(level: number): void;
 }
 
 declare global {
@@ -228,6 +230,8 @@ export class App {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     this.renderer.setSize(window.innerWidth, window.innerHeight, false);
     this.world.studio.setShadowMapSize(shadow);
+    // lowest tier (1024 shadow map): small props stop casting shadows
+    this.world.setShadowDetail(shadow > 1024);
   }
 
   private setRay(e: PointerEvent): void {
@@ -335,6 +339,7 @@ export class App {
       field: (x, y, z) => JadeMaterial.field.set(x, y, z),
       cull: (on) => { this.director.cullStations = on; },
       look: (l) => { this.world.studio.setLook(l); return this.world.studio.look; },
+      setQuality: (level) => this.quality.set(level),
       shadowCovers: () => this.world.studio.shadowCovers(Director.stationOf(this.journey.state.stage).clone().setY(0.8)),
     };
   }

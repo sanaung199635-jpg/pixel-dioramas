@@ -361,3 +361,14 @@ test('every station is lit inside the key light\'s shadow box', async ({ page })
     expect(ok, `stage ${i + 1}`).toBe(true);
   }
 });
+
+test('lowest quality tier drops the small shadow casters in the mine', async ({ page }) => {
+  const errors = await boot(page);
+  const calls = (level: number) => page.evaluate(async (l) => {
+    const j = window.__jade!; j.setQuality(l); j.goTo(0, false); j.seek(0.7); j.resetView(); await j.frames(3); return j.state().render.calls;
+  }, level);
+  const high = await calls(2), low = await calls(0);
+  expect(low).toBeLessThan(high);
+  await calls(2);
+  expect(errors).toEqual([]);
+});

@@ -45,6 +45,14 @@ export class Quality {
     else if (avg < this.budget * 0.6 && this.level < LEVELS.length - 1) this.step(1);
   }
 
+  /** Jump to a level (testing and measurement). */
+  set(level: number): void {
+    this.level = Math.max(0, Math.min(LEVELS.length - 1, level));
+    this.samples = [];
+    this.cooldown = 120;
+    this.onChange(this.current);
+  }
+
   private step(d: number): void {
     this.level += d;
     this.samples = [];

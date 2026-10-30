@@ -241,7 +241,7 @@ function truck(): THREE.Group {
   g.add(at(rbox(0.16, 0.012, 0.34, 0.004, PAINT), 0.215, bodyY + 0.205, 0));
   // load of broken rock
   const rnd = mulberry(9);
-  const rocks = new THREE.InstancedMesh(rockGeometry(4), ROCK, 14);
+  const rocks = new THREE.InstancedMesh(rocksGeo().boulder, ROCK, 14);
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), c = new THREE.Color();
   for (let i = 0; i < 14; i++) {
     const r = 0.04 + rnd() * 0.03;
@@ -261,6 +261,8 @@ export interface MineDiorama {
   /** Height of the terrain at diorama-local (x, z). */
   height(x: number, z: number): number;
   pitFloor: THREE.Vector3;
+  /** Small shadow casters that the lowest quality level turns off. */
+  minorCasters: THREE.Object3D[];
 }
 
 const S = 6, H = S / 2, TOP = 1.0, BOTTOM_Y = -0.7;
@@ -365,15 +367,26 @@ function edgeDistance(th: number): number {
  */
 function terrainGeometry(): { geo: THREE.BufferGeometry; rim: THREE.Vector3[] } {
   const corners = [[H, H], [-H, H], [-H, -H], [H, -H]].map(([x, z]) => Math.atan2((z - PIT.y) / AZ, (x - PIT.x) / AX));
-  const A = 192;
+  const A = 168;
   const ths = new Set<number>();
   for (let i = 0; i < A; i++) ths.add(-Math.PI + (i / A) * Math.PI * 2);
   for (const c of corners) ths.add(c);
   const angles = [...ths].sort((a, b) => a - b);
-  const inner = R0 + 0.35, NI = 120, NO = 18;
-  const rows: ((th: number) => number)[] = [];
-  for (let i = 0; i <= NI; i++) { const r = (i / NI) * inner; rows.push(() => r); }
-  for (let i = 1; i <= NO; i++) { const t = i / NO; rows.push((th) => inner + (edgeDistance(th) - inner) * t); }
+  // Rows follow the bench edges, wobble included: radius d where the bench
+  // coordinate s equals a given value at this angle (two fixed-point steps).
+  const dAt = (s: number, th: number) => {
+    const d0 = R0 - s * STEP_W;
+    const d2 = d0 - edgeWobble(th, d0 - edgeWobble(th, d0));
+    return THREE.MathUtils.clamp(d2, 0, edgeDistance(th) - 0.02);
+  };
+  // dense where a bench bends (crest, rock face, apron), sparse on the flat tread
+  const F = [0, 0.04, 0.09, 0.15, 0.22, 0.3, 0.39, 0.5, 0.66, 0.83];
+  const benchS = [STEPS, ...Array.from({ length: STEPS }, (_, k) => F.map((f) => k + f)).flat()].sort((a, b) => b - a);
+  const rows: ((th: number) => number)[] = [() => 0];
+  for (const u of [0.3, 0.55, 0.8]) rows.push((th) => dAt(STEPS, th) * u);
+  for (const sv of benchS) rows.push((th) => dAt(sv, th));
+  const NO = 10;
+  for (let i = 1; i <= NO; i++) { const t = i / NO; rows.push((th) => { const a = dAt(0, th); return a + (edgeDistance(th) - a) * t; }); }
   const P: number[] = [], RD: number[] = [];
   const C = angles.length;
   for (const row of rows) {
@@ -437,8 +450,8 @@ function sideGeometry(rim: THREE.Vector3[]): THREE.BufferGeometry {
 }
 
 /** Fractured rock: a noisy icosahedron with flat facets and darker undersides. */
-function rockGeometry(seed: number): THREE.BufferGeometry {
-  const g = new THREE.IcosahedronGeometry(1, 1);
+function rockGeometry(seed: number, detail = 1): THREE.BufferGeometry {
+  const g = new THREE.IcosahedronGeometry(1, detail);
   const p = g.attributes.position as THREE.BufferAttribute;
   const v = new THREE.Vector3();
   for (let i = 0; i < p.count; i++) {
@@ -457,10 +470,18 @@ function rockGeometry(seed: number): THREE.BufferGeometry {
   return ng;
 }
 
-/** Broadleaf crown: three overlapping lumpy clumps, lighter on top. */
-function crownGeometry(): THREE.BufferGeometry {
+/** Shared rock shapes: boulders (80 faces) and scree (20 faces), reused by the truck load. */
+let rockGeos: { boulder: THREE.BufferGeometry; scree: THREE.BufferGeometry } | null = null;
+function rocksGeo(): { boulder: THREE.BufferGeometry; scree: THREE.BufferGeometry } {
+  return (rockGeos ??= { boulder: rockGeometry(1, 1), scree: rockGeometry(2, 0) });
+}
+
+const CROWN: [number, number, number, number][] = [[0, 0.02, 0, 1], [0.42, -0.12, 0.18, 0.72], [-0.3, -0.08, -0.3, 0.78], [0.05, 0.38, -0.08, 0.7]];
+const SHRUB: [number, number, number, number][] = [[0, 0, 0, 1]];
+
+/** Broadleaf crown: overlapping lumpy clumps, lighter on top (shrubs use one clump). */
+function crownGeometry(clumps = CROWN): THREE.BufferGeometry {
   const parts: THREE.BufferGeometry[] = [];
-  const clumps: [number, number, number, number][] = [[0, 0.02, 0, 1], [0.42, -0.12, 0.18, 0.72], [-0.3, -0.08, -0.3, 0.78], [0.05, 0.38, -0.08, 0.7]];
   clumps.forEach(([x, y, z, r], k) => {
     const g = new THREE.IcosahedronGeometry(r, 1);
     const p = g.attributes.position as THREE.BufferAttribute;
@@ -550,14 +571,22 @@ export function mineDiorama(): MineDiorama {
     if (polar(x, z)[0] < R0 + 0.3 || distToTrack(x, z) < 0.3) continue;
     rocks.push({ x, z, r: 0.06 + rnd() * 0.07, c: rnd() });
   }
-  const rockMesh = new THREE.InstancedMesh(rockGeometry(1), ROCK, rocks.length);
-  rocks.forEach(({ x, z, r, c }, i) => {
-    q.setFromEuler(e.set((rnd() - 0.5) * 0.4, rnd() * 6.28, (rnd() - 0.5) * 0.4));
-    rockMesh.setMatrixAt(i, m.compose(v.set(x, mineHeight(x, z) + r * 0.1, z), q, sc.set(r * (0.9 + rnd() * 0.5), r, r * (0.9 + rnd() * 0.4))));
-    rockMesh.setColorAt(i, tint.setRGB(0.56, 0.5, 0.43).lerp(new THREE.Color(0.44, 0.46, 0.42), c).convertSRGBToLinear());
+  // small scree: 20-face rocks that only receive shadows (their own would be a few
+  // pixels); boulders keep the finer shape and cast shadows
+  const scree = rocks.filter((r) => r.r < 0.05), boulders = rocks.filter((r) => r.r >= 0.05);
+  const rockSets: [typeof rocks, THREE.BufferGeometry, boolean][] = [[scree, rocksGeo().scree, false], [boulders, rocksGeo().boulder, true]];
+  const rockMeshes = rockSets.map(([list, geo, cast]) => {
+    const im = new THREE.InstancedMesh(geo, ROCK, list.length);
+    list.forEach(({ x, z, r, c }, i) => {
+      q.setFromEuler(e.set((rnd() - 0.5) * 0.4, rnd() * 6.28, (rnd() - 0.5) * 0.4));
+      im.setMatrixAt(i, m.compose(v.set(x, mineHeight(x, z) + r * 0.1, z), q, sc.set(r * (0.9 + rnd() * 0.5), r, r * (0.9 + rnd() * 0.4))));
+      im.setColorAt(i, tint.setRGB(0.56, 0.5, 0.43).lerp(new THREE.Color(0.44, 0.46, 0.42), c).convertSRGBToLinear());
+    });
+    im.castShadow = cast;
+    im.receiveShadow = true;
+    root.add(im);
+    return im;
   });
-  rockMesh.castShadow = rockMesh.receiveShadow = true;
-  root.add(rockMesh);
 
   // trees and shrubs on the rim, kept off the track and the cut edge
   const spots: { x: number; z: number; s: number }[] = [];
@@ -587,7 +616,7 @@ export function mineDiorama(): MineDiorama {
     if (Math.abs(x) > H - 0.15 || Math.abs(z) > H - 0.15 || distToTrack(x, z) < 0.2 || sample(x, z).road > 0.1) continue;
     shrubs.push(new THREE.Vector3(x, mineHeight(x, z), z));
   }
-  const shrubMesh = new THREE.InstancedMesh(crownGeometry(), LEAF, shrubs.length);
+  const shrubMesh = new THREE.InstancedMesh(crownGeometry(SHRUB), LEAF, shrubs.length);
   shrubs.forEach((p, i) => {
     const s = 0.05 + rnd() * 0.04;
     q.setFromEuler(e.set(0, rnd() * 6.28, 0));
@@ -610,5 +639,7 @@ export function mineDiorama(): MineDiorama {
   digger.root.userData.info = 'excavator';
   root.add(digger.root);
 
-  return { root, digger, height: mineHeight, pitFloor: new THREE.Vector3(PIT.x, FLOOR_Y, PIT.y) };
+  // small casters whose shadows are dropped at the lowest quality level
+  const minorCasters = [rockMeshes[1], trunks, shrubMesh];
+  return { root, digger, height: mineHeight, pitFloor: new THREE.Vector3(PIT.x, FLOOR_Y, PIT.y), minorCasters };
 }
