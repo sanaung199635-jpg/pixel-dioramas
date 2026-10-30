@@ -2,13 +2,14 @@
 
 一个 3D 互动网页项目：带观众亲眼看着一块硬玉翡翠原石，经过开采、清洗、观察、切片、取圈、打磨和抛光，最终成为一只绿色翡翠手镯。
 
-## 当前状态：v1.1.1 · Phase 7.7 性能优化（待审核）
+## 当前状态：v1.2.0 · Phase 8 移动端重构（待审核）
 
-- **在线版本：** `https://sanaung199635-jpg.github.io/pixel-dioramas/jade-genesis/play/`（v1.1 已合并到 main；v1.1.1 待审核）
+- **在线版本：** `https://sanaung199635-jpg.github.io/pixel-dioramas/jade-genesis/play/`（v1.1.1 已合并到 main；v1.2.0 待审核）
 - **发布构建：** `npm run release` → `play/`（纯静态文件，部署方式见 [`docs/DEPLOY.md`](docs/DEPLOY.md)）
-- **Phase 7：** 计划 [`docs/PHASE7_PLAN.md`](docs/PHASE7_PLAN.md) · 视觉验收 [`docs/PHASE7_VISUAL_REPORT.md`](docs/PHASE7_VISUAL_REPORT.md) · 性能 [`docs/PHASE7_PERFORMANCE.md`](docs/PHASE7_PERFORMANCE.md) · 迭代记录 [`docs/PHASE7_ITERATION_LOG.md`](docs/PHASE7_ITERATION_LOG.md)
-- **前后对比图：** [`docs/phase7/compare/`](docs/phase7/compare)（同一状态、同一镜头）
-- **未完成：** 真实设备上的帧率测量；GIA 原文的直接核对
+- **Phase 8：** 计划 [`docs/PHASE8_PLAN.md`](docs/PHASE8_PLAN.md) · 移动端 QA [`docs/PHASE8_MOBILE_QA.md`](docs/PHASE8_MOBILE_QA.md) · 视觉验收 [`docs/PHASE8_VISUAL_REPORT.md`](docs/PHASE8_VISUAL_REPORT.md) · 迭代记录 [`docs/PHASE8_ITERATION_LOG.md`](docs/PHASE8_ITERATION_LOG.md)
+- **手机前后对比：** [`docs/phase8/compare/`](docs/phase8/compare)
+- **Phase 7：** [`docs/PHASE7_PLAN.md`](docs/PHASE7_PLAN.md) · [`docs/PHASE7_VISUAL_REPORT.md`](docs/PHASE7_VISUAL_REPORT.md) · [`docs/PHASE7_PERFORMANCE.md`](docs/PHASE7_PERFORMANCE.md)
+- **未完成：** 真实 iPhone Safari 验证；真实设备帧率；GIA 原文的直接核对
 
 ## 功能（Phase 4 完成）
 
@@ -43,7 +44,7 @@ npm run dev
 
 其他命令：
 - `npm run build`：类型检查 + 构建
-- `npm test`：Playwright，桌面 1440×900 + 移动 390×844
+- `npm test`：Playwright，桌面 1440×900、手机 390×844，另有 320 / 430 / Android / 横屏 / 平板的移动端布局测试（Chromium 模拟）
 - `npm run knowledge`：校验知识数据并生成知识表
 
 ### 文档
