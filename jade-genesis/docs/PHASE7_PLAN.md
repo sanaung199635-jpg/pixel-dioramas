@@ -76,7 +76,7 @@
   - 棉絮减弱。
   - 加入细微的晶粒斑驳：硬玉是多晶集合体，不是玻璃。
 - **绿色偏移：** 所有工件统一使用 0.12。成品手镯不再单独加绿。
-- **散射：** 次表面散射仍是近似做法：边缘透光（emissive）+ transmission + attenuation。**这不是物理级模拟**。
+- **散射：** 次表面散射仍是近似做法：边缘透光（emissive）+ 体内回散光 `uInner`（emissive，以玉色着色）+ transmission + attenuation。**这不是物理级模拟**。
 
 ### 7.4 灯光
 - 灯光参数集中在 `LIGHTING`（`scenes/Studio.ts`）：hemi / key / fill / rim、环境强度、色调映射、曝光。
