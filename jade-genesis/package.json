@@ -1,7 +1,7 @@
 {
   "name": "jade-genesis",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "JADE GENESIS · 翡翠诞生记 — interactive 3D journey from rough jadeite to bangle",
   "scripts": {

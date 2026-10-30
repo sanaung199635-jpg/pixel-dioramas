@@ -8,7 +8,7 @@ type State = {
   frames: number; phase: string; intro: boolean;
 };
 
-const SHOTS = path.resolve('docs/qa/phase5');
+const SHOTS = path.resolve('docs/qa/phase7');
 /** Representative moment of each stage for the screenshot record. */
 const MOMENTS = [0.7, 0.6, 0.6, 0.6, 0.9, 0.55, 0.85, 1, 0.6, 0.6, 0.6, 1];
 const TITLES = ['开采', '清洗', '打灯观察', '开窗', '切割规划', '水冷切片', '画圈', '套取镯坯', '粗加工', '精磨', '抛光', '检查展示'];
@@ -77,7 +77,10 @@ test('timeline steps and prev / next jump between stages', async ({ page }) => {
   const errors = await boot(page);
   await page.locator('.timeline .step').nth(5).click();
   let s = await state(page);
-  expect(s).toMatchObject({ stage: 5, progress: 0, playing: true, intro: false });
+  expect(s).toMatchObject({ stage: 5, playing: true, intro: false });
+  // the jump lands at the start of the stage; it is already playing, so a frame
+  // rendered between the click and this read may have advanced it slightly
+  expect(s.progress).toBeLessThan(0.02);
   await expect(page.locator('.story h1')).toContainText('水冷切片');
   await expect(page.locator('.timeline .step').nth(5)).toHaveAttribute('aria-current', 'step');
   await page.getByRole('button', { name: '下一道工序' }).click();
@@ -349,4 +352,12 @@ test('the saw opens a kerf as it descends', async ({ page }) => {
   expect(ids).not.toContain('cutface');
   expect(ids).toContain('coolant');
   expect(errors).toEqual([]);
+});
+
+test('every station is lit inside the key light\'s shadow box', async ({ page }) => {
+  await boot(page);
+  for (let i = 0; i < 12; i++) {
+    const ok = await page.evaluate(async (k) => { const j = window.__jade!; j.goTo(k, false); await j.frames(1); return j.shadowCovers(); }, i);
+    expect(ok, `stage ${i + 1}`).toBe(true);
+  }
 });

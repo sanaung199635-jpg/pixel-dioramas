@@ -8,7 +8,7 @@ import { CUT_X } from '../stone/StoneSolid';
 import { TurnedPiece, axisMatrix, capGeometry, discProfile, ringProfile, shellMorphGeometry, sliceOfShell } from '../stone/StoneGeometry';
 import { RING, SITES, SLAB, SLAB_T, shapeAt, siteFrame, surfaceAt } from '../stone/Production';
 
-const SHELL_MAT: JadeOptions = { thickness: 1.4, attenuationDistance: 0.45, transmission: 0.42, roughness: 0.24, wave: 1, morph: true };
+const SHELL_MAT: JadeOptions = { thickness: 1.4, attenuationDistance: 0.38, transmission: 0.5, roughness: 0.2, wave: 1, morph: true };
 const CAP_MAT: JadeOptions = { thickness: 1.2, attenuationDistance: 0.6, transmission: 0.45, roughness: 0.38, wave: 0.4 };
 const SLAB_MAT: JadeOptions = { thickness: SLAB_T, attenuationDistance: 0.35, transmission: 0.5, roughness: 0.38, wave: 0.3 };
 
@@ -96,7 +96,7 @@ export class JadePieces {
     for (const m of [this.holeWall, this.core]) { m.castShadow = m.receiveShadow = true; m.visible = false; this.S.group.add(m); }
 
     this.bangleShape = new TurnedPiece(96, 220, f);
-    this.bangle = new THREE.Mesh(this.bangleShape.geometry, new JadeMaterial({ rind: 0, green: 0.18, thickness: 0.09, attenuationDistance: 0.18, transmission: 0.55, roughness: 0.1, bump: 0.02, edgeGlow: 0.22 }));
+    this.bangle = new THREE.Mesh(this.bangleShape.geometry, new JadeMaterial({ rind: 0, thickness: 0.09, attenuationDistance: 0.18, transmission: 0.55, roughness: 0.1, bump: 0.02, edgeGlow: 0.22 }));
     this.bangle.castShadow = this.bangle.receiveShadow = true;
     this.bangle.userData.info = 'bangle';
     this.bangleGroup.add(this.bangle);

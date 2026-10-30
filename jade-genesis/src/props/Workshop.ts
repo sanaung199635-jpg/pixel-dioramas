@@ -1,12 +1,15 @@
 // Workshop stations 02, 04, 07, 08, 09–11 and 12.
 import * as THREE from 'three';
-import { MAT, at, cyl, rbox, shadowed, tube } from './kit';
+import { gritMaps } from '../materials/surfaces';
+import { MAT, at, bodyDetail, cyl, mergeByMaterial, rbox, shadowed, tube } from './kit';
 
 const phys = (color: number, roughness: number, extra: THREE.MeshPhysicalMaterialParameters = {}) => new THREE.MeshPhysicalMaterial({ color, roughness, ...extra });
 const WOOD = phys(0xb08d6a, 0.75);
 const FELT = phys(0xece5d6, 1, { sheen: 1, sheenColor: new THREE.Color(0xffffff), sheenRoughness: 0.6 });
 const VELVET = phys(0xe8e2d6, 1, { sheen: 1, sheenColor: new THREE.Color(0xffffff), sheenRoughness: 0.5 });
-const GRIT_FINE = phys(0x9a9d97, 0.9);
+const fine = gritMaps(0xb4b7b0, 0x8d908a, 6);
+const CUSHION = phys(0x8a7f74, 1, { sheen: 1, sheenColor: new THREE.Color(0xe8ddd0), sheenRoughness: 0.45 });
+const GRIT_FINE = phys(0xffffff, 0.9, { map: fine.map, normalMap: fine.normalMap, normalScale: new THREE.Vector2(0.4, 0.4) });
 
 // ---------- 02 washing ----------
 export interface WashStation { root: THREE.Group; nozzle: THREE.Object3D; gratingTop: number }
@@ -29,6 +32,8 @@ export function washStation(): WashStation {
   tip.position.copy(nozzle.position);
   tip.rotation.set(0.5, 0, 0.9);
   root.add(tip, nozzle);
+  root.add(...bodyDetail(3.6, 0.5, 2.8, [0, 0.25, 0], 3));
+  mergeByMaterial(root);
   root.userData.info = 'wash';
   return { root, nozzle, gratingTop: 0.59 };
 }
@@ -59,6 +64,8 @@ export function lightbox(): Lightbox {
   const tipM = cyl(0.012, 0.03, 0.08, phys(0xb83a2a, 0.5), 16); tipM.position.y = -0.39;
   pen.add(barrel, tipM);
   root.add(pen);
+  root.add(...bodyDetail(4.2, 0.7, 3.0, [0, 0.35, 0], 3));
+  mergeByMaterial(root);
   root.userData.info = 'lightbox';
   return { root, panel, top: 0.73, pen };
 }
@@ -89,6 +96,8 @@ export function coreDrill(ri: number, ro: number, bitLen = 0.9): CoreDrill {
   const outerBit = bit(ro), innerBit = bit(ri);
   head.add(outerBit, innerBit);
   root.add(tube([[-0.3, 3.2, -0.2], [-0.45, 2.9, 0.1], [-0.2, 2.6, 0.3]], 0.025, MAT.rubber));
+  root.add(...bodyDetail(3.4, 0.25, 2.0, [0.4, 0.125, 0]));
+  mergeByMaterial(root);
   root.userData.info = 'drill';
   return { root, head, outerBit, innerBit, tableTop: 0.31, headUp: 2.3 };
 }
@@ -125,6 +134,8 @@ export function grindBench(): GrindBench {
   for (const h of [wheel, drum, buff]) { h.position.copy(spindle); root.add(h); }
   root.add(tube([[0.2, 2.5, -0.5], [0.7, 2.4, -0.2], [1.0, 2.25, 0.15]], 0.025, MAT.rubber));
   const tip = cyl(0.025, 0.018, 0.12, MAT.brass, 16); tip.position.set(1.0, 2.18, 0.18); root.add(tip);
+  root.add(...bodyDetail(3.4, 0.9, 1.7, [-0.4, 0.45, 0], 2));
+  mergeByMaterial(root);
   root.userData.info = 'grind-bench';
   return { root, spindle, wheel, drum, buff, spinning: [w, d, bf] };
 }
@@ -140,7 +151,8 @@ export function showcase(): Showcase {
   const velvet = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.04, 96), VELVET));
   velvet.position.y = h + 0.02;
   root.add(velvet);
-  const cradle = rbox(0.9, 0.1, 0.36, 0.05, VELVET);
+  // deeper taupe velvet under the bangle: the green reads against it
+  const cradle = rbox(0.9, 0.1, 0.36, 0.05, CUSHION);
   cradle.position.y = h + 0.09;
   root.add(cradle);
   // vernier caliper (simplified)

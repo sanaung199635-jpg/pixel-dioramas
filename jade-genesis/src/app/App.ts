@@ -5,6 +5,7 @@ import { CameraRig } from '../controls/CameraRig';
 import { STAGES, phaseKey } from '../journey/stages';
 import { JadeMaterial } from '../materials/JadeMaterial';
 import { Director, type LightMode } from '../scenes/Director';
+import type { Look } from '../scenes/Studio';
 import { World } from '../scenes/World';
 import { Journey, type JourneySnapshot, type Speed } from './Journey';
 import { Quality } from './Quality';
@@ -45,6 +46,10 @@ export interface JadeDebug {
   field(x: number, y: number, z: number): void;
   /** Dev: turn per-stage station culling on/off (for measurements). */
   cull(on: boolean): void;
+  /** Dev: tone mapping / reflection environment, for A/B comparison and fallback. */
+  look(l: Partial<Look>): Look;
+  /** Whether the active station sits inside the key light's shadow box. */
+  shadowCovers(): boolean;
 }
 
 declare global {
@@ -77,7 +82,6 @@ export class App {
   constructor(private readonly canvas: HTMLCanvasElement, uiRoot: HTMLElement) {
     const mobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 760;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.localClippingEnabled = true;
@@ -330,6 +334,8 @@ export class App {
       unfreeze: () => this.start(),
       field: (x, y, z) => JadeMaterial.field.set(x, y, z),
       cull: (on) => { this.director.cullStations = on; },
+      look: (l) => { this.world.studio.setLook(l); return this.world.studio.look; },
+      shadowCovers: () => this.world.studio.shadowCovers(Director.stationOf(this.journey.state.stage).clone().setY(0.8)),
     };
   }
 }

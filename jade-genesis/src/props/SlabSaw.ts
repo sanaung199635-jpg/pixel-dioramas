@@ -2,7 +2,7 @@
 // placed with its stone-frame x axis along world x is cut exactly at CUT_X.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { MAT, at, cyl, rbox, shadowed, tube } from './kit';
+import { MAT, at, bodyDetail, cyl, mergeByMaterial, rbox, shadowed, tube } from './kit';
 
 export const SAW = {
   bladeRadius: 1.55,
@@ -115,5 +115,7 @@ export function slabSaw(): SlabSawHandles {
     body.add(b);
   }
   for (const [x, z] of [[-2.5, -1.5], [2.5, -1.5], [-2.5, 1.5], [2.5, 1.5]]) body.add(at(cyl(0.12, 0.15, 0.08, MAT.rubber, 24), x, 0.04, z));
+  body.add(...bodyDetail(5.4, 0.9, 3.4, [0, 0.45, 0], 3));
+  mergeByMaterial(body);
   return { root, blade, bladeDisc: disc, carriage, nozzles, pickables: [body, blade] };
 }

@@ -18,6 +18,8 @@ export interface JadeOptions {
   attenuationDistance?: number;
   clearcoat?: number;
   edgeGlow?: number;
+  /** Light scattered back out of the body (a cheap stand-in for subsurface scattering). */
+  inner?: number;
   /** Gentle surface undulation on exposed jade (hand-ground faces). */
   wave?: number;
   bump?: number;
@@ -31,7 +33,7 @@ export interface JadeOptions {
 
 export type JadeUniforms = {
   uRindAmt: THREE.IUniform<number>; uRough: THREE.IUniform<number>; uWet: THREE.IUniform<number>;
-  uBump: THREE.IUniform<number>; uGreen: THREE.IUniform<number>; uEdgeGlow: THREE.IUniform<number>;
+  uBump: THREE.IUniform<number>; uGreen: THREE.IUniform<number>; uEdgeGlow: THREE.IUniform<number>; uInner: THREE.IUniform<number>;
   uField: THREE.IUniform<THREE.Vector3>; uWave: THREE.IUniform<number>;
   uMarks: THREE.IUniform<THREE.Vector3[]>; uMarkN: THREE.IUniform<number>; uMarkSweep: THREE.IUniform<number>;
   uPlans: THREE.IUniform<THREE.Vector4[]>; uPlanN: THREE.IUniform<number>; uPlanSweep: THREE.IUniform<THREE.Vector4>;
@@ -76,7 +78,7 @@ export class JadeMaterial extends THREE.MeshPhysicalMaterial {
     const v4 = (a?: [number, number, number, number][]) => Array.from({ length: 4 }, (_, i) => (a?.[i] ? new THREE.Vector4(...a[i]) : new THREE.Vector4()));
     this.jade = {
       uRindAmt: { value: o.rind ?? 1 }, uRough: { value: o.rough ?? 0 }, uWet: { value: o.wet ?? 0 },
-      uBump: { value: o.bump ?? 0.035 }, uGreen: { value: o.green ?? 0.08 }, uEdgeGlow: { value: o.edgeGlow ?? 0.18 },
+      uBump: { value: o.bump ?? 0.035 }, uGreen: { value: o.green ?? 0.12 }, uEdgeGlow: { value: o.edgeGlow ?? 0.18 }, uInner: { value: o.inner ?? 0.3 },
       uField: { value: JadeMaterial.field }, uWave: { value: o.wave ?? 0 },
       uMarks: { value: v3(o.marks) }, uMarkN: { value: o.marks?.length ?? 0 }, uMarkSweep: { value: 1 },
       uPlans: { value: v4(o.plans) }, uPlanN: { value: o.plans?.length ?? 0 }, uPlanSweep: { value: new THREE.Vector4(1, 1, 1, 1) },

@@ -268,6 +268,7 @@ export class Director {
     d.boom.rotation.z = a.boom;
     d.stick.rotation.z = a.stick;
     d.bucket.rotation.z = a.bucket;
+    d.sync();
   }
 
   private bucketStonePose(): THREE.Matrix4 {
@@ -585,7 +586,7 @@ export class Director {
       sc.lamp.visible = true;
       sc.lamp.position.set(0.2, 2.6, 0.5);
       w.pieces.bangle.material.jade.uEdgeGlow.value = 0.22 + 0.4 * Math.sin(lamp * Math.PI);
-    } else w.pieces.bangle.material.jade.uEdgeGlow.value = 0.22;
+    } else w.pieces.bangle.material.jade.uEdgeGlow.value = this.lightMode === 'back' && p >= 0.5 ? 0.6 : 0.22;
     const ring = (deg: number) => { const a = (deg * Math.PI) / 180; return apply(pose, Math.sin(a) * 0.386, 0, Math.cos(a) * 0.386); };
     const hot: Hotspot[] = p > 0.5 ? [
       { id: 'edge', world: ring(200) },

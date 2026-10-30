@@ -2,12 +2,13 @@
 
 一个 3D 互动网页项目：带观众亲眼看着一块硬玉翡翠原石，经过开采、清洗、观察、切片、取圈、打磨和抛光，最终成为一只绿色翡翠手镯。
 
-## 当前状态：v1.0 · Phase 6 发布
+## 当前状态：v1.1 · Phase 7 工业级视觉升级（待审核）
 
-- **在线版本：** 合并到 GitHub Pages 分支后，地址为 `https://sanaung199635-jpg.github.io/pixel-dioramas/jade-genesis/play/`
+- **在线版本：** `https://sanaung199635-jpg.github.io/pixel-dioramas/jade-genesis/play/`（v1.0；Phase 7 合并后更新）
 - **发布构建：** `npm run release` → `play/`（纯静态文件，部署方式见 [`docs/DEPLOY.md`](docs/DEPLOY.md)）
-- **测试：** 桌面 21 / 21、移动 19 / 19（另有 2 项按设计跳过）
-- **未完成：** 真实设备上的帧率测量；GIA 原文的直接核对（见 [`docs/QA_REPORT.md`](docs/QA_REPORT.md)）
+- **Phase 7：** 计划 [`docs/PHASE7_PLAN.md`](docs/PHASE7_PLAN.md) · 视觉验收 [`docs/PHASE7_VISUAL_REPORT.md`](docs/PHASE7_VISUAL_REPORT.md) · 性能 [`docs/PHASE7_PERFORMANCE.md`](docs/PHASE7_PERFORMANCE.md) · 迭代记录 [`docs/PHASE7_ITERATION_LOG.md`](docs/PHASE7_ITERATION_LOG.md)
+- **前后对比图：** [`docs/phase7/compare/`](docs/phase7/compare)（同一状态、同一镜头）
+- **未完成：** 真实设备上的帧率测量；GIA 原文的直接核对
 
 ## 功能（Phase 4 完成）
 
@@ -49,7 +50,8 @@ npm run dev
 
 - 架构：[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - 迭代记录：[`docs/ITERATION_LOG.md`](docs/ITERATION_LOG.md)
-- 测试报告：[`docs/QA_REPORT.md`](docs/QA_REPORT.md)；截图在 [`docs/qa/`](docs/qa)
+- 测试报告：[`docs/QA_REPORT.md`](docs/QA_REPORT.md)；截图在 [`docs/qa/`](docs/qa)（Phase 7 测试截图在 `docs/qa/phase7/`）
+- Phase 7 截图工具：`node tools/phase7-capture.cjs <url> <输出目录> [desktop|mobile|both]`；对比图：`python3 tools/phase7-compare.py`
 - 知识研究：[`docs/RESEARCH.md`](docs/RESEARCH.md)、[`docs/KNOWLEDGE_TABLE.md`](docs/KNOWLEDGE_TABLE.md)、[`docs/SCENE_SCRIPT.md`](docs/SCENE_SCRIPT.md)
 
 ### Phase 1 成果
@@ -90,4 +92,4 @@ node jade-genesis/design/tools/board.cjs
 
 ## 素材与版权
 
-所有模型、材质和场景都是代码程序化生成的，没有使用第三方模型、贴图或图片。
+所有模型、材质、纹理和反射环境都是代码程序化生成的，没有使用第三方模型、贴图、HDR 或图片。
