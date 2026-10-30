@@ -16,7 +16,7 @@ npm ci
 npm run release
 ```
 
-产物在 `jade-genesis/play/`：`index.html` 加 `assets/`，约 645 KB JS、gzip 后约 177 KB。所有路径都是相对路径，可以放在任意子目录下运行。
+产物在 `jade-genesis/play/`：`index.html` 加 `assets/`，约 684 KB JS、gzip 后约 191 KB。所有路径都是相对路径，可以放在任意子目录下运行。
 
 ## 2. GitHub Pages（本仓库现有方式）
 
