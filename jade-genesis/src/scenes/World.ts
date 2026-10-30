@@ -98,6 +98,11 @@ export class World {
     this.scene.add(this.torch, this.handGrinder);
   }
 
+  /** Shadow tiers: the lowest quality level drops the small casters' shadows. */
+  setShadowDetail(full: boolean): void {
+    for (const o of this.mine.minorCasters) o.castShadow = full;
+  }
+
   /** Draw only the stations a stage can see (the others are far away in fog anyway). */
   showStations(names: readonly StationName[]): void {
     for (const [k, objs] of this.stationObjects) {

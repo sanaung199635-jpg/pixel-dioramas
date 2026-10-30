@@ -33,8 +33,14 @@ export function shadowed<T extends THREE.Object3D>(o: T): T {
   return o;
 }
 
+/**
+ * Rounded box. Rounding segments follow the radius: a 2–8 mm edge (r < 0.012 at
+ * 1 unit ≈ 100 mm) needs one segment, not four; this alone saved ~900 triangles
+ * per small part.
+ */
 export function rbox(w: number, h: number, d: number, r: number, mat: THREE.Material): THREE.Mesh {
-  return shadowed(new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 4, r), mat));
+  const seg = r < 0.012 ? 1 : r < 0.04 ? 2 : 4;
+  return shadowed(new THREE.Mesh(new RoundedBoxGeometry(w, h, d, seg, r), mat));
 }
 
 export function cyl(rt: number, rb: number, h: number, mat: THREE.Material, seg = 64, open = false): THREE.Mesh {

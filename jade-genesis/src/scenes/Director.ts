@@ -33,6 +33,7 @@ const QUIET: SoundMix = { wind: 0.25, motor: 0, water: 0, grind: 0, buff: 0 };
 
 // ---------- fixed poses ----------
 const MINI = 0.11; // the stone at diorama scale
+const LOD_SCALE = new THREE.Vector3();
 const ON_WASH = mul(Tv(at(STATION.wash, 0, 0.59 + FLOOR_Y, 0)), Ry(0.6));
 const ON_PLINTH = mul(Tv(at(STATION.plinth, 0, PLINTH.h + FLOOR_Y, 0)), Ry(-0.25));
 const LOAD_Z = 1.1, CUT_Z = 0.2;
@@ -117,7 +118,7 @@ export class Director {
         const attach = this.mineAttachPose();
         this.setArm(this.armAt(p));
         const stone = p < 0.45 ? attach : this.bucketStonePose();
-        this.showIntact(stone, { reveal: 0, flat: 0 });
+        this.showIntact(stone, { reveal: 0, flat: 0, opaque: true });
         sound = { ...QUIET, wind: 0.5, motor: 0.35 * (seg(p, 0.15, 0.25) - seg(p, 0.92, 1)) };
         w.scene.updateMatrixWorld();
         hot = [
@@ -132,7 +133,7 @@ export class Director {
         this.setArm(this.armAt(1));
         const pose = blend(this.mineEndPose(), ON_WASH, fly, 3);
         const wet = E(seg(p, 0.3, 0.7));
-        this.showIntact(pose, { reveal: 0, flat: 0, wet });
+        this.showIntact(pose, { reveal: 0, flat: 0, wet, opaque: true });
         const flow = seg(p, 0.25, 0.32) * (1 - seg(p, 0.85, 0.92));
         w.scene.updateMatrixWorld();
         const hit = apply(pose, -0.4, 0.6, 0.3);
@@ -145,7 +146,7 @@ export class Director {
         const move = E(seg(p, 0, 0.18));
         const pose = blend(ON_WASH, ON_PLINTH, move, 1.6);
         const wet = 1 - seg(p, 0.15, 0.55);
-        this.showIntact(pose, { reveal: 0, flat: 0, wet });
+        this.showIntact(pose, { reveal: 0, flat: 0, wet, opaque: true });
         exposure = this.torchMode ? 0 : 1 - seg(p, 0.2, 0.3) + seg(p, 0.86, 0.96);
         const torchOn = this.torchMode || (p > 0.28 && p < 0.88);
         if (torchOn) this.placeTorch(pose, p);
@@ -235,10 +236,13 @@ export class Director {
     for (const c of [w.sawWater, w.washWater, w.drillWater, w.benchWater]) c.update(0, 0, [], new THREE.Vector3());
   }
 
-  private showIntact(m: THREE.Matrix4, o: { reveal: number; flat: number; wet?: number }): void {
+  private showIntact(m: THREE.Matrix4, o: { reveal: number; flat: number; wet?: number; opaque?: boolean }): void {
     const g = this.w.pieces.intactGroup;
     place(g, m);
     g.visible = true;
+    // stages 01-03: rind everywhere, so no transmission pass; diorama-sized stone: low detail
+    this.w.pieces.setIntactOpaque(o.opaque ?? false);
+    this.w.pieces.setIntactLod(LOD_SCALE.setFromMatrixScale(m).x < 0.3);
     this.w.pieces.setWindow(o.reveal, o.flat);
     this.w.pieces.setWet(o.wet ?? 0);
   }
