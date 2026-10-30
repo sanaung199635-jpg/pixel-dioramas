@@ -23,7 +23,9 @@ export const MAT = {
   seam: phys(0xa9a59c, 0.6),
   trim: phys(0x5b5f60, 0.45, 0, { clearcoat: 0.3 }),
   plinth: phys(0xf6f3ee, 0.6),
-  glass: new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.02, transmission: 1, thickness: 0.05, ior: 1.5 }),
+  // reflective, see-through glass without transmission: a transmissive material
+  // makes three.js render the whole scene again just to refract the loupe lens
+  glass: new THREE.MeshPhysicalMaterial({ color: 0xf4f8f8, roughness: 0.02, transparent: true, opacity: 0.22, clearcoat: 1, clearcoatRoughness: 0.02, specularIntensity: 1, depthWrite: false }),
   waterSurface: new THREE.MeshPhysicalMaterial({ color: 0xbfd9d6, roughness: 0.08, transparent: true, opacity: 0.55, clearcoat: 1 }),
   water: new THREE.MeshStandardMaterial({ color: 0xcfe6ee, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.7, depthWrite: false }),
 };
