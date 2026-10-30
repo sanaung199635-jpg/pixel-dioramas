@@ -80,6 +80,17 @@
     "fallback.error.body": "加载过程中出现错误，请刷新页面重试。",
     "fallback.retry": "重试",
     "ph.liftBlank": "取出镯坯",
-    "dim.inner": "圈口 ≈ {mm} mm"
+    "dim.inner": "圈口 ≈ {mm} mm",
+    "intro.leadShort": "从一块原石到一只手镯，12 道工序的 3D 工艺馆。",
+    "btn.more": "更多控制",
+    "more.title": "播放与导航",
+    "more.speed": "播放速度",
+    "more.stages": "跳到工序",
+    "sheet.expand": "展开全部",
+    "sheet.half": "收起到半屏",
+    "sheet.close": "关闭知识卡片",
+    "card.gist": "要点",
+    "story.fold": "收起说明",
+    "story.unfold": "展开说明"
   }
 }

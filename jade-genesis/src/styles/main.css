@@ -7,9 +7,11 @@
   --gutter: 32px;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: var(--font); overflow: hidden; -webkit-font-smoothing: antialiased; }
+html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: var(--font); overflow: hidden; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior: none; }
+/* dynamic viewport where supported (Safari toolbars); 100% above is the fallback, never a fixed 100vh */
+@supports (height: 100dvh) { html, body { height: 100dvh; } }
 #stage { position: fixed; inset: 0; display: block; touch-action: none; outline: none; }
-button { font: inherit; color: inherit; cursor: pointer; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--jade); outline-offset: 2px; }
 svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 svg .fill { fill: currentColor; stroke: none; }
@@ -40,6 +42,7 @@ svg .fill { fill: currentColor; stroke: none; }
 .intro { position: absolute; left: 40px; top: 120px; width: 560px; padding: 32px 36px 28px; background: var(--panel); border: 1px solid var(--hair); border-radius: 24px; backdrop-filter: blur(12px); }
 .intro h1 { font-family: var(--serif); font-weight: 500; font-size: 64px; letter-spacing: 0.12em; margin: 18px 0 16px; }
 .intro .lead { font-size: 15px; line-height: 1.95; color: var(--muted); margin: 0 0 28px; }
+.intro .lead-short { display: none; }
 .intro .note { font-size: 12px; color: var(--muted); margin: 18px 0 0; letter-spacing: 0.06em; }
 .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
 .pill.big { min-height: 52px; padding: 0 26px; font-size: 15px; }
@@ -52,10 +55,13 @@ svg .fill { fill: currentColor; stroke: none; }
 .story h1 { font-family: var(--serif); font-weight: 500; font-size: 34px; letter-spacing: 0.1em; margin: 12px 0 12px; }
 .story h1 small { display: block; font-family: var(--font); font-size: 11px; letter-spacing: 0.24em; color: var(--muted); margin-top: 6px; text-transform: uppercase; }
 .story p { font-size: 14px; line-height: 1.9; margin: 0 0 14px; }
+.story-fold { display: none; }
 .simp { font-size: 12px; line-height: 1.7; color: var(--warn); padding: 10px 12px; border-radius: 10px; background: rgba(138, 94, 36, 0.08); }
 .simp b { display: block; font-weight: 600; margin-bottom: 2px; }
-.know { position: absolute; right: var(--gutter); top: 92px; width: 280px; max-height: calc(100vh - 300px); overflow: auto; padding: 18px 20px; background: var(--panel); border: 1px solid var(--hair); border-radius: 20px; backdrop-filter: blur(10px); }
-.know .kh { display: flex; justify-content: space-between; align-items: center; font-size: 12px; letter-spacing: 0.22em; color: var(--muted); margin-bottom: 12px; }
+.know { position: absolute; right: var(--gutter); top: 92px; width: 280px; max-height: calc(100% - 300px); overflow: auto; padding: 18px 20px; background: var(--panel); border: 1px solid var(--hair); border-radius: 20px; backdrop-filter: blur(10px); }
+.know .kh { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; letter-spacing: 0.22em; color: var(--muted); margin-bottom: 12px; }
+.know .kt { flex: 1; margin: 0; font-size: 12px; font-weight: 400; letter-spacing: 0.22em; color: var(--muted); outline: none; }
+.know .grip, .know .sheet-btn, .know .gist, .know .kt-stage { display: none; }
 .grade { font-size: 11px; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 999px; }
 .grade.gA { background: rgba(43, 115, 81, 0.14); color: var(--jade); }
 .grade.gB { background: rgba(47, 95, 184, 0.12); color: #2f5fb8; }
@@ -102,6 +108,10 @@ svg .fill { fill: currentColor; stroke: none; }
 .step.on .n, .step.on .zh { color: var(--jade); font-weight: 600; }
 .step.done .zh { color: var(--muted); }
 .controls { display: flex; align-items: center; gap: 10px; }
+/* desktop: the secondary group is laid out inline, in the v1.x order */
+.secondary { display: contents; }
+.controls .speed { order: 4; } .controls .scrub { order: 5; } .controls .torch { order: 6; } .controls .reset { order: 7; }
+.know-btn, .more-btn, .more-h, .nav-grid { display: none; }
 .round { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--hair); background: transparent; display: grid; place-items: center; flex: none; }
 .round:disabled { opacity: 0.35; cursor: default; }
 .round.primary { background: var(--jade); color: #fff; border-color: transparent; }
@@ -139,51 +149,143 @@ svg .fill { fill: currentColor; stroke: none; }
 .fallback h1 { font-family: var(--serif); font-weight: 500; font-size: 26px; margin: 12px 0; }
 .fallback p { font-size: 14px; line-height: 1.9; color: var(--muted); margin: 0 0 18px; }
 
-/* mobile: canvas first, compact story, knowledge in a sheet */
-@media (max-width: 759px) {
-  :root { --gutter: 12px; }
-  .top { height: 56px; gap: 10px; padding: 0 14px; }
-  .brand i, .guided { display: none !important; }
-  .chip span { display: none; }
-  .chip { padding: 0 10px; }
-  .intro { left: 12px; right: 12px; top: 64px; width: auto; padding: 18px 18px 18px; }
-  .intro h1 { font-size: 40px; margin: 10px 0 8px; }
-  .intro .lead { font-size: 14px; line-height: 1.8; margin-bottom: 18px; }
-  .intro .note { display: none; }
-  .story { top: 60px; left: var(--gutter); right: var(--gutter); width: auto; padding: 12px 14px; border-radius: 16px; }
-  .story h1 { font-size: 22px; margin: 4px 0 4px; }
-  .story h1 small { display: inline; margin-left: 8px; }
-  .story p { font-size: 13px; line-height: 1.65; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .story .simp { display: none; }
-  .know-toggle { display: inline-flex; align-items: center; gap: 6px; position: absolute; right: var(--gutter); bottom: 178px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--hair); background: var(--panel); font-size: 13px; }
-  .know { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 62vh; border-radius: 20px 20px 0 0; padding: 18px 20px 40px; transform: translateY(100%); transition: transform 0.3s; z-index: 6; }
-  .know.open { transform: none; }
-  .dock { left: 8px; right: 8px; bottom: 10px; padding: 8px 8px 6px; border-radius: 16px; }
-  .timeline { gap: 2px; }
-  .step { padding: 2px 0 4px; align-items: center; }
-  .step .zh { display: none; }
-  .controls { flex-wrap: wrap; gap: 6px; }
-  .round { width: 44px; height: 44px; }
-  .speed button { min-width: 40px; }
-  .scrub { flex-basis: 100%; order: 9; padding: 14px 2px 14px; }
-  .scrub .ticks span:nth-child(even) { display: none; }
-  .hint { display: none; }
-  .cam-chip { right: auto; left: var(--gutter); bottom: 178px; }
-  .showcase-bar { left: 8px; right: 8px; bottom: 178px; border-radius: 16px; flex-wrap: wrap; justify-content: center; }
-  .showcase-bar .lbl { display: none; }
-  .ui.showcase-ready .know-toggle, .ui.showcase-ready .cam-chip { bottom: 262px; }
-  .pin .lbl i { display: none; }
-  .toast { top: auto; bottom: 236px; }
-}
 /* narrow desktop / tablet: knowledge card folds into a toggle */
-@media (min-width: 760px) and (max-width: 1179px) {
+@media (min-width: 760px) and (max-width: 1179px) and (min-height: 501px) {
   .know-toggle { display: inline-flex; align-items: center; gap: 6px; position: absolute; right: var(--gutter); top: 80px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--hair); background: var(--panel); font-size: 13px; }
   .know { top: 134px; display: none; }
   .step .zh { font-size: 11px; }
   .intro { width: 460px; }
   .know.open { display: block; }
+  .know .sheet-btn[data-action="sheet-close"] { display: grid; place-items: center; width: 44px; height: 44px; border: 0; background: none; color: var(--muted); }
   .story { width: 300px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .toast, .cam-chip, .know { transition: none; }
+  .toast, .cam-chip, .know, .ui[data-layout="compact"] .know, .ui[data-layout="compact"] .secondary { transition: none !important; }
+}
+
+/* =====================================================================
+   Compact layout (phones, portrait and landscape). Set by JS from
+   COMPACT_QUERY so CSS and the camera framing always agree.
+   --avoid tells the camera which edge a docked panel occupies.
+   ===================================================================== */
+.ui[data-layout="compact"] {
+  --sa-t: env(safe-area-inset-top, 0px); --sa-b: env(safe-area-inset-bottom, 0px);
+  --sa-l: env(safe-area-inset-left, 0px); --sa-r: env(safe-area-inset-right, 0px);
+  --edge-l: max(10px, var(--sa-l)); --edge-r: max(10px, var(--sa-r));
+  --gutter: 10px;
+}
+.ui[data-layout="compact"] .top { --avoid: top; height: calc(50px + var(--sa-t)); padding: var(--sa-t) var(--edge-r) 0 var(--edge-l); gap: 8px; }
+.ui[data-layout="compact"] .brand { font-size: 13px; letter-spacing: 0.16em; }
+.ui[data-layout="compact"] .brand i, .ui[data-layout="compact"] .guided { display: none !important; }
+.ui[data-layout="compact"] .chip.sound { width: 44px; height: 44px; padding: 0; justify-content: center; }
+.ui[data-layout="compact"] .chip.sound span { display: none; }
+.ui[data-layout="compact"] .hint, .ui[data-layout="compact"] .know-toggle, .ui[data-layout="compact"] .timeline { display: none; }
+
+/* intro: a short card docked at the bottom; the diorama keeps the screen */
+.ui[data-layout="compact"] .intro { --avoid: bottom; top: auto; left: var(--edge-l); right: var(--edge-r); bottom: calc(10px + var(--sa-b)); width: auto; padding: 16px 16px 14px; border-radius: 20px; }
+.ui[data-layout="compact"] .intro .kicker { font-size: 10px; letter-spacing: 0.2em; }
+.ui[data-layout="compact"] .intro h1 { font-size: 28px; letter-spacing: 0.1em; margin: 6px 0 4px; }
+.ui[data-layout="compact"] .intro .lead, .ui[data-layout="compact"] .intro .note { display: none; }
+.ui[data-layout="compact"] .intro .lead-short { display: block; font-size: 13px; line-height: 1.7; color: var(--muted); margin: 0 0 12px; }
+.ui[data-layout="compact"] .cta-row { flex-wrap: nowrap; gap: 10px; }
+.ui[data-layout="compact"] .cta-row .pill.big { min-height: 48px; padding: 0 18px; font-size: 15px; }
+.ui[data-layout="compact"] .cta-row .pill.primary { flex: 1; justify-content: center; }
+.ui[data-layout="compact"][data-intro="true"] .dock { display: none; }
+
+/* story: a floating chip under the brand bar; the summary folds away */
+.ui[data-layout="compact"] .story { --avoid: top; top: calc(var(--top-h, 50px) + 2px); left: var(--edge-l); right: var(--edge-r); width: auto; padding: 10px 50px 10px 14px; border-radius: 16px; }
+.ui[data-layout="compact"] .story .kicker { font-size: 10px; letter-spacing: 0.22em; }
+.ui[data-layout="compact"] .story h1 { font-size: 20px; margin: 3px 0 2px; letter-spacing: 0.08em; }
+.ui[data-layout="compact"] .story h1 small { display: inline; margin-left: 8px; font-size: 10px; }
+.ui[data-layout="compact"] .story p { font-size: 13px; line-height: 1.6; margin: 2px 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ui[data-layout="compact"] .story .simp, .ui[data-layout="compact"] .story.folded p { display: none; }
+.ui[data-layout="compact"] .story-fold { display: grid; place-items: center; position: absolute; right: 2px; top: 2px; width: 44px; height: 44px; border: 0; background: none; color: var(--muted); border-radius: 12px; }
+.ui[data-layout="compact"] .story.folded .story-fold svg { transform: rotate(180deg); }
+
+/* dock: scrubber on top, then knowledge · prev · play · next · more */
+.ui[data-layout="compact"] .dock { --avoid: bottom; left: var(--edge-l); right: var(--edge-r); bottom: calc(8px + var(--sa-b)); padding: 6px 10px 8px; border-radius: 20px; }
+.ui[data-layout="compact"] .controls { display: grid; gap: 0 4px; align-items: center; grid-template-columns: 44px 1fr 44px 56px 44px 1fr 44px; grid-template-areas: "scrub scrub scrub scrub scrub scrub scrub" "know . prev play next . more"; }
+.ui[data-layout="compact"] .know-btn { display: grid; grid-area: know; }
+.ui[data-layout="compact"] .controls .prev { grid-area: prev; }
+.ui[data-layout="compact"] .controls .next { grid-area: next; }
+.ui[data-layout="compact"] .controls .play { grid-area: play; width: 56px; height: 56px; }
+.ui[data-layout="compact"] .more-btn { display: grid; grid-area: more; }
+.ui[data-layout="compact"] .more-btn[aria-expanded="true"], .ui[data-layout="compact"] .know-btn[aria-expanded="true"] { background: var(--hair); }
+.ui[data-layout="compact"] .scrub { grid-area: scrub; padding: 20px 2px 2px; }
+.ui[data-layout="compact"] .scrub input { height: 32px; touch-action: none; }
+.ui[data-layout="compact"] .scrub .phase { top: 2px; font-size: 12px; }
+.ui[data-layout="compact"] .scrub .ticks { display: none; }
+
+/* "more": speed, torch, reset view and the 12 stages, in a panel above the dock */
+.ui[data-layout="compact"] .secondary { display: none; position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 6; padding: 12px 12px 14px; background: #fbfaf7; border: 1px solid var(--hair); border-radius: 18px; box-shadow: 0 16px 40px rgba(30, 40, 35, 0.16); grid-template-columns: 1fr auto auto; gap: 8px 8px; align-items: center; max-height: calc(100% - 0px); overflow: auto; overscroll-behavior: contain; }
+.ui[data-layout="compact"] .secondary.open { display: grid; max-height: calc(100dvh - var(--dock-h, 120px) - var(--top-h, 50px) - 24px); }
+.ui[data-layout="compact"] .more-h { display: block; grid-column: 1 / -1; font-size: 11px; letter-spacing: 0.2em; color: var(--muted); }
+.ui[data-layout="compact"] .secondary .speed { order: 0; grid-column: 1; padding: 0; gap: 4px; }
+.ui[data-layout="compact"] .secondary .speed button { min-height: 44px; min-width: 52px; border: 1px solid var(--hair); }
+.ui[data-layout="compact"] .secondary .torch { order: 0; grid-column: 2; }
+.ui[data-layout="compact"] .secondary .reset { order: 0; grid-column: 3; }
+.ui[data-layout="compact"] .nav-grid { display: grid; grid-column: 1 / -1; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ui[data-layout="compact"] .nav-step { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1px; min-height: 48px; padding: 4px 10px; border: 1px solid var(--hair); border-radius: 12px; background: transparent; text-align: left; }
+.ui[data-layout="compact"] .nav-step .n { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; font-variant-numeric: tabular-nums; }
+.ui[data-layout="compact"] .nav-step .zh { font-size: 13px; white-space: nowrap; }
+.ui[data-layout="compact"] .nav-step.on { border-color: var(--jade); color: var(--jade); background: rgba(43, 115, 81, 0.08); }
+.ui[data-layout="compact"] .nav-step.on .n { color: var(--jade); }
+
+/* knowledge sheet: closed / half (above the dock) / full (covers the dock) */
+.ui[data-layout="compact"] .know { --avoid: bottom; display: flex; flex-direction: column; position: absolute; top: auto; left: var(--edge-l); right: var(--edge-r); bottom: var(--dock-h, 120px); width: auto; max-height: none; padding: 0; border-radius: 20px; background: rgba(251, 250, 247, 0.97); box-shadow: 0 -10px 40px rgba(30, 40, 35, 0.12); z-index: 7; height: min(40%, calc(100% - var(--dock-h, 120px) - var(--top-h, 50px) - 110px)); min-height: 220px; transform: translateY(calc(100% + var(--dock-h, 120px) + 30px)); visibility: hidden; transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), height 0.28s, visibility 0s 0.28s; }
+.ui[data-layout="compact"] .know[data-sheet="half"], .ui[data-layout="compact"] .know[data-sheet="full"] { transform: translateY(var(--drag, 0px)); visibility: visible; transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), height 0.28s, visibility 0s; }
+.ui[data-layout="compact"] .know[data-sheet="full"] { left: 0; right: 0; bottom: 0; height: calc(100% - var(--top-h, 50px) - 6px); border-radius: 20px 20px 0 0; z-index: 8; }
+.ui[data-layout="compact"] .know .kh { position: relative; flex: none; margin: 0; padding: 14px 6px 4px 18px; touch-action: none; cursor: grab; }
+.ui[data-layout="compact"] .know .grip { display: block; position: absolute; left: 50%; top: 6px; width: 36px; height: 4px; margin-left: -18px; border-radius: 2px; background: var(--hair); }
+.ui[data-layout="compact"] .know .sheet-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 12px; background: none; color: var(--muted); flex: none; }
+.ui[data-layout="compact"] .know .sheet-btn.down svg { transform: rotate(180deg); }
+.ui[data-layout="compact"] .know .kb { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 4px 18px calc(16px + var(--sa-b)); }
+.ui[data-layout="compact"] .know[data-sheet="half"] .kb { padding-bottom: 16px; }
+.ui[data-layout="compact"] .know .gist { display: block; margin: 0 0 14px; padding: 10px 12px; border-radius: 12px; background: rgba(43, 115, 81, 0.08); font-size: 14px; line-height: 1.7; }
+.ui[data-layout="compact"] .know .gist b { display: block; font-size: 11px; letter-spacing: 0.2em; color: var(--jade); margin-bottom: 2px; }
+.ui[data-layout="compact"] .know .gist-simp { display: block; margin-top: 6px; font-size: 12px; color: var(--warn); }
+.ui[data-layout="compact"] .know dl { grid-template-columns: 62px 1fr; font-size: 14px; }
+
+/* overlays sit above the dock */
+.ui[data-layout="compact"] .cam-chip { right: auto; left: var(--edge-l); bottom: calc(var(--dock-h, 120px) + 8px); min-height: 44px; }
+.ui[data-layout="compact"][data-intro="true"] .cam-chip { display: none; }
+/* while the knowledge sheet is open the story card steps aside (the sheet names the stage) */
+.ui[data-layout="compact"][data-sheet="half"] .story, .ui[data-layout="compact"][data-sheet="full"] .story { display: none; }
+.ui[data-layout="compact"] .know .kt-stage { display: inline; color: var(--ink); letter-spacing: 0.08em; }
+.ui[data-layout="compact"] .toast { top: auto; bottom: calc(var(--dock-h, 120px) + 10px); }
+.ui[data-layout="compact"] .showcase-bar { --avoid: bottom; left: var(--edge-l); right: var(--edge-r); bottom: calc(var(--dock-h, 120px) + 8px); border-radius: 16px; flex-wrap: wrap; justify-content: center; }
+.ui[data-layout="compact"] .showcase-bar .lbl { display: none; }
+.ui[data-layout="compact"].showcase-ready .cam-chip { bottom: calc(var(--dock-h, 120px) + 112px); }
+.ui[data-layout="compact"] .pin .lbl i { display: none; }
+
+/* ---- landscape phones: story and intro on the left, knowledge as a right drawer */
+.ui[data-layout="compact"][data-orient="landscape"] .top { height: calc(42px + var(--sa-t)); }
+.ui[data-layout="compact"][data-orient="landscape"] .story { --avoid: left; right: auto; width: min(300px, 34vw); }
+.ui[data-layout="compact"][data-orient="landscape"] .story p { -webkit-line-clamp: 4; }
+.ui[data-layout="compact"][data-orient="landscape"] .intro { --avoid: left; top: calc(var(--top-h, 42px) + 4px); bottom: auto; right: auto; width: min(360px, 44vw); }
+.ui[data-layout="compact"][data-orient="landscape"] .dock { padding: 4px 10px 6px; }
+.ui[data-layout="compact"][data-orient="landscape"] .controls { grid-template-columns: 44px 44px 52px 44px 1fr 44px; grid-template-areas: "know prev play next scrub more"; gap: 0 6px; }
+.ui[data-layout="compact"][data-orient="landscape"] .controls .play { width: 52px; height: 52px; }
+.ui[data-layout="compact"][data-orient="landscape"] .scrub { padding: 16px 4px 0; }
+.ui[data-layout="compact"][data-orient="landscape"] .secondary { left: auto; width: min(460px, 72vw); }
+.ui[data-layout="compact"][data-orient="landscape"] .nav-grid { grid-template-columns: repeat(6, 1fr); }
+.ui[data-layout="compact"][data-orient="landscape"] .know { --avoid: right; top: calc(var(--top-h, 42px) + 4px); bottom: var(--dock-h, 70px); left: auto; height: auto; min-height: 0; width: min(380px, 46vw); transform: translateX(calc(100% + 30px)); }
+.ui[data-layout="compact"][data-orient="landscape"] .know[data-sheet="half"] { transform: none; }
+.ui[data-layout="compact"][data-orient="landscape"] .know[data-sheet="full"] { left: auto; right: var(--edge-r); bottom: var(--dock-h, 70px); width: min(620px, 72vw); height: auto; border-radius: 20px; transform: none; }
+.ui[data-layout="compact"][data-orient="landscape"] .know .grip { display: none; }
+
+/* tablet portrait: regular panels, the scene framed in the area below them */
+@media (min-width: 760px) and (max-width: 1179px) and (min-height: 501px) and (orientation: portrait) {
+  .top, .story, .intro { --avoid: top; }
+  .dock { --avoid: bottom; }
+}
+
+/* touch screens: every control at least 44 px (showcase lights, speed, sound, view chip) */
+.ui[data-layout="compact"] .seg button { min-height: 44px; padding: 0 14px; }
+@media (pointer: coarse) {
+  .chip, .speed button, .seg button, .cam-chip { min-height: 44px; }
+}
+/* very narrow phones: the sheet title keeps only the stage */
+@media (max-width: 359px) {
+  .ui[data-layout="compact"] .know .kt-sep, .ui[data-layout="compact"] .know .kt-card { display: none; }
 }

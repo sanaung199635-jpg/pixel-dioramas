@@ -8,7 +8,7 @@ type State = {
   frames: number; phase: string; intro: boolean;
 };
 
-const SHOTS = path.resolve('docs/qa/phase7');
+const SHOTS = path.resolve('docs/qa/phase8');
 /** Representative moment of each stage for the screenshot record. */
 const MOMENTS = [0.7, 0.6, 0.6, 0.6, 0.9, 0.55, 0.85, 1, 0.6, 0.6, 0.6, 1];
 const TITLES = ['开采', '清洗', '打灯观察', '开窗', '切割规划', '水冷切片', '画圈', '套取镯坯', '粗加工', '精磨', '抛光', '检查展示'];
@@ -27,6 +27,20 @@ async function boot(page: Page): Promise<string[]> {
   await frames(page, 2);
   return errors;
 }
+
+/** Phones put the stage list, speed and torch behind "更多控制"; desktops show them inline. */
+const isCompact = (page: Page) => page.evaluate(() => document.querySelector('.ui')!.getAttribute('data-layout') === 'compact');
+async function openMore(page: Page): Promise<void> {
+  if (!(await isCompact(page))) return;
+  const more = page.getByRole('button', { name: '更多控制' });
+  if ((await more.getAttribute('aria-expanded')) !== 'true') await more.click();
+}
+/** Jump to a stage the way a user would on this layout. */
+async function pickStage(page: Page, i: number): Promise<void> {
+  if (await isCompact(page)) { await openMore(page); await page.locator('.nav-step').nth(i).click(); }
+  else await page.locator('.timeline .step').nth(i).click();
+}
+const stageButton = async (page: Page, i: number) => ((await isCompact(page)) ? page.locator('.nav-step').nth(i) : page.locator('.timeline .step').nth(i));
 
 const state = (page: Page) => page.evaluate(() => window.__jade!.state() as unknown as State);
 const frames = (page: Page, n: number) => page.evaluate((k) => window.__jade!.frames(k), n);
@@ -75,14 +89,14 @@ test('the guided journey continues into the next stage on its own', async ({ pag
 
 test('timeline steps and prev / next jump between stages', async ({ page }) => {
   const errors = await boot(page);
-  await page.locator('.timeline .step').nth(5).click();
+  await pickStage(page, 5);
   let s = await state(page);
   expect(s).toMatchObject({ stage: 5, playing: true, intro: false });
   // the jump lands at the start of the stage; it is already playing, so a frame
   // rendered between the click and this read may have advanced it slightly
   expect(s.progress).toBeLessThan(0.02);
   await expect(page.locator('.story h1')).toContainText('水冷切片');
-  await expect(page.locator('.timeline .step').nth(5)).toHaveAttribute('aria-current', 'step');
+  await expect(await stageButton(page, 5)).toHaveAttribute('aria-current', 'step');
   await page.getByRole('button', { name: '下一道工序' }).click();
   s = await state(page);
   expect(s.stage).toBe(6);
@@ -94,7 +108,7 @@ test('timeline steps and prev / next jump between stages', async ({ page }) => {
 
 test('pause holds the picture; play resumes', async ({ page }) => {
   const errors = await boot(page);
-  await page.locator('.timeline .step').nth(1).click();
+  await pickStage(page, 1);
   await expect.poll(async () => (await state(page)).progress, { timeout: 90_000 }).toBeGreaterThan(0.004);
   await page.getByRole('button', { name: '暂停' }).click();
   const paused = await state(page);
@@ -109,6 +123,7 @@ test('pause holds the picture; play resumes', async ({ page }) => {
 test('speed buttons and the scrubber', async ({ page }) => {
   const errors = await boot(page);
   await page.evaluate(() => window.__jade!.goTo(7));
+  await openMore(page);
   for (const sp of ['2×', '0.5×', '1×']) {
     await page.getByRole('button', { name: sp, exact: true }).click();
     expect((await state(page)).speed).toBe(parseFloat(sp));
@@ -190,6 +205,7 @@ test('manual torch is offered only at stage 03 and dims the room', async ({ page
   await page.evaluate(() => window.__jade!.goTo(1, false));
   await expect(page.getByRole('button', { name: '手动打灯' })).toBeHidden();
   await page.evaluate(() => window.__jade!.goTo(2, false));
+  await openMore(page);
   const btn = page.getByRole('button', { name: '手动打灯' });
   await expect(btn).toBeVisible();
   await btn.click();
@@ -265,8 +281,7 @@ test('keyboard shortcuts', async ({ page }, info) => {
 
 test('rapid stage switching ends in a consistent state', async ({ page }) => {
   const errors = await boot(page);
-  const steps = page.locator('.timeline .step');
-  for (const i of [3, 9, 0, 11, 5, 7, 2, 10, 6]) await steps.nth(i).click();
+  for (const i of [3, 9, 0, 11, 5, 7, 2, 10, 6]) await pickStage(page, i);
   await frames(page, 2);
   const s = await state(page);
   expect(s.stage).toBe(6);
