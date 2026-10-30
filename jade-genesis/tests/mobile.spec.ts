@@ -204,3 +204,15 @@ test('without WebGL 2 the explanation fits the screen', async ({ page }) => {
   expect(card.right).toBeLessThanOrEqual(vp.width);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
+
+test('regular layout (desktop, tablet) keeps the v1 dock', async ({ page }) => {
+  const errors = await boot(page);
+  await page.getByRole('button', { name: '开始旅程' }).click();
+  test.skip(await compact(page), 'phones use the compact dock');
+  await expect(page.locator('.controls .know-btn')).toBeHidden();
+  await expect(page.locator('.controls .more-btn')).toBeHidden();
+  await expect(page.locator('.timeline')).toBeVisible();
+  await expect(page.getByRole('button', { name: '2×', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '重置视角' })).toBeVisible();
+  expect(errors).toEqual([]);
+});

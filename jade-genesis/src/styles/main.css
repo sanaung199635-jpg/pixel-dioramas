@@ -111,7 +111,8 @@ svg .fill { fill: currentColor; stroke: none; }
 /* desktop: the secondary group is laid out inline, in the v1.x order */
 .secondary { display: contents; }
 .controls .speed { order: 4; } .controls .scrub { order: 5; } .controls .torch { order: 6; } .controls .reset { order: 7; }
-.know-btn, .more-btn, .more-h, .nav-grid { display: none; }
+/* (.controls prefix: must outrank `.round { display: grid }` further down) */
+.controls .know-btn, .controls .more-btn, .more-h, .nav-grid { display: none; }
 .round { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--hair); background: transparent; display: grid; place-items: center; flex: none; }
 .round:disabled { opacity: 0.35; cursor: default; }
 .round.primary { background: var(--jade); color: #fff; border-color: transparent; }
@@ -205,11 +206,11 @@ svg .fill { fill: currentColor; stroke: none; }
 /* dock: scrubber on top, then knowledge · prev · play · next · more */
 .ui[data-layout="compact"] .dock { --avoid: bottom; left: var(--edge-l); right: var(--edge-r); bottom: calc(8px + var(--sa-b)); padding: 6px 10px 8px; border-radius: 20px; }
 .ui[data-layout="compact"] .controls { display: grid; gap: 0 4px; align-items: center; grid-template-columns: 44px 1fr 44px 56px 44px 1fr 44px; grid-template-areas: "scrub scrub scrub scrub scrub scrub scrub" "know . prev play next . more"; }
-.ui[data-layout="compact"] .know-btn { display: grid; grid-area: know; }
+.ui[data-layout="compact"] .controls .know-btn { display: grid; grid-area: know; }
 .ui[data-layout="compact"] .controls .prev { grid-area: prev; }
 .ui[data-layout="compact"] .controls .next { grid-area: next; }
 .ui[data-layout="compact"] .controls .play { grid-area: play; width: 56px; height: 56px; }
-.ui[data-layout="compact"] .more-btn { display: grid; grid-area: more; }
+.ui[data-layout="compact"] .controls .more-btn { display: grid; grid-area: more; }
 .ui[data-layout="compact"] .more-btn[aria-expanded="true"], .ui[data-layout="compact"] .know-btn[aria-expanded="true"] { background: var(--hair); }
 .ui[data-layout="compact"] .scrub { grid-area: scrub; padding: 20px 2px 2px; }
 .ui[data-layout="compact"] .scrub input { height: 32px; touch-action: none; }
