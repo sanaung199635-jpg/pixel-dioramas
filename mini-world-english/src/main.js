@@ -6,9 +6,6 @@ import { buildGym } from './gym.js';
 import { buildHome } from './home.js';
 import { buildMarket } from './market.js';
 import { createPhone } from './phone.js';
-import { createBoard } from './board.js';
-import { FOOD_CATS, FOOD_GROUPS, FOOD_WORDS } from './food-data.js';
-import { TRAVEL_CATS, TRAVEL_GROUPS, TRAVEL_WORDS, DINING_CATS, DINING_GROUPS, DINING_WORDS } from './board-data.js';
 import { createTalk } from './talk.js';
 import { WORDS, WORD_BY_ID, CATS, SCENES } from './data.js';
 
@@ -39,7 +36,7 @@ controls.rotateSpeed = 0.55;
 controls.zoomSpeed = 0.9;
 controls.screenSpacePanning = true;
 controls.zoomToCursor = true;
-controls.minZoom = 0.3;
+controls.minZoom = 0.8;
 controls.maxZoom = 5;
 controls.minPolarAngle = THREE.MathUtils.degToRad(18);
 controls.maxPolarAngle = THREE.MathUtils.degToRad(76);
@@ -65,12 +62,7 @@ try {
   if (SCENES[localStorage.getItem(SCENE_KEY)]) sceneId = localStorage.getItem(SCENE_KEY);
 } catch (e) {}
 const sceneOf = (w) => CATS[w.cat].scene;
-let fly = null; // camera glide between islands: { t0, to, zoom }
-// overview = zoomed out far enough to see every island; a click then zooms into one
-const overview = { on: false, zoom: 0.4, target: new THREE.Vector3() };
-const OVERVIEW_BELOW = 0.7;
-const FIT_ALL = [];
-for (const x of [-HALF, GYM_X + HALF]) for (const z of [-HALF, HOME_Z + HALF]) for (const y of [-2.4, 7.2]) FIT_ALL.push(new THREE.Vector3(x, y, z));
+let fly = null; // camera glide between islands
 
 const pixel = new PixelRenderer(renderer, scene, camera);
 pixel.clear.set('#dff1fb');
@@ -127,22 +119,6 @@ function resize() {
   const s = -(p0.x * camDir.x + p0.z * camDir.z) / (camDir.x * camDir.x + camDir.z * camDir.z);
   home.target.copy(p0).addScaledVector(camDir, s);
 
-  // overview: frame every island at once
-  let aX0 = Infinity, aY0 = Infinity, aX1 = -Infinity, aY1 = -Infinity;
-  for (const p of FIT_ALL) {
-    v.copy(p).applyMatrix4(inv);
-    aX0 = Math.min(aX0, v.x); aX1 = Math.max(aX1, v.x);
-    aY0 = Math.min(aY0, v.y); aY1 = Math.max(aY1, v.y);
-  }
-  const ovTop = phone ? 56 : topH;
-  const uppAll = Math.max((aX1 - aX0) / (w * 0.96), (aY1 - aY0) / ((h - 40 - ovTop) * 0.94));
-  overview.zoom = upp / uppAll;
-  const p1 = new THREE.Vector3()
-    .setFromMatrixColumn(tmpCam.matrixWorld, 0)
-    .multiplyScalar((aX0 + aX1) / 2)
-    .addScaledVector(up, (aY0 + aY1) / 2 - ((40 - ovTop) / 2) * uppAll);
-  overview.target.copy(p1).addScaledVector(camDir, -p1.y / camDir.y);
-
   // art-pixel size: ~440 art pixels across the island
   const ps = Math.max(2, Math.round(((bw / upp) * (buf.x / w)) / 440));
   pixel.setSize(buf.x, buf.y, ps);
@@ -152,10 +128,9 @@ function resize() {
   layoutKey = key;
   if (!homeSet) {
     fly = null;
-    if (overview.on) controls.target.copy(overview.target); // stay on the overview across layout changes
-    else controls.target.copy(home.target).add(CENTER[sceneId] || CENTER.park);
+    controls.target.copy(home.target).add(CENTER[sceneId] || CENTER.park);
     camera.position.copy(controls.target).add(home.offset);
-    camera.zoom = overview.on ? overview.zoom : 1;
+    camera.zoom = 1;
     homeSet = true;
   }
   const ex = (pixel.lowW * pixel.pixelSize) / buf.x;
@@ -218,7 +193,7 @@ try {
 const chips = {};
 const bar = $('words');
 // the phone scene is a clickable English phone screen instead of an island
-const panelHooks = {
+const phone = createPhone($('phoneStage'), {
   onPick: (id, el) => (quiz.on ? answerWord(id, el) : selectWord(id, el)),
   onScreen: () => {
     deselect();
@@ -229,25 +204,13 @@ const panelHooks = {
       nextQuestion();
     }
   },
-};
-// scenes that are plain HTML panels instead of 3D islands
-const panels = { phone: createPhone($('phoneStage'), panelHooks) };
-const panelStage = { phone: $('phoneStage') };
-const BOARDS = {
-  food: { cats: FOOD_CATS, groups: FOOD_GROUPS, words: FOOD_WORDS, quizPrompt: '听一听，点出这种食物！' },
-  travel: { cats: TRAVEL_CATS, groups: TRAVEL_GROUPS, words: TRAVEL_WORDS, quizPrompt: '听一听，点出这个旅游单词！' },
-  dining: { cats: DINING_CATS, groups: DINING_GROUPS, words: DINING_WORDS, quizPrompt: '听一听，点出这个餐厅单词！' },
-};
-for (const id in BOARDS) {
-  panels[id] = createBoard($('boards'), BOARDS[id], panelHooks);
-  panelStage[id] = panels[id].stage;
-}
+});
 for (const w of WORDS) {
   const b = document.createElement('button');
   b.className = 'chip';
   b.style.setProperty('--cat', CATS[w.cat].color);
   b.innerHTML = `${w.en}<small>${w.zh.split('；')[0]}</small>`;
-  b.addEventListener('click', () => (panels[sceneOf(w)] ? panels[sceneOf(w)].reveal(w.id) : select(primary[w.id])));
+  b.addEventListener('click', () => (sceneOf(w) === 'phone' ? phone.reveal(w.id) : select(primary[w.id])));
   bar.appendChild(b);
   chips[w.id] = b;
 }
@@ -257,7 +220,7 @@ function renderProgress() {
   $('found').textContent = mine.filter((w) => found.has(w.id)).length;
   for (const w of WORDS) {
     chips[w.id].classList.toggle('found', found.has(w.id));
-    chips[w.id].hidden = sceneOf(w) !== sceneId || (!!panels[sceneId] && !panels[sceneId].screenWords().includes(w.id));
+    chips[w.id].hidden = sceneOf(w) !== sceneId || (sceneId === 'phone' && !phone.screenWords().includes(w.id));
   }
 }
 function markFound(id) {
@@ -272,32 +235,18 @@ renderProgress();
 
 // ---------------------------------------------------------------- scenes
 const sceneTabs = {};
-const allTab = document.createElement('button');
-allTab.innerHTML = '全景<small>All</small>';
-allTab.addEventListener('click', () => goOverview());
-$('scenes').appendChild(allTab);
-const isles = {}; // floating name tags shown over each island in the overview
 for (const id in SCENES) {
   const b = document.createElement('button');
   b.innerHTML = `${SCENES[id].zh}<small>${SCENES[id].en}</small>`;
   b.addEventListener('click', () => setScene(id));
   $('scenes').appendChild(b);
-  if (CENTER[id]) {
-    const tagEl = document.createElement('button');
-    tagEl.className = 'isle';
-    tagEl.innerHTML = `${SCENES[id].zh}<small>${SCENES[id].en}</small><i>${WORDS.filter((w) => sceneOf(w) === id).length} 词</i>`;
-    tagEl.addEventListener('click', () => setScene(id));
-    $('isles').appendChild(tagEl);
-    isles[id] = tagEl;
-  }
   sceneTabs[id] = b;
 }
 function setScene(id, { keep = false } = {}) {
   for (const k in sceneTabs) sceneTabs[k].classList.toggle('active', k === id);
   sceneTabs[id].scrollIntoView({ block: 'nearest', inline: 'center' });
-  document.body.classList.toggle('phone-mode', !!panels[id]);
-  for (const k in panelStage) panelStage[k].hidden = k !== id;
-  if (CENTER[id]) fly = { t0: now, to: home.target.clone().add(CENTER[id]), zoom: 1 }; // zoom into the island
+  document.body.classList.toggle('phone-mode', id === 'phone');
+  $('phoneStage').hidden = id !== 'phone';
   if (id === sceneId) return;
   sceneId = id;
   try {
@@ -306,56 +255,10 @@ function setScene(id, { keep = false } = {}) {
   if (!keep) deselect();
   renderProgress();
   bar.scrollTo(0, 0);
+  if (CENTER[id]) fly = { t0: now, to: home.target.clone().add(CENTER[id]) };
   if (quiz.on) {
     quiz.target = null;
     nextQuestion();
-  }
-}
-
-function goOverview() {
-  if (!CENTER[sceneId]) setScene(lastIsland);
-  if (quiz.on) setQuiz(false);
-  deselect();
-  fly = { t0: now, to: overview.target.clone(), zoom: overview.zoom };
-}
-let lastIsland = 'park';
-function nearestIsland() {
-  let best = sceneId;
-  let bestD = Infinity;
-  for (const id in CENTER) {
-    const d = tmp.copy(home.target).add(CENTER[id]).distanceTo(controls.target);
-    if (d < bestD) [best, bestD] = [id, d];
-  }
-  return best;
-}
-/** keep the overview flag in step with the zoom level (buttons, wheel and pinch all end up here) */
-function syncOverview() {
-  if (CENTER[sceneId]) lastIsland = sceneId;
-  const on = !!CENTER[sceneId] && (fly?.zoom ?? camera.zoom) < Math.min(0.92, Math.max(OVERVIEW_BELOW, overview.zoom * 1.12));
-  if (on !== overview.on) {
-    overview.on = on;
-    document.body.classList.toggle('overview', on);
-    if (on) {
-      if (quiz.on) setQuiz(false);
-      deselect();
-    } else if (!fly && CENTER[sceneId]) {
-      // zoomed in by hand: adopt whichever island is in the middle of the view
-      const id = nearestIsland();
-      if (id !== sceneId) {
-        sceneId = id;
-        try {
-          localStorage.setItem(SCENE_KEY, id);
-        } catch (e) {}
-        renderProgress();
-      }
-    }
-  }
-  allTab.classList.toggle('active', on);
-  for (const k in sceneTabs) sceneTabs[k].classList.toggle('active', !on && k === sceneId);
-  if (!on) return;
-  for (const id in isles) {
-    const [x, y] = toScreen(tmp.copy(CENTER[id]).setY(8.5));
-    isles[id].style.transform = `translate(calc(${x.toFixed(1)}px - 50%), calc(${y.toFixed(1)}px - 100%))`;
   }
 }
 
@@ -369,7 +272,7 @@ let now = 0;
 function select(item, point = null, { say = true } = {}) {
   const word = WORD_BY_ID[item.userData.word];
   if (item.userData.scene !== sceneId) setScene(item.userData.scene, { keep: true });
-  clearPanelHighlight();
+  phone.highlight(null);
   current = { item, word, point: item.userData.flat ? point || item.getWorldPosition(new THREE.Vector3()) : null };
   tag.textContent = word.en;
   tag.hidden = false;
@@ -382,12 +285,8 @@ function selectWord(id, el) {
   const word = WORD_BY_ID[id];
   current = { word, el };
   tag.hidden = true;
-  clearPanelHighlight();
-  panels[sceneId]?.highlight(el);
+  phone.highlight(el);
   openCard(word, true);
-}
-function clearPanelHighlight() {
-  for (const k in panels) panels[k].highlight(null);
 }
 function openCard(word, say) {
   const cat = CATS[word.cat];
@@ -412,7 +311,7 @@ function openCard(word, say) {
 }
 function deselect() {
   current = null;
-  clearPanelHighlight();
+  phone.highlight(null);
   card.classList.remove('open');
   tag.hidden = true;
   for (const id in chips) chips[id].classList.remove('active');
@@ -442,11 +341,11 @@ function setBanner(text, cls = '') {
   }
 }
 function nextQuestion() {
-  const all = panels[sceneId] ? panels[sceneId].screenWords().map((id) => WORD_BY_ID[id]) : WORDS.filter((w) => sceneOf(w) === sceneId);
+  const all = sceneId === 'phone' ? phone.screenWords().map((id) => WORD_BY_ID[id]) : WORDS.filter((w) => sceneOf(w) === sceneId);
   const pool = all.filter((w) => w.id !== quiz.target);
   quiz.target = pool[Math.floor(Math.random() * pool.length)].id;
   quiz.lock = false;
-  setBanner(panels[sceneId] ? panels[sceneId].quizPrompt : `听一听，在${SCENES[sceneId].zh}里找到它！`);
+  setBanner(sceneId === 'phone' ? '听一听，在手机屏幕上点出它！' : `听一听，在${SCENES[sceneId].zh}里找到它！`);
   speak(WORD_BY_ID[quiz.target].en);
 }
 function setQuiz(on) {
@@ -466,7 +365,7 @@ function setQuiz(on) {
   }
 }
 const answer = (item, point) => judge(item.userData.word, () => select(item, point), () => !item.userData.flat && pulses.set(item, now));
-const answerWord = (id, el) => judge(id, () => selectWord(id, el), () => panels[sceneId].shake(el));
+const answerWord = (id, el) => judge(id, () => selectWord(id, el), () => phone.shake(el));
 function judge(gotId, onRight, onWrong) {
   if (quiz.lock) return;
   const target = WORD_BY_ID[quiz.target];
@@ -527,7 +426,6 @@ canvas.addEventListener('pointerup', (e) => {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > 7 || performance.now() - p.t > 600) return;
   const hit = pick(e);
-  if (overview.on) return void (hit && setScene(hit.item.userData.scene)); // overview: a click zooms into that island
   if (!hit) return quiz.on ? undefined : deselect();
   if (quiz.on) answer(hit.item, hit.point);
   else select(hit.item, hit.point);
@@ -576,10 +474,6 @@ function frame() {
     tmp.copy(fly.to).sub(controls.target).multiplyScalar(k < 1 ? Math.min(1, e * 0.25 + 0.04) : 1);
     controls.target.add(tmp);
     camera.position.add(tmp);
-    if (fly.zoom) {
-      camera.zoom = k < 1 ? camera.zoom + (fly.zoom - camera.zoom) * Math.min(1, e * 0.25 + 0.04) : fly.zoom;
-      camera.updateProjectionMatrix();
-    }
     if (k >= 1) fly = null;
   }
   controls.update();
@@ -595,8 +489,7 @@ function frame() {
       item.scale.setScalar(base * (1 + 0.32 * Math.sin(k * Math.PI * 3) * (1 - k)));
     }
   }
-  syncOverview();
-  if (!panels[sceneId]) pixel.render(); // panel scenes are plain HTML
+  if (sceneId !== 'phone') pixel.render(); // the phone scene is plain HTML
   placeTag();
   requestAnimationFrame(frame);
 }
@@ -605,8 +498,7 @@ window.addEventListener('resize', resize);
 new ResizeObserver(() => resize()).observe(canvas);
 resize();
 setScene(sceneId);
-if (CENTER[sceneId]) goOverview(); // start on the overview of all the mini worlds
 requestAnimationFrame(frame);
 
 // debugging / automated checks
-window.__miniWorld = { overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, panels, phone: panels.phone, food: panels.food, talk };
+window.__miniWorld = { items, primary, select, camera, quiz, toScreen, setScene, phone, talk };
