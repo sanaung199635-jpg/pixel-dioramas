@@ -6,6 +6,7 @@ import { buildGym } from './gym.js';
 import { buildHome } from './home.js';
 import { buildMarket } from './market.js';
 import { createPhone } from './phone.js';
+import { createFood } from './food.js';
 import { createTalk } from './talk.js';
 import { WORDS, WORD_BY_ID, CATS, SCENES } from './data.js';
 
@@ -215,7 +216,7 @@ try {
 const chips = {};
 const bar = $('words');
 // the phone scene is a clickable English phone screen instead of an island
-const phone = createPhone($('phoneStage'), {
+const panelHooks = {
   onPick: (id, el) => (quiz.on ? answerWord(id, el) : selectWord(id, el)),
   onScreen: () => {
     deselect();
@@ -226,13 +227,16 @@ const phone = createPhone($('phoneStage'), {
       nextQuestion();
     }
   },
-});
+};
+// scenes that are plain HTML panels instead of 3D islands
+const panels = { phone: createPhone($('phoneStage'), panelHooks), food: createFood($('foodStage'), panelHooks) };
+const panelStage = { phone: $('phoneStage'), food: $('foodStage') };
 for (const w of WORDS) {
   const b = document.createElement('button');
   b.className = 'chip';
   b.style.setProperty('--cat', CATS[w.cat].color);
   b.innerHTML = `${w.en}<small>${w.zh.split('；')[0]}</small>`;
-  b.addEventListener('click', () => (sceneOf(w) === 'phone' ? phone.reveal(w.id) : select(primary[w.id])));
+  b.addEventListener('click', () => (panels[sceneOf(w)] ? panels[sceneOf(w)].reveal(w.id) : select(primary[w.id])));
   bar.appendChild(b);
   chips[w.id] = b;
 }
@@ -242,7 +246,7 @@ function renderProgress() {
   $('found').textContent = mine.filter((w) => found.has(w.id)).length;
   for (const w of WORDS) {
     chips[w.id].classList.toggle('found', found.has(w.id));
-    chips[w.id].hidden = sceneOf(w) !== sceneId || (sceneId === 'phone' && !phone.screenWords().includes(w.id));
+    chips[w.id].hidden = sceneOf(w) !== sceneId || (!!panels[sceneId] && !panels[sceneId].screenWords().includes(w.id));
   }
 }
 function markFound(id) {
@@ -280,8 +284,8 @@ for (const id in SCENES) {
 function setScene(id, { keep = false } = {}) {
   for (const k in sceneTabs) sceneTabs[k].classList.toggle('active', k === id);
   sceneTabs[id].scrollIntoView({ block: 'nearest', inline: 'center' });
-  document.body.classList.toggle('phone-mode', id === 'phone');
-  $('phoneStage').hidden = id !== 'phone';
+  document.body.classList.toggle('phone-mode', !!panels[id]);
+  for (const k in panelStage) panelStage[k].hidden = k !== id;
   if (CENTER[id]) fly = { t0: now, to: home.target.clone().add(CENTER[id]), zoom: 1 }; // zoom into the island
   if (id === sceneId) return;
   sceneId = id;
@@ -354,7 +358,7 @@ let now = 0;
 function select(item, point = null, { say = true } = {}) {
   const word = WORD_BY_ID[item.userData.word];
   if (item.userData.scene !== sceneId) setScene(item.userData.scene, { keep: true });
-  phone.highlight(null);
+  clearPanelHighlight();
   current = { item, word, point: item.userData.flat ? point || item.getWorldPosition(new THREE.Vector3()) : null };
   tag.textContent = word.en;
   tag.hidden = false;
@@ -367,8 +371,12 @@ function selectWord(id, el) {
   const word = WORD_BY_ID[id];
   current = { word, el };
   tag.hidden = true;
-  phone.highlight(el);
+  clearPanelHighlight();
+  panels[sceneId]?.highlight(el);
   openCard(word, true);
+}
+function clearPanelHighlight() {
+  for (const k in panels) panels[k].highlight(null);
 }
 function openCard(word, say) {
   const cat = CATS[word.cat];
@@ -393,7 +401,7 @@ function openCard(word, say) {
 }
 function deselect() {
   current = null;
-  phone.highlight(null);
+  clearPanelHighlight();
   card.classList.remove('open');
   tag.hidden = true;
   for (const id in chips) chips[id].classList.remove('active');
@@ -423,11 +431,11 @@ function setBanner(text, cls = '') {
   }
 }
 function nextQuestion() {
-  const all = sceneId === 'phone' ? phone.screenWords().map((id) => WORD_BY_ID[id]) : WORDS.filter((w) => sceneOf(w) === sceneId);
+  const all = panels[sceneId] ? panels[sceneId].screenWords().map((id) => WORD_BY_ID[id]) : WORDS.filter((w) => sceneOf(w) === sceneId);
   const pool = all.filter((w) => w.id !== quiz.target);
   quiz.target = pool[Math.floor(Math.random() * pool.length)].id;
   quiz.lock = false;
-  setBanner(sceneId === 'phone' ? '听一听，在手机屏幕上点出它！' : `听一听，在${SCENES[sceneId].zh}里找到它！`);
+  setBanner(panels[sceneId] ? panels[sceneId].quizPrompt : `听一听，在${SCENES[sceneId].zh}里找到它！`);
   speak(WORD_BY_ID[quiz.target].en);
 }
 function setQuiz(on) {
@@ -447,7 +455,7 @@ function setQuiz(on) {
   }
 }
 const answer = (item, point) => judge(item.userData.word, () => select(item, point), () => !item.userData.flat && pulses.set(item, now));
-const answerWord = (id, el) => judge(id, () => selectWord(id, el), () => phone.shake(el));
+const answerWord = (id, el) => judge(id, () => selectWord(id, el), () => panels[sceneId].shake(el));
 function judge(gotId, onRight, onWrong) {
   if (quiz.lock) return;
   const target = WORD_BY_ID[quiz.target];
@@ -577,7 +585,7 @@ function frame() {
     }
   }
   syncOverview();
-  if (sceneId !== 'phone') pixel.render(); // the phone scene is plain HTML
+  if (!panels[sceneId]) pixel.render(); // panel scenes are plain HTML
   placeTag();
   requestAnimationFrame(frame);
 }
@@ -590,4 +598,4 @@ if (CENTER[sceneId]) goOverview(); // start on the overview of all the mini worl
 requestAnimationFrame(frame);
 
 // debugging / automated checks
-window.__miniWorld = { overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, phone, talk };
+window.__miniWorld = { overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, phone: panels.phone, food: panels.food, talk };

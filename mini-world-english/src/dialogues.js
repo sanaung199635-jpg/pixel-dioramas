@@ -103,6 +103,19 @@ export const DIALOGUES = [
     ],
   },
   {
+    id: 'butcher', scene: 'food', zh: '买菜买肉', en: 'Buying Meat and Vegetables', icon: '🥩', roles: { A: 'Customer', B: 'Seller' },
+    lines: [
+      ['A', 'Hi! Is this beef fresh?', '你好！这牛肉新鲜吗？'],
+      ['B', 'Yes, it came in this morning.', '新鲜，今天早上刚到的。'],
+      ['A', 'How much is it per kilo?', '多少钱一公斤？'],
+      ['B', 'Twelve dollars a kilo.', '十二美元一公斤。'],
+      ['A', "I'll take half a kilo, please. Can you slice it for me?", '我要半公斤。可以帮我切片吗？'],
+      ['B', 'Sure. Anything else?', '可以。还要别的吗？'],
+      ['A', 'Two tomatoes, some garlic, and a dozen eggs.', '两个西红柿、一点大蒜，还有一打鸡蛋。'],
+      ['B', "Here you go. That's eighteen dollars in total.", '给你。一共十八美元。'],
+    ],
+  },
+  {
     id: 'restaurant', zh: '餐厅点餐', en: 'At a Restaurant', icon: '🍽️', roles: { A: 'Waiter', B: 'Customer' },
     lines: [
       ['A', 'Good evening. A table for two?', '晚上好。两位吗？'],
