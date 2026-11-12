@@ -272,6 +272,6 @@ export function createPhone(stage, { onPick, onScreen }) {
       el.classList.add('shake');
     },
     screenWords: () => pages[idx].words,
-    quizPrompt: '听一听，在手机屏幕上点出它！',
+    allWords: () => [...new Set(pages.flatMap((p) => p.words))],
   };
 }
