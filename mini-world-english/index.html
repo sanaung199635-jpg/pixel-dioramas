@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>迷你小世界 · Mini World English</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <section class="phone-stage" id="phoneStage" hidden>
+    <nav class="ph-tabs" id="phTabs" aria-label="手机界面"></nav>
+    <div class="ph-device"><div class="ph-screen" id="phScreen"></div></div>
+  </section>
+
+  <header class="hud">
+    <div class="brand"><span class="dot"></span>MINI WORLD<em>迷你小世界 · 点一点学英语</em></div>
+    <div class="scenes" id="scenes" role="tablist" aria-label="场景"></div>
+    <div class="hud-right">
+      <div class="progress" id="progress" title="已发现的单词"><b id="found">0</b>/<span id="total">0</span><span class="plabel"> 已发现</span></div>
+      <button class="pill" id="quizBtn"><span class="full">听音找物</span><span class="short">测验</span></button>
+      <button class="pill" id="talkBtn"><span class="full">情景对话</span><span class="short">对话</span></button>
+    </div>
+  </header>
+
+  <div class="banner" id="banner" hidden>
+    <span class="banner-text" id="bannerText"></span>
+    <button id="quizReplay">再听一次</button>
+    <button id="quizHint">提示</button>
+    <span class="score">得分 <b id="quizScore">0</b></span>
+    <button id="quizExit">退出</button>
+  </div>
+
+  <div class="tag" id="tag" hidden></div>
+
+  <aside class="card" id="card" aria-live="polite">
+    <button class="card-close" id="cardClose" aria-label="关闭">
+      <svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 6l12 12M18 6L6 18" /></svg>
+    </button>
+    <div class="card-kicker" id="cKicker"></div>
+    <div class="card-head">
+      <h2 class="card-word" id="cWord"></h2>
+      <div class="card-zh" id="cZh"></div>
+    </div>
+    <div class="ipa-row">
+      <button class="say" data-say="us"><i>美</i><span id="cUs"></span><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" /></svg></button>
+      <button class="say" data-say="uk"><i>英</i><span id="cUk"></span><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" /></svg></button>
+      <button class="say slow" data-say="slow">慢速</button>
+    </div>
+    <div class="card-ex">
+      <button class="say ex" data-say="ex"><span id="cEx"></span><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" /></svg></button>
+      <p id="cExZh"></p>
+    </div>
+    <p class="card-use" id="cUse" hidden><b>用途</b><span id="cUseText"></span></p>
+    <p class="card-note" id="cNote" hidden></p>
+    <p class="card-warn" id="cWarn" hidden>这个浏览器不支持语音朗读，请换用 Chrome / Edge / Safari。</p>
+  </aside>
+
+  <p class="hint" id="hint">点击任何东西学单词 · 拖动旋转 · 滚轮缩放</p>
+
+  <nav class="words" id="words" aria-label="单词表"></nav>
+
+  <div class="talk" id="talk" hidden>
+    <div class="talk-box" role="dialog" aria-label="情景对话">
+      <header><b>情景对话</b><span>点一句听一句，或播放整段</span>
+        <button class="card-close" id="talkClose" aria-label="关闭"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+      </header>
+      <nav id="talkList" aria-label="对话列表"></nav>
+      <section>
+        <h3 id="talkTitle"></h3>
+        <div class="talk-tools"><button id="talkPlay">▶ 播放全部</button><button id="talkSlow">慢速</button><button id="talkZh" class="on">中文：显示</button></div>
+        <div id="talkLines"></div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
