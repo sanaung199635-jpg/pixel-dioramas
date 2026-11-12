@@ -36,7 +36,7 @@ controls.rotateSpeed = 0.55;
 controls.zoomSpeed = 0.9;
 controls.screenSpacePanning = true;
 controls.zoomToCursor = true;
-controls.minZoom = 0.3;
+controls.minZoom = 0.8;
 controls.maxZoom = 5;
 controls.minPolarAngle = THREE.MathUtils.degToRad(18);
 controls.maxPolarAngle = THREE.MathUtils.degToRad(76);
@@ -62,12 +62,7 @@ try {
   if (SCENES[localStorage.getItem(SCENE_KEY)]) sceneId = localStorage.getItem(SCENE_KEY);
 } catch (e) {}
 const sceneOf = (w) => CATS[w.cat].scene;
-let fly = null; // camera glide between islands: { t0, to, zoom }
-// overview = zoomed out far enough to see every island; a click then zooms into one
-const overview = { on: false, zoom: 0.4, target: new THREE.Vector3() };
-const OVERVIEW_BELOW = 0.7;
-const FIT_ALL = [];
-for (const x of [-HALF, GYM_X + HALF]) for (const z of [-HALF, HOME_Z + HALF]) for (const y of [-2.4, 7.2]) FIT_ALL.push(new THREE.Vector3(x, y, z));
+let fly = null; // camera glide between islands
 
 const pixel = new PixelRenderer(renderer, scene, camera);
 pixel.clear.set('#dff1fb');
@@ -124,22 +119,6 @@ function resize() {
   const s = -(p0.x * camDir.x + p0.z * camDir.z) / (camDir.x * camDir.x + camDir.z * camDir.z);
   home.target.copy(p0).addScaledVector(camDir, s);
 
-  // overview: frame every island at once
-  let aX0 = Infinity, aY0 = Infinity, aX1 = -Infinity, aY1 = -Infinity;
-  for (const p of FIT_ALL) {
-    v.copy(p).applyMatrix4(inv);
-    aX0 = Math.min(aX0, v.x); aX1 = Math.max(aX1, v.x);
-    aY0 = Math.min(aY0, v.y); aY1 = Math.max(aY1, v.y);
-  }
-  const ovTop = phone ? 56 : topH;
-  const uppAll = Math.max((aX1 - aX0) / (w * 0.96), (aY1 - aY0) / ((h - 40 - ovTop) * 0.94));
-  overview.zoom = upp / uppAll;
-  const p1 = new THREE.Vector3()
-    .setFromMatrixColumn(tmpCam.matrixWorld, 0)
-    .multiplyScalar((aX0 + aX1) / 2)
-    .addScaledVector(up, (aY0 + aY1) / 2 - ((40 - ovTop) / 2) * uppAll);
-  overview.target.copy(p1).addScaledVector(camDir, -p1.y / camDir.y);
-
   // art-pixel size: ~440 art pixels across the island
   const ps = Math.max(2, Math.round(((bw / upp) * (buf.x / w)) / 440));
   pixel.setSize(buf.x, buf.y, ps);
@@ -149,10 +128,9 @@ function resize() {
   layoutKey = key;
   if (!homeSet) {
     fly = null;
-    if (overview.on) controls.target.copy(overview.target); // stay on the overview across layout changes
-    else controls.target.copy(home.target).add(CENTER[sceneId] || CENTER.park);
+    controls.target.copy(home.target).add(CENTER[sceneId] || CENTER.park);
     camera.position.copy(controls.target).add(home.offset);
-    camera.zoom = overview.on ? overview.zoom : 1;
+    camera.zoom = 1;
     homeSet = true;
   }
   const ex = (pixel.lowW * pixel.pixelSize) / buf.x;
@@ -257,24 +235,11 @@ renderProgress();
 
 // ---------------------------------------------------------------- scenes
 const sceneTabs = {};
-const allTab = document.createElement('button');
-allTab.innerHTML = '全景<small>All</small>';
-allTab.addEventListener('click', () => goOverview());
-$('scenes').appendChild(allTab);
-const isles = {}; // floating name tags shown over each island in the overview
 for (const id in SCENES) {
   const b = document.createElement('button');
   b.innerHTML = `${SCENES[id].zh}<small>${SCENES[id].en}</small>`;
   b.addEventListener('click', () => setScene(id));
   $('scenes').appendChild(b);
-  if (CENTER[id]) {
-    const tagEl = document.createElement('button');
-    tagEl.className = 'isle';
-    tagEl.innerHTML = `${SCENES[id].zh}<small>${SCENES[id].en}</small><i>${WORDS.filter((w) => sceneOf(w) === id).length} 词</i>`;
-    tagEl.addEventListener('click', () => setScene(id));
-    $('isles').appendChild(tagEl);
-    isles[id] = tagEl;
-  }
   sceneTabs[id] = b;
 }
 function setScene(id, { keep = false } = {}) {
@@ -282,7 +247,6 @@ function setScene(id, { keep = false } = {}) {
   sceneTabs[id].scrollIntoView({ block: 'nearest', inline: 'center' });
   document.body.classList.toggle('phone-mode', id === 'phone');
   $('phoneStage').hidden = id !== 'phone';
-  if (CENTER[id]) fly = { t0: now, to: home.target.clone().add(CENTER[id]), zoom: 1 }; // zoom into the island
   if (id === sceneId) return;
   sceneId = id;
   try {
@@ -291,56 +255,10 @@ function setScene(id, { keep = false } = {}) {
   if (!keep) deselect();
   renderProgress();
   bar.scrollTo(0, 0);
+  if (CENTER[id]) fly = { t0: now, to: home.target.clone().add(CENTER[id]) };
   if (quiz.on) {
     quiz.target = null;
     nextQuestion();
-  }
-}
-
-function goOverview() {
-  if (!CENTER[sceneId]) setScene(lastIsland);
-  if (quiz.on) setQuiz(false);
-  deselect();
-  fly = { t0: now, to: overview.target.clone(), zoom: overview.zoom };
-}
-let lastIsland = 'park';
-function nearestIsland() {
-  let best = sceneId;
-  let bestD = Infinity;
-  for (const id in CENTER) {
-    const d = tmp.copy(home.target).add(CENTER[id]).distanceTo(controls.target);
-    if (d < bestD) [best, bestD] = [id, d];
-  }
-  return best;
-}
-/** keep the overview flag in step with the zoom level (buttons, wheel and pinch all end up here) */
-function syncOverview() {
-  if (CENTER[sceneId]) lastIsland = sceneId;
-  const on = !!CENTER[sceneId] && (fly?.zoom ?? camera.zoom) < Math.min(0.92, Math.max(OVERVIEW_BELOW, overview.zoom * 1.12));
-  if (on !== overview.on) {
-    overview.on = on;
-    document.body.classList.toggle('overview', on);
-    if (on) {
-      if (quiz.on) setQuiz(false);
-      deselect();
-    } else if (!fly && CENTER[sceneId]) {
-      // zoomed in by hand: adopt whichever island is in the middle of the view
-      const id = nearestIsland();
-      if (id !== sceneId) {
-        sceneId = id;
-        try {
-          localStorage.setItem(SCENE_KEY, id);
-        } catch (e) {}
-        renderProgress();
-      }
-    }
-  }
-  allTab.classList.toggle('active', on);
-  for (const k in sceneTabs) sceneTabs[k].classList.toggle('active', !on && k === sceneId);
-  if (!on) return;
-  for (const id in isles) {
-    const [x, y] = toScreen(tmp.copy(CENTER[id]).setY(8.5));
-    isles[id].style.transform = `translate(calc(${x.toFixed(1)}px - 50%), calc(${y.toFixed(1)}px - 100%))`;
   }
 }
 
@@ -508,7 +426,6 @@ canvas.addEventListener('pointerup', (e) => {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > 7 || performance.now() - p.t > 600) return;
   const hit = pick(e);
-  if (overview.on) return void (hit && setScene(hit.item.userData.scene)); // overview: a click zooms into that island
   if (!hit) return quiz.on ? undefined : deselect();
   if (quiz.on) answer(hit.item, hit.point);
   else select(hit.item, hit.point);
@@ -557,10 +474,6 @@ function frame() {
     tmp.copy(fly.to).sub(controls.target).multiplyScalar(k < 1 ? Math.min(1, e * 0.25 + 0.04) : 1);
     controls.target.add(tmp);
     camera.position.add(tmp);
-    if (fly.zoom) {
-      camera.zoom = k < 1 ? camera.zoom + (fly.zoom - camera.zoom) * Math.min(1, e * 0.25 + 0.04) : fly.zoom;
-      camera.updateProjectionMatrix();
-    }
     if (k >= 1) fly = null;
   }
   controls.update();
@@ -576,7 +489,6 @@ function frame() {
       item.scale.setScalar(base * (1 + 0.32 * Math.sin(k * Math.PI * 3) * (1 - k)));
     }
   }
-  syncOverview();
   if (sceneId !== 'phone') pixel.render(); // the phone scene is plain HTML
   placeTag();
   requestAnimationFrame(frame);
@@ -586,8 +498,7 @@ window.addEventListener('resize', resize);
 new ResizeObserver(() => resize()).observe(canvas);
 resize();
 setScene(sceneId);
-if (CENTER[sceneId]) goOverview(); // start on the overview of all the mini worlds
 requestAnimationFrame(frame);
 
 // debugging / automated checks
-window.__miniWorld = { overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, phone, talk };
+window.__miniWorld = { items, primary, select, camera, quiz, toScreen, setScene, phone, talk };
