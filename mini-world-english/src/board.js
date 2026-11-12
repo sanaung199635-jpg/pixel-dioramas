@@ -1,15 +1,21 @@
-// Stand-alone Food scene: a board of picture tiles, one page per food category.
-// Same small interface as the phone scene so the app can treat both alike.
-import { FOOD_CATS, FOOD_GROUPS, FOOD_WORDS } from './food-data.js';
+// Picture-board scenes (Food, Travel, Restaurant): tabs of emoji tiles, one page per category.
+// Exposes the same small interface as the phone scene so the app treats every panel alike.
 
 const tile = (w) =>
   `<button class="ft" data-w="${w.id}"><span class="fe">${w.emoji}${w.badge ? `<i>${w.badge}</i>` : ''}</span><span class="fn">${w.en}</span><span class="fz">${w.zh.split('；')[0]}</span></button>`;
 
-export function createFood(stage, { onPick, onScreen }) {
-  const tabsEl = stage.querySelector('#foodTabs');
-  const boardEl = stage.querySelector('#foodBoard');
-  const zhBtn = stage.querySelector('#foodZh');
-  const pages = Object.keys(FOOD_CATS).map((cat) => ({ cat, ...FOOD_CATS[cat], words: FOOD_WORDS.filter((w) => w.cat === cat) }));
+/** cfg: { cats, groups, words, quizPrompt } */
+export function createBoard(host, cfg, { onPick, onScreen }) {
+  const stage = document.createElement('section');
+  stage.className = 'food-stage';
+  stage.hidden = true;
+  stage.innerHTML =
+    '<div class="food-top"><nav class="food-tabs" aria-label="分类"></nav><button class="food-zh on">中文：显示</button></div><div class="food-board"></div>';
+  host.appendChild(stage);
+  const tabsEl = stage.querySelector('.food-tabs');
+  const boardEl = stage.querySelector('.food-board');
+  const zhBtn = stage.querySelector('.food-zh');
+  const pages = Object.keys(cfg.cats).map((cat) => ({ cat, ...cfg.cats[cat], words: cfg.words.filter((w) => w.cat === cat) }));
   let idx = -1;
 
   const tabs = pages.map((p, i) => {
@@ -25,12 +31,12 @@ export function createFood(stage, { onPick, onScreen }) {
     if (i === idx) return;
     idx = i;
     const p = pages[i];
-    // words that share a group get a small heading (Meat / Seafood, Staples / Protein Foods)
+    // words that share a group get a small heading (e.g. Meat / Seafood)
     const groups = [...new Set(p.words.map((w) => w.group))];
     boardEl.style.setProperty('--cat', p.color);
     boardEl.innerHTML = groups
       .map((g) => {
-        const head = FOOD_GROUPS[g] ? `<h3>${FOOD_GROUPS[g].en}<small>${FOOD_GROUPS[g].zh}</small></h3>` : '';
+        const head = cfg.groups[g] ? `<h3>${cfg.groups[g].en}<small>${cfg.groups[g].zh}</small></h3>` : '';
         return `${head}<div class="fgrid">${p.words.filter((w) => w.group === g).map(tile).join('')}</div>`;
       })
       .join('');
@@ -51,6 +57,7 @@ export function createFood(stage, { onPick, onScreen }) {
   show(0, true);
 
   return {
+    stage,
     reveal(id) {
       const i = pages.findIndex((p) => p.words.some((w) => w.id === id));
       if (i < 0) return;
@@ -69,6 +76,6 @@ export function createFood(stage, { onPick, onScreen }) {
       el.classList.add('shake');
     },
     screenWords: () => pages[idx].words.map((w) => w.id),
-    quizPrompt: '听一听，点出这种食物！',
+    quizPrompt: cfg.quizPrompt,
   };
 }

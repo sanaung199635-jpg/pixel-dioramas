@@ -397,3 +397,12 @@ body.overview:not(.phone-mode) .isles { display: block; }
   .ft .fe { font-size: 36px; }
   .ft .fn { font-size: 13.5px; }
 }
+
+/* panels are later in the page than the card and the quiz banner, so lift those above them */
+.card { z-index: 6; }
+.banner { z-index: 7; }
+.hud { z-index: 5; }
+.brand { flex: none; white-space: nowrap; }
+@media (max-width: 1500px) {
+  .brand em { display: none; }
+}

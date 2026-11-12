@@ -6,7 +6,9 @@ import { buildGym } from './gym.js';
 import { buildHome } from './home.js';
 import { buildMarket } from './market.js';
 import { createPhone } from './phone.js';
-import { createFood } from './food.js';
+import { createBoard } from './board.js';
+import { FOOD_CATS, FOOD_GROUPS, FOOD_WORDS } from './food-data.js';
+import { TRAVEL_CATS, TRAVEL_GROUPS, TRAVEL_WORDS, DINING_CATS, DINING_GROUPS, DINING_WORDS } from './board-data.js';
 import { createTalk } from './talk.js';
 import { WORDS, WORD_BY_ID, CATS, SCENES } from './data.js';
 
@@ -229,8 +231,17 @@ const panelHooks = {
   },
 };
 // scenes that are plain HTML panels instead of 3D islands
-const panels = { phone: createPhone($('phoneStage'), panelHooks), food: createFood($('foodStage'), panelHooks) };
-const panelStage = { phone: $('phoneStage'), food: $('foodStage') };
+const panels = { phone: createPhone($('phoneStage'), panelHooks) };
+const panelStage = { phone: $('phoneStage') };
+const BOARDS = {
+  food: { cats: FOOD_CATS, groups: FOOD_GROUPS, words: FOOD_WORDS, quizPrompt: '听一听，点出这种食物！' },
+  travel: { cats: TRAVEL_CATS, groups: TRAVEL_GROUPS, words: TRAVEL_WORDS, quizPrompt: '听一听，点出这个旅游单词！' },
+  dining: { cats: DINING_CATS, groups: DINING_GROUPS, words: DINING_WORDS, quizPrompt: '听一听，点出这个餐厅单词！' },
+};
+for (const id in BOARDS) {
+  panels[id] = createBoard($('boards'), BOARDS[id], panelHooks);
+  panelStage[id] = panels[id].stage;
+}
 for (const w of WORDS) {
   const b = document.createElement('button');
   b.className = 'chip';
@@ -598,4 +609,4 @@ if (CENTER[sceneId]) goOverview(); // start on the overview of all the mini worl
 requestAnimationFrame(frame);
 
 // debugging / automated checks
-window.__miniWorld = { overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, phone: panels.phone, food: panels.food, talk };
+window.__miniWorld = { overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, panels, phone: panels.phone, food: panels.food, talk };
