@@ -132,6 +132,7 @@ export function person(g, { shirt, pants, hair, apron }) {
 export function buildMarket({ root, item: baseItem, updaters }) {
   const shop = new THREE.Group();
   shop.position.set(GYM_X, 0, HOME_Z);
+  shop.userData.island = 'market';
   root.add(shop);
   const item = (word, x, z, opts = {}) => baseItem(word, x, z, { ...opts, parent: shop, scene: 'market' });
 

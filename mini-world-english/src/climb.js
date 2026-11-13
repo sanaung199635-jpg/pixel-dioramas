@@ -23,6 +23,7 @@ const HOLD_COLORS = [RED, BLUE, GREEN, PURPLE, ORANGE, PINK, '#35b5a4', K];
 export function buildClimb({ root, item: baseItem, updaters, R }) {
   const gym = new THREE.Group();
   gym.position.set(SPORT_X, 0, 0);
+  gym.userData.island = 'climb';
   root.add(gym);
   const item = (word, x, z, opts = {}) => baseItem(word, x, z, { ...opts, parent: gym, scene: 'climb' });
 

@@ -25,6 +25,7 @@
   <header class="hud">
     <div class="brand"><span class="dot"></span>MINI WORLD<em>迷你小世界 · 点一点学英语</em></div>
     <div class="scenes" id="scenes" role="tablist" aria-label="场景"></div>
+    <button class="pill scene-btn" id="sceneBtn" aria-label="选择场景"><span id="sceneBtnText">场景</span><i>▾</i></button>
     <div class="hud-right">
       <div class="progress" id="progress" title="已发现的单词"><b id="found">0</b>/<span id="total">0</span><span class="plabel"> 已发现</span></div>
       <button class="pill" id="quizBtn"><span class="full">听音找物</span><span class="short">测验</span></button>
@@ -87,6 +88,14 @@
     </div>
   </div>
 
+  <div class="talk" id="sceneSheet" hidden>
+    <div class="scene-sheet" role="dialog" aria-label="选择场景">
+      <header><b>选择场景</b>
+        <button class="card-close" id="sceneSheetClose" aria-label="关闭"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+      </header>
+      <div class="scene-grid" id="sceneGrid"></div>
+    </div>
+  </div>
   <div class="talk" id="walkman" hidden>
     <div class="talk-box wm-box" role="dialog" aria-label="随身听">
       <header><b>🎧 随身听</b><span>中英双语音频，戴上耳机、锁屏也能听</span>

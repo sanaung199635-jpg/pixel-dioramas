@@ -30,6 +30,7 @@ const HITBOX = {
 export function buildHome({ root, item: baseItem, updaters, R }) {
   const home = new THREE.Group();
   home.position.set(0, 0, HOME_Z);
+  home.userData.island = 'home';
   root.add(home);
   const item = (word, x, z, opts = {}) => baseItem(word, x, z, { hitBox: HITBOX[word], ...opts, parent: home, scene: 'home' });
 
