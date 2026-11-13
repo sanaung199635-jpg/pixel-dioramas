@@ -45,6 +45,9 @@ export function buildWorld(root, extraBuilders = []) {
   const updaters = [];
   const primary = {};
   const R = rng(7);
+  const park = new THREE.Group();
+  park.userData.island = 'park';
+  root.add(park);
 
   /** opts: labelY (tag height), flat (no bounce, tag at click point), hit [radius, y] / hitBox [w, h, d] invisible click helpers */
   function item(word, x, z, opts = {}) {
@@ -66,7 +69,7 @@ export function buildWorld(root, extraBuilders = []) {
       h.visible = false;
       g.add(h);
     }
-    (opts.parent || root).add(g);
+    (opts.parent || park).add(g);
     items.push(g);
     if (!primary[word]) primary[word] = g;
     return g;
@@ -74,7 +77,7 @@ export function buildWorld(root, extraBuilders = []) {
 
   // ------------------------------------------------------------------ ground
   const soil = new THREE.Group();
-  root.add(soil);
+  park.add(soil);
   box(HALF * 2, 1.5, HALF * 2, '#9a6b42', 0, -1.15, 0, soil);
   box(HALF * 2, 0.5, HALF * 2, '#7a5232', 0, -2.15, 0, soil);
 

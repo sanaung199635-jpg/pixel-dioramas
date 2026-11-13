@@ -19,6 +19,7 @@ const CZ = -1.6; // court centre line (z)
 export function buildTennis({ root, item: baseItem, updaters }) {
   const isle = new THREE.Group();
   isle.position.set(SPORT_X, 0, HOME_Z);
+  isle.userData.island = 'tennis';
   root.add(isle);
   const item = (word, x, z, opts = {}) => baseItem(word, x, z, { ...opts, parent: isle, scene: 'tennis' });
   /** invisible, wider click strip so thin court lines are easy to hit */

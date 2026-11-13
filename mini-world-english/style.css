@@ -466,3 +466,30 @@ body.overview:not(.phone-mode) .isles { display: block; }
   .wm-ctl { justify-content: center; flex-wrap: wrap; }
   .wm-pill { right: 8px; bottom: calc(var(--bar-h) + 20px); }
 }
+
+/* ================================================================ scene picker (replaces the tab row when it does not fit) */
+.scene-btn { display: none; margin-right: auto; font-size: 14px; gap: 8px; max-width: 100%; min-width: 0; }
+.scene-btn span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scene-btn i { font-style: normal; font-size: 11px; opacity: 0.6; }
+.scene-sheet { width: min(560px, 100%); max-height: 100%; display: flex; flex-direction: column; border-radius: 22px; background: #fff; box-shadow: var(--shadow); overflow: hidden; }
+.scene-sheet header { position: relative; padding: 15px 56px 13px 20px; border-bottom: 1px solid var(--line); font-size: 17px; }
+.scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; padding: 14px; overflow: auto; }
+.scene-grid button { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; padding: 11px 12px; border-radius: 16px; background: #f4f7f9; border: 2px solid transparent; text-align: left; }
+.scene-grid button span { grid-row: span 2; font-size: 26px; }
+.scene-grid button b { font-size: 15px; }
+.scene-grid button small { font-size: 12px; color: var(--muted); }
+.scene-grid button i { grid-column: 2; font-style: normal; font-size: 11px; color: var(--muted); }
+.scene-grid button:hover { background: #eaf0f4; }
+.scene-grid button.active { border-color: var(--accent); background: #fff; }
+@media (max-width: 1240px) {
+  .scenes { display: none; }
+  .scene-btn { display: inline-flex; }
+}
+@media (max-width: 760px) {
+  .hud { gap: 6px; }
+  .hud-right { gap: 6px; }
+  .scene-btn { flex: 1 1 auto; justify-content: space-between; }
+  .scene-grid { grid-template-columns: repeat(2, 1fr); padding: 10px; }
+  .scene-grid button { padding: 10px; }
+  .scene-grid button span { font-size: 22px; }
+}

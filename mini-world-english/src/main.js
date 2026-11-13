@@ -276,6 +276,23 @@ function markFound(id) {
 renderProgress();
 
 // ---------------------------------------------------------------- scenes
+const SCENE_ICON = { all: '🗺️', park: '🌳', gym: '🏋️', home: '🏠', market: '🛒', climb: '🧗', tennis: '🎾', phone: '📱', food: '🍎', travel: '✈️', dining: '🍽️' };
+const sheetBtns = {};
+function sheetButton(id, zh, en, count, go) {
+  const b = document.createElement('button');
+  b.innerHTML = `<span>${SCENE_ICON[id] || '📚'}</span><b>${zh}</b><small>${en}</small>${count ? `<i>${count} 词</i>` : ''}`;
+  b.addEventListener('click', () => {
+    $('sceneSheet').hidden = true;
+    go();
+  });
+  $('sceneGrid').appendChild(b);
+  sheetBtns[id] = b;
+}
+sheetButton('all', '全景', 'All Worlds', 0, () => goOverview());
+$('sceneBtn').addEventListener('click', () => ($('sceneSheet').hidden = false));
+$('sceneSheetClose').addEventListener('click', () => ($('sceneSheet').hidden = true));
+$('sceneSheet').addEventListener('click', (e) => e.target === $('sceneSheet') && ($('sceneSheet').hidden = true));
+let sceneBtnKey = '';
 const sceneTabs = {};
 const allTab = document.createElement('button');
 allTab.innerHTML = '全景<small>All</small>';
@@ -287,6 +304,7 @@ for (const id in SCENES) {
   b.innerHTML = `${SCENES[id].zh}<small>${SCENES[id].en}</small>`;
   b.addEventListener('click', () => setScene(id));
   $('scenes').appendChild(b);
+  sheetButton(id, SCENES[id].zh, SCENES[id].en, WORDS.filter((w) => sceneOf(w) === id).length, () => setScene(id));
   if (CENTER[id]) {
     const tagEl = document.createElement('button');
     tagEl.className = 'isle';
@@ -356,6 +374,12 @@ function syncOverview() {
     }
   }
   allTab.classList.toggle('active', on);
+  const shown = on ? 'all' : sceneId;
+  if (shown !== sceneBtnKey) {
+    sceneBtnKey = shown;
+    $('sceneBtnText').textContent = `${SCENE_ICON[shown]} ${on ? '全景' : SCENES[sceneId].zh}`;
+    for (const k in sheetBtns) sheetBtns[k].classList.toggle('active', k === shown);
+  }
   for (const k in sceneTabs) sceneTabs[k].classList.toggle('active', !on && k === sceneId);
   if (!on) return;
   for (const id in isles) {
@@ -561,6 +585,36 @@ window.addEventListener('keydown', (e) => e.key === 'Escape' && (walkman.isOpen(
 
 // ---------------------------------------------------------------- frame loop
 const clock = new THREE.Clock();
+// ---- performance: skip islands that are off screen, refresh shadows every other frame,
+//      and render at half rate on touch devices while nothing is being dragged.
+//      Shadows only change with the slow animations, so the shadow map is redrawn every 4th frame.
+const islands = {};
+for (const c of world.children) if (c.userData.island) islands[c.userData.island] = c;
+const frustum = new THREE.Frustum();
+const projView = new THREE.Matrix4();
+const islandBox = new THREE.Box3();
+function cullIslands() {
+  camera.updateMatrixWorld();
+  projView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  frustum.setFromProjectionMatrix(projView);
+  let changed = false;
+  for (const id in islands) {
+    const c = CENTER[id];
+    islandBox.min.set(c.x - HALF, -2.7, c.z - HALF);
+    islandBox.max.set(c.x + HALF, 7.6, c.z + HALF);
+    const v = frustum.intersectsBox(islandBox);
+    if (v !== islands[id].visible) changed = true;
+    islands[id].visible = v;
+  }
+  return changed;
+}
+renderer.shadowMap.autoUpdate = false;
+const LOW_POWER = window.matchMedia?.('(pointer: coarse)').matches;
+let tick = 0;
+let rendered = 0;
+let busyUntil = 0; // full frame rate while the camera is being moved
+controls.addEventListener('start', () => (busyUntil = Infinity));
+controls.addEventListener('end', () => (busyUntil = now + 0.8));
 const tmp = new THREE.Vector3();
 function toScreen(v) {
   camera.updateMatrixWorld();
@@ -579,8 +633,10 @@ function placeTag() {
   tag.style.transform = `translate(calc(${x.toFixed(1)}px - 50%), calc(${(y - 8).toFixed(1)}px - 100%))`;
 }
 function frame() {
+  requestAnimationFrame(frame);
   clock.getDelta();
   now = clock.elapsedTime;
+  if (LOW_POWER && !fly && now > busyUntil && ++tick % 2) return;
   if (fly) {
     const k = Math.min(1, (now - fly.t0) / 0.9);
     const e = k < 1 ? 1 - Math.pow(1 - k, 3) : 1;
@@ -607,9 +663,12 @@ function frame() {
     }
   }
   syncOverview();
-  if (!panels[sceneId]) pixel.render(); // panel scenes are plain HTML
+  // nothing to draw behind a full panel (HTML scenes, dialogues, walkman)
+  if (!panels[sceneId] && !talk.isOpen() && !walkman.isOpen()) {
+    if (cullIslands() || rendered++ % 4 === 0) renderer.shadowMap.needsUpdate = true;
+    pixel.render();
+  }
   placeTag();
-  requestAnimationFrame(frame);
 }
 
 window.addEventListener('resize', resize);
@@ -620,4 +679,16 @@ if (CENTER[sceneId]) goOverview(); // start on the overview of all the mini worl
 requestAnimationFrame(frame);
 
 // debugging / automated checks
-window.__miniWorld = { overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, panels, phone: panels.phone, food: panels.food, talk };
+/** draw calls for one frame; all = every island forced visible (the old behaviour), shadows = redraw the shadow map too */
+function measure(all = false, shadows = true) {
+  renderer.info.autoReset = false;
+  renderer.info.reset();
+  cullIslands();
+  if (all) for (const id in islands) islands[id].visible = true;
+  renderer.shadowMap.needsUpdate = shadows;
+  pixel.render();
+  const calls = renderer.info.render.calls;
+  renderer.info.autoReset = true;
+  return calls;
+}
+window.__miniWorld = { measure, islands, overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, panels, phone: panels.phone, food: panels.food, talk };

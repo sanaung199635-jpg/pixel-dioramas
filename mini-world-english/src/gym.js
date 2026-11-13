@@ -71,6 +71,7 @@ function dumbbell(p, x, y, z, c = K, s = 1, alongZ = false) {
 export function buildGym({ root, item: baseItem, updaters }) {
   const gym = new THREE.Group();
   gym.position.set(GYM_X, 0, 0);
+  gym.userData.island = 'gym';
   root.add(gym);
   const item = (word, x, z, opts = {}) => baseItem(word, x, z, { hitBox: HITBOX[word], ...opts, parent: gym, scene: 'gym' });
 
