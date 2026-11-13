@@ -38,6 +38,7 @@ const hitMat = new THREE.MeshBasicMaterial();
 
 export const GYM_X = 30; // the gym island sits beside the park
 export const HOME_Z = 30; // the home island sits on the park's other side
+export const SPORT_X = 60; // third column: climbing gym and tennis court
 
 export function buildWorld(root, extraBuilders = []) {
   const items = [];

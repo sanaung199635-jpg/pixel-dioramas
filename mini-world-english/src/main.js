@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { PixelRenderer } from './pixel-renderer.js';
-import { buildWorld, HALF, GYM_X, HOME_Z } from './world.js';
+import { buildWorld, HALF, GYM_X, HOME_Z, SPORT_X } from './world.js';
 import { buildGym } from './gym.js';
 import { buildHome } from './home.js';
 import { buildMarket } from './market.js';
+import { buildClimb } from './climb.js';
+import { buildTennis } from './tennis.js';
 import { createPhone } from './phone.js';
 import { createBoard } from './board.js';
 import { FOOD_CATS, FOOD_GROUPS, FOOD_WORDS } from './food-data.js';
@@ -28,7 +30,7 @@ const AZ = THREE.MathUtils.degToRad(45);
 const EL = THREE.MathUtils.degToRad(34);
 const DIST = 60;
 const camDir = new THREE.Vector3(Math.sin(AZ) * Math.cos(EL), Math.sin(EL), Math.cos(AZ) * Math.cos(EL));
-const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 10, 130);
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 2, 160);
 camera.position.copy(camDir).multiplyScalar(DIST);
 camera.lookAt(0, 0, 0);
 
@@ -46,19 +48,19 @@ controls.maxPolarAngle = THREE.MathUtils.degToRad(76);
 
 scene.add(new THREE.HemisphereLight('#eaf6ff', '#b9c79a', 1.7));
 const sun = new THREE.DirectionalLight('#fff4dc', 2.6);
-sun.position.set(GYM_X / 2 - 14, 26, HOME_Z / 2 + 16);
-sun.target.position.set(GYM_X / 2, 0, HOME_Z / 2);
+sun.position.set(SPORT_X / 2 - 14, 26, HOME_Z / 2 + 16);
+sun.target.position.set(SPORT_X / 2, 0, HOME_Z / 2);
 sun.castShadow = true;
 sun.shadow.mapSize.set(4096, 4096);
-Object.assign(sun.shadow.camera, { left: -42, right: 42, top: 42, bottom: -42, near: 1, far: 110 });
+Object.assign(sun.shadow.camera, { left: -56, right: 56, top: 44, bottom: -44, near: 1, far: 130 });
 sun.shadow.bias = -0.0004;
 sun.shadow.normalBias = 0.03;
 scene.add(sun, sun.target);
 
-const { items, pickList, updaters, primary } = buildWorld(world, [buildGym, buildHome, buildMarket]);
+const { items, pickList, updaters, primary } = buildWorld(world, [buildGym, buildHome, buildMarket, buildClimb, buildTennis]);
 
 // two islands side by side; the camera frames one at a time
-const CENTER = { park: new THREE.Vector3(0, 0, 0), gym: new THREE.Vector3(GYM_X, 0, 0), home: new THREE.Vector3(0, 0, HOME_Z), market: new THREE.Vector3(GYM_X, 0, HOME_Z) };
+const CENTER = { park: new THREE.Vector3(0, 0, 0), gym: new THREE.Vector3(GYM_X, 0, 0), home: new THREE.Vector3(0, 0, HOME_Z), market: new THREE.Vector3(GYM_X, 0, HOME_Z), climb: new THREE.Vector3(SPORT_X, 0, 0), tennis: new THREE.Vector3(SPORT_X, 0, HOME_Z) };
 const SCENE_KEY = 'mini-world-english:scene';
 let sceneId = 'park';
 try {
@@ -70,7 +72,7 @@ let fly = null; // camera glide between islands: { t0, to, zoom }
 const overview = { on: false, zoom: 0.4, target: new THREE.Vector3() };
 const OVERVIEW_BELOW = 0.7;
 const FIT_ALL = [];
-for (const x of [-HALF, GYM_X + HALF]) for (const z of [-HALF, HOME_Z + HALF]) for (const y of [-2.4, 7.2]) FIT_ALL.push(new THREE.Vector3(x, y, z));
+for (const x of [-HALF, SPORT_X + HALF]) for (const z of [-HALF, HOME_Z + HALF]) for (const y of [-2.4, 7.2]) FIT_ALL.push(new THREE.Vector3(x, y, z));
 
 const pixel = new PixelRenderer(renderer, scene, camera);
 pixel.clear.set('#dff1fb');
@@ -400,6 +402,7 @@ function openCard(word, say) {
   $('cEx').textContent = word.ex;
   $('cExZh').textContent = word.exZh;
   $('cUse').hidden = !word.use;
+  $('cUseLabel').textContent = sceneOf(word) === 'gym' ? '用途' : '说明';
   $('cUseText').textContent = word.use || '';
   $('cNote').hidden = !word.note;
   $('cNote').textContent = word.note || '';
