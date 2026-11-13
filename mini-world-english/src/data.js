@@ -1,5 +1,7 @@
 // Vocabulary for the mini world. us / uk = IPA, zh = Chinese, ex = example sentence.
 import { PHONE_CATS, PHONE_WORDS } from './phone-data.js';
+import { FOOD_CATS, FOOD_WORDS } from './food-data.js';
+import { TRAVEL_CATS, TRAVEL_WORDS, DINING_CATS, DINING_WORDS } from './board-data.js';
 
 export const SCENES = {
   park: { zh: '小公园', en: 'Park' },
@@ -7,6 +9,9 @@ export const SCENES = {
   home: { zh: '家', en: 'Home' },
   market: { zh: '超市', en: 'Market' },
   phone: { zh: '手机', en: 'Phone' },
+  food: { zh: '食物', en: 'Food' },
+  travel: { zh: '旅游', en: 'Travel' },
+  dining: { zh: '餐厅', en: 'Restaurant' },
 };
 
 export const CATS = {
@@ -223,7 +228,7 @@ export const WORDS = [
   { id: 'meat', cat: 'food', en: 'meat', us: '/miːt/', uk: '/miːt/', zh: '肉', ex: 'He does not eat meat.', exZh: '他不吃肉。', note: 'meat 和 meet（见面）发音完全一样。' },
 ];
 
-Object.assign(CATS, PHONE_CATS);
-WORDS.push(...PHONE_WORDS);
+Object.assign(CATS, PHONE_CATS, FOOD_CATS, TRAVEL_CATS, DINING_CATS);
+WORDS.push(...PHONE_WORDS, ...FOOD_WORDS, ...TRAVEL_WORDS, ...DINING_WORDS);
 
 export const WORD_BY_ID = Object.fromEntries(WORDS.map((w) => [w.id, w]));
