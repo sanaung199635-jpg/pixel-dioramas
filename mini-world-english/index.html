@@ -40,6 +40,7 @@
     <button id="quizExit">退出</button>
   </div>
 
+  <div class="isles" id="isles"></div>
   <div class="tag" id="tag" hidden></div>
 
   <aside class="card" id="card" aria-live="polite">
@@ -65,9 +66,11 @@
     <p class="card-warn" id="cWarn" hidden>这个浏览器不支持语音朗读，请换用 Chrome / Edge / Safari。</p>
   </aside>
 
-  <p class="hint" id="hint">点击任何东西学单词 · 拖动旋转 · 滚轮缩放</p>
+  <p class="hint" id="hint"><span class="in">点击任何东西学单词 · 拖动旋转 · 滚轮缩放</span><span class="out">点击一个小世界放大进入 · 拖动旋转</span></p>
 
   <nav class="words" id="words" aria-label="单词表"></nav>
+
+  <div id="boards"></div>
 
   <div class="talk" id="talk" hidden>
     <div class="talk-box" role="dialog" aria-label="情景对话">
