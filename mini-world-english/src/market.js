@@ -107,7 +107,7 @@ const PRODUCE = {
   },
 };
 
-function person(g, { shirt, pants, hair, apron }) {
+export function person(g, { shirt, pants, hair, apron }) {
   for (const s of [-1, 1]) {
     box(0.24, 0.72, 0.26, pants, 0, 0.36, s * 0.17, g);
     box(0.34, 0.1, 0.26, K, 0.05, 0.05, s * 0.17, g);
