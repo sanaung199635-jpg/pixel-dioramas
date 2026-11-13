@@ -1,0 +1,676 @@
+{
+ "groups": [
+  {
+   "id": "course",
+   "zh": "零基础到进阶课程",
+   "en": "Course",
+   "lists": [
+    {
+     "id": "L1",
+     "zh": "第一阶段 · 零基础",
+     "en": "Level 1 · Starting from Zero",
+     "tracks": [
+      {
+       "id": "c01",
+       "zh": "第 1 课 · 打招呼与告别",
+       "en": "Hello and Goodbye",
+       "sec": 191
+      },
+      {
+       "id": "c02",
+       "zh": "第 2 课 · 介绍自己",
+       "en": "Introducing Yourself",
+       "sec": 197
+      },
+      {
+       "id": "c03",
+       "zh": "第 3 课 · 数字、时间和日期",
+       "en": "Numbers, Time and Dates",
+       "sec": 234
+      },
+      {
+       "id": "c04",
+       "zh": "第 4 课 · 礼貌用语和求助",
+       "en": "Polite Words and Asking for Help",
+       "sec": 195
+      },
+      {
+       "id": "c05",
+       "zh": "第 5 课 · 家人和每天的生活",
+       "en": "Family and Daily Life",
+       "sec": 211
+      }
+     ]
+    },
+    {
+     "id": "L2",
+     "zh": "第二阶段 · 初级",
+     "en": "Level 2 · Beginner",
+     "tracks": [
+      {
+       "id": "c06",
+       "zh": "第 6 课 · 买东西和问价钱",
+       "en": "Shopping and Prices",
+       "sec": 208
+      },
+      {
+       "id": "c07",
+       "zh": "第 7 课 · 吃饭和点餐",
+       "en": "Eating Out",
+       "sec": 208
+      },
+      {
+       "id": "c08",
+       "zh": "第 8 课 · 问路和坐车",
+       "en": "Directions and Transport",
+       "sec": 219
+      },
+      {
+       "id": "c09",
+       "zh": "第 9 课 · 天气和闲聊",
+       "en": "Weather and Small Talk",
+       "sec": 208
+      },
+      {
+       "id": "c10",
+       "zh": "第 10 课 · 打电话和约时间",
+       "en": "Phone Calls and Making Plans",
+       "sec": 211
+      }
+     ]
+    },
+    {
+     "id": "L3",
+     "zh": "第三阶段 · 中级",
+     "en": "Level 3 · Intermediate",
+     "tracks": [
+      {
+       "id": "c11",
+       "zh": "第 11 课 · 说说过去的事",
+       "en": "Talking about the Past",
+       "sec": 244
+      },
+      {
+       "id": "c12",
+       "zh": "第 12 课 · 计划和将来",
+       "en": "Plans and the Future",
+       "sec": 239
+      },
+      {
+       "id": "c13",
+       "zh": "第 13 课 · 表达看法、同意和反对",
+       "en": "Opinions, Agreeing and Disagreeing",
+       "sec": 230
+      },
+      {
+       "id": "c14",
+       "zh": "第 14 课 · 健身、攀岩和网球",
+       "en": "Gym, Climbing and Tennis",
+       "sec": 236
+      },
+      {
+       "id": "c15",
+       "zh": "第 15 课 · 旅行：机场和酒店",
+       "en": "Travel: Airport and Hotel",
+       "sec": 219
+      }
+     ]
+    },
+    {
+     "id": "L4",
+     "zh": "第四阶段 · 进阶",
+     "en": "Level 4 · Advanced",
+     "tracks": [
+      {
+       "id": "c16",
+       "zh": "第 16 课 · 工作和面试",
+       "en": "Work and Job Interviews",
+       "sec": 271
+      },
+      {
+       "id": "c17",
+       "zh": "第 17 课 · 地道口语和习惯说法",
+       "en": "Everyday Idioms",
+       "sec": 212
+      },
+      {
+       "id": "c18",
+       "zh": "第 18 课 · 委婉地请求和拒绝",
+       "en": "Polite Requests and Refusals",
+       "sec": 286
+      },
+      {
+       "id": "c19",
+       "zh": "第 19 课 · 说明问题和投诉",
+       "en": "Explaining Problems and Complaining",
+       "sec": 260
+      },
+      {
+       "id": "c20",
+       "zh": "第 20 课 · 讲故事和连接句子",
+       "en": "Telling a Story",
+       "sec": 318
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "vocab",
+   "zh": "场景单词",
+   "en": "Vocabulary",
+   "lists": [
+    {
+     "id": "s_park",
+     "zh": "小公园",
+     "en": "Park",
+     "tracks": [
+      {
+       "id": "v_tree",
+       "zh": "树木",
+       "en": "Trees",
+       "sec": 84
+      },
+      {
+       "id": "v_play",
+       "zh": "操场",
+       "en": "Playground",
+       "sec": 100
+      },
+      {
+       "id": "v_grass",
+       "zh": "草地",
+       "en": "Grass",
+       "sec": 72
+      },
+      {
+       "id": "v_bug",
+       "zh": "虫子",
+       "en": "Bugs",
+       "sec": 100
+      }
+     ]
+    },
+    {
+     "id": "s_gym",
+     "zh": "健身房",
+     "en": "Gym",
+     "tracks": [
+      {
+       "id": "v_cardio",
+       "zh": "有氧器械",
+       "en": "Cardio",
+       "sec": 99
+      },
+      {
+       "id": "v_weights",
+       "zh": "自由重量",
+       "en": "Free Weights",
+       "sec": 134
+      },
+      {
+       "id": "v_machine",
+       "zh": "力量器械",
+       "en": "Machines",
+       "sec": 151
+      },
+      {
+       "id": "v_gear",
+       "zh": "小器材与用品",
+       "en": "Gear",
+       "sec": 242
+      }
+     ]
+    },
+    {
+     "id": "s_home",
+     "zh": "家",
+     "en": "Home",
+     "tracks": [
+      {
+       "id": "v_bedroom",
+       "zh": "卧室",
+       "en": "Bedroom",
+       "sec": 259
+      },
+      {
+       "id": "v_living",
+       "zh": "客厅",
+       "en": "Living Room",
+       "sec": 343
+      }
+     ]
+    },
+    {
+     "id": "s_market",
+     "zh": "超市",
+     "en": "Market",
+     "tracks": [
+      {
+       "id": "v_store",
+       "zh": "店内设施",
+       "en": "In the Store",
+       "sec": 206
+      },
+      {
+       "id": "v_fruit",
+       "zh": "水果",
+       "en": "Fruit",
+       "sec": 119
+      },
+      {
+       "id": "v_veg",
+       "zh": "蔬菜",
+       "en": "Vegetables",
+       "sec": 139
+      },
+      {
+       "id": "v_food",
+       "zh": "食品饮料",
+       "en": "Food & Drinks",
+       "sec": 226
+      }
+     ]
+    },
+    {
+     "id": "s_climb",
+     "zh": "攀岩",
+     "en": "Climbing",
+     "tracks": [
+      {
+       "id": "v_cWall",
+       "zh": "岩壁与岩点",
+       "en": "Wall & Holds",
+       "sec": 223
+      },
+      {
+       "id": "v_cRope",
+       "zh": "绳索与保护",
+       "en": "Rope & Safety",
+       "sec": 156
+      },
+      {
+       "id": "v_cGear",
+       "zh": "个人装备",
+       "en": "Personal Gear",
+       "sec": 88
+      }
+     ]
+    },
+    {
+     "id": "s_tennis",
+     "zh": "网球",
+     "en": "Tennis",
+     "tracks": [
+      {
+       "id": "v_tCourt",
+       "zh": "球场",
+       "en": "The Court",
+       "sec": 175
+      },
+      {
+       "id": "v_tGear",
+       "zh": "装备",
+       "en": "Equipment",
+       "sec": 165
+      },
+      {
+       "id": "v_tPlay",
+       "zh": "人物与击球",
+       "en": "People & Strokes",
+       "sec": 85
+      }
+     ]
+    },
+    {
+     "id": "s_phone",
+     "zh": "手机",
+     "en": "Phone",
+     "tracks": [
+      {
+       "id": "v_app",
+       "zh": "应用",
+       "en": "Apps",
+       "sec": 332
+      },
+      {
+       "id": "v_setting",
+       "zh": "设置",
+       "en": "Settings",
+       "sec": 410
+      },
+      {
+       "id": "v_alert",
+       "zh": "弹窗提示",
+       "en": "Alerts",
+       "sec": 209
+      },
+      {
+       "id": "v_button",
+       "zh": "登录与按钮",
+       "en": "Buttons",
+       "sec": 327
+      },
+      {
+       "id": "v_control",
+       "zh": "控制中心",
+       "en": "Control Center",
+       "sec": 184
+      },
+      {
+       "id": "v_call",
+       "zh": "电话与信息",
+       "en": "Calls & Messages",
+       "sec": 182
+      },
+      {
+       "id": "v_photo",
+       "zh": "相机与照片",
+       "en": "Camera & Photos",
+       "sec": 173
+      }
+     ]
+    },
+    {
+     "id": "s_food",
+     "zh": "食物",
+     "en": "Food",
+     "tracks": [
+      {
+       "id": "v_fd_meat",
+       "zh": "肉类",
+       "en": "Meat & Seafood",
+       "sec": 267
+      },
+      {
+       "id": "v_fd_veg",
+       "zh": "蔬菜类",
+       "en": "Vegetables",
+       "sec": 255
+      },
+      {
+       "id": "v_fd_fruit",
+       "zh": "水果类",
+       "en": "Fruit",
+       "sec": 224
+      },
+      {
+       "id": "v_fd_staple",
+       "zh": "主食与蛋白质",
+       "en": "Staples & Protein",
+       "sec": 332
+      }
+     ]
+    },
+    {
+     "id": "s_travel",
+     "zh": "旅游",
+     "en": "Travel",
+     "tracks": [
+      {
+       "id": "v_tr_air",
+       "zh": "机场",
+       "en": "Airport",
+       "sec": 309
+      },
+      {
+       "id": "v_tr_move",
+       "zh": "交通出行",
+       "en": "Getting Around",
+       "sec": 221
+      },
+      {
+       "id": "v_tr_stay",
+       "zh": "酒店住宿",
+       "en": "Hotel",
+       "sec": 191
+      },
+      {
+       "id": "v_tr_see",
+       "zh": "观光与求助",
+       "en": "Sightseeing & Help",
+       "sec": 317
+      }
+     ]
+    },
+    {
+     "id": "s_dining",
+     "zh": "餐厅",
+     "en": "Restaurant",
+     "tracks": [
+      {
+       "id": "v_rs_table",
+       "zh": "餐厅与餐具",
+       "en": "At the Table",
+       "sec": 229
+      },
+      {
+       "id": "v_rs_dish",
+       "zh": "菜单",
+       "en": "Menu",
+       "sec": 275
+      },
+      {
+       "id": "v_rs_drink",
+       "zh": "饮品",
+       "en": "Drinks",
+       "sec": 171
+      },
+      {
+       "id": "v_rs_taste",
+       "zh": "味道与做法",
+       "en": "Taste & Cooking",
+       "sec": 288
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "talk",
+   "zh": "情景对话",
+   "en": "Dialogues",
+   "lists": [
+    {
+     "id": "talk",
+     "zh": "全部对话",
+     "en": "All Dialogues",
+     "tracks": [
+      {
+       "id": "d_greet",
+       "zh": "打招呼",
+       "en": "Greetings",
+       "sec": 109
+      },
+      {
+       "id": "d_park",
+       "zh": "在公园",
+       "en": "At the Park",
+       "sec": 100
+      },
+      {
+       "id": "d_gym",
+       "zh": "在健身房",
+       "en": "At the Gym",
+       "sec": 115
+      },
+      {
+       "id": "d_home",
+       "zh": "在家里",
+       "en": "At Home",
+       "sec": 106
+      },
+      {
+       "id": "d_market-find",
+       "zh": "超市找商品",
+       "en": "Finding Things in the Store",
+       "sec": 90
+      },
+      {
+       "id": "d_market-pay",
+       "zh": "超市结账",
+       "en": "At the Checkout",
+       "sec": 110
+      },
+      {
+       "id": "d_phone-help",
+       "zh": "手机求助",
+       "en": "Phone Help",
+       "sec": 126
+      },
+      {
+       "id": "d_call",
+       "zh": "打电话",
+       "en": "A Phone Call",
+       "sec": 110
+      },
+      {
+       "id": "d_butcher",
+       "zh": "买菜买肉",
+       "en": "Buying Meat and Vegetables",
+       "sec": 107
+      },
+      {
+       "id": "d_restaurant",
+       "zh": "餐厅点餐",
+       "en": "At a Restaurant",
+       "sec": 110
+      },
+      {
+       "id": "d_coffee",
+       "zh": "咖啡店",
+       "en": "At a Coffee Shop",
+       "sec": 109
+      },
+      {
+       "id": "d_directions",
+       "zh": "问路",
+       "en": "Asking for Directions",
+       "sec": 95
+      },
+      {
+       "id": "d_taxi",
+       "zh": "打车",
+       "en": "Taking a Taxi",
+       "sec": 98
+      },
+      {
+       "id": "d_clothes",
+       "zh": "买衣服",
+       "en": "Shopping for Clothes",
+       "sec": 116
+      },
+      {
+       "id": "d_doctor",
+       "zh": "看医生",
+       "en": "At the Doctor",
+       "sec": 104
+      },
+      {
+       "id": "d_hotel",
+       "zh": "酒店入住",
+       "en": "Checking In at a Hotel",
+       "sec": 115
+      },
+      {
+       "id": "d_air-checkin",
+       "zh": "机场值机",
+       "en": "Checking In at the Airport",
+       "sec": 134
+      },
+      {
+       "id": "d_air-immigration",
+       "zh": "入境与海关",
+       "en": "Immigration and Customs",
+       "sec": 107
+      },
+      {
+       "id": "d_air-plane",
+       "zh": "在飞机上",
+       "en": "On the Plane",
+       "sec": 130
+      },
+      {
+       "id": "d_train-ticket",
+       "zh": "买车票",
+       "en": "Buying a Train Ticket",
+       "sec": 111
+      },
+      {
+       "id": "d_lost-luggage",
+       "zh": "行李丢了",
+       "en": "Lost Luggage",
+       "sec": 110
+      },
+      {
+       "id": "d_book-table",
+       "zh": "订位和入座",
+       "en": "Getting a Table",
+       "sec": 122
+      },
+      {
+       "id": "d_order-detail",
+       "zh": "点餐细节",
+       "en": "Ordering in Detail",
+       "sec": 143
+      },
+      {
+       "id": "d_order-problem",
+       "zh": "菜有问题",
+       "en": "A Problem with the Order",
+       "sec": 118
+      },
+      {
+       "id": "d_pay-bill",
+       "zh": "结账",
+       "en": "Paying the Bill",
+       "sec": 121
+      },
+      {
+       "id": "d_takeout-order",
+       "zh": "快餐与外带",
+       "en": "Fast Food and Takeout",
+       "sec": 117
+      },
+      {
+       "id": "d_climb-first",
+       "zh": "第一次去岩馆",
+       "en": "First Time at the Climbing Gym",
+       "sec": 133
+      },
+      {
+       "id": "d_climb-calls",
+       "zh": "攀岩口令",
+       "en": "Climbing Calls",
+       "sec": 113
+      },
+      {
+       "id": "d_climb-boulder",
+       "zh": "一起抱石",
+       "en": "Bouldering Together",
+       "sec": 110
+      },
+      {
+       "id": "d_tennis-lesson",
+       "zh": "第一节网球课",
+       "en": "First Tennis Lesson",
+       "sec": 121
+      },
+      {
+       "id": "d_tennis-score",
+       "zh": "网球比分",
+       "en": "Keeping Score",
+       "sec": 130
+      },
+      {
+       "id": "d_tennis-book",
+       "zh": "订场和约球",
+       "en": "Booking a Court",
+       "sec": 118
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
