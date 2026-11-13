@@ -12,6 +12,7 @@ import { createBoard } from './board.js';
 import { FOOD_CATS, FOOD_GROUPS, FOOD_WORDS } from './food-data.js';
 import { TRAVEL_CATS, TRAVEL_GROUPS, TRAVEL_WORDS, DINING_CATS, DINING_GROUPS, DINING_WORDS } from './board-data.js';
 import { createTalk } from './talk.js';
+import { createWalkman } from './walkman.js';
 import { WORDS, WORD_BY_ID, CATS, SCENES } from './data.js';
 
 const $ = (id) => document.getElementById(id);
@@ -186,6 +187,7 @@ function voiceFor(lang) {
   return exact.find((v) => /natural|google|samantha|daniel/i.test(v.name)) || exact[0] || voices.find((v) => norm(v.lang).startsWith('en')) || null;
 }
 /** two different English voices for the two speakers of a dialogue */
+let walkman = null; // created below; pauses itself while a word is spoken
 function pairVoices() {
   const en = voices.filter((v) => /^en/i.test(v.lang));
   const us = en.filter((v) => /^en[-_]US/i.test(v.lang));
@@ -194,6 +196,7 @@ function pairVoices() {
 }
 function speak(text, { lang = 'en-US', rate = 0.9, button = null, voiceIndex = null, onend = null } = {}) {
   if (!synth) return void onend?.();
+  walkman?.pauseForSpeech();
   synth.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = lang;
@@ -540,6 +543,7 @@ canvas.addEventListener('pointermove', (e) => {
   canvas.style.cursor = pick(e) ? 'pointer' : 'grab';
 });
 // ---------------------------------------------------------------- dialogues
+walkman = createWalkman({ beforePlay: () => synth?.cancel() });
 const talk = createTalk($('talk'), {
   speakLine: (text, opts) => speak(text, opts),
   stop: () => synth?.cancel(),
@@ -549,7 +553,11 @@ $('talkBtn').addEventListener('click', () => {
   if (quiz.on) setQuiz(false);
   talk.open();
 });
-window.addEventListener('keydown', (e) => e.key === 'Escape' && (talk.isOpen() ? talk.close() : quiz.on ? setQuiz(false) : deselect()));
+$('wmBtn').addEventListener('click', () => {
+  if (quiz.on) setQuiz(false);
+  walkman.open();
+});
+window.addEventListener('keydown', (e) => e.key === 'Escape' && (walkman.isOpen() ? walkman.close() : talk.isOpen() ? talk.close() : quiz.on ? setQuiz(false) : deselect()));
 
 // ---------------------------------------------------------------- frame loop
 const clock = new THREE.Clock();
