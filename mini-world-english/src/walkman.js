@@ -54,7 +54,7 @@ export function createWalkman({ beforePlay }) {
   };
 
   function load() {
-    ready ??= fetch('./audio/manifest.json')
+    ready ??= fetch(`./audio/manifest.json?v=${window.__APP_VERSION || ''}`)
       .then((r) => r.json())
       .then((m) => {
         lists = m.groups.flatMap((g) => g.lists.map((l) => ({ ...l, group: g })));

@@ -13,6 +13,7 @@ import { FOOD_CATS, FOOD_GROUPS, FOOD_WORDS } from './food-data.js';
 import { TRAVEL_CATS, TRAVEL_GROUPS, TRAVEL_WORDS, DINING_CATS, DINING_GROUPS, DINING_WORDS } from './board-data.js';
 import { createTalk } from './talk.js';
 import { createWalkman } from './walkman.js';
+import { createReview } from './review.js';
 import { WORDS, WORD_BY_ID, CATS, SCENES } from './data.js';
 
 const $ = (id) => document.getElementById(id);
@@ -188,6 +189,7 @@ function voiceFor(lang) {
 }
 /** two different English voices for the two speakers of a dialogue */
 let walkman = null; // created below; pauses itself while a word is spoken
+let review = null; // spaced review + mistake book, created below
 function pairVoices() {
   const en = voices.filter((v) => /^en/i.test(v.lang));
   const us = en.filter((v) => /^en[-_]US/i.test(v.lang));
@@ -272,6 +274,7 @@ function markFound(id) {
     localStorage.setItem(STORE, JSON.stringify([...found]));
   } catch (e) {}
   renderProgress();
+  review?.learn(id); // first review tomorrow
 }
 renderProgress();
 
@@ -515,6 +518,7 @@ function judge(gotId, onRight, onWrong) {
   } else {
     setBanner(`这是 ${got.en}（${got.zh.split('；')[0]}），再找找看`, 'bad');
     onWrong();
+    review.miss(target.id); // goes into the mistake book
     setTimeout(() => quiz.on && !quiz.lock && speak(target.en), 700);
   }
 }
@@ -568,6 +572,19 @@ canvas.addEventListener('pointermove', (e) => {
 });
 // ---------------------------------------------------------------- dialogues
 walkman = createWalkman({ beforePlay: () => synth?.cancel() });
+// ---------------------------------------------------------------- review
+function paintReviewBadge() {
+  const n = review.dueCount();
+  $('rvBadge').textContent = n;
+  $('rvBadge').hidden = !n;
+}
+review = createReview({ speak: (text) => speak(text), onChange: paintReviewBadge });
+for (const id of found) review.learn(id); // words opened before the review feature existed
+paintReviewBadge();
+$('rvBtn').addEventListener('click', () => {
+  if (quiz.on) setQuiz(false);
+  review.open();
+});
 const talk = createTalk($('talk'), {
   speakLine: (text, opts) => speak(text, opts),
   stop: () => synth?.cancel(),
@@ -581,7 +598,7 @@ $('wmBtn').addEventListener('click', () => {
   if (quiz.on) setQuiz(false);
   walkman.open();
 });
-window.addEventListener('keydown', (e) => e.key === 'Escape' && (walkman.isOpen() ? walkman.close() : talk.isOpen() ? talk.close() : quiz.on ? setQuiz(false) : deselect()));
+window.addEventListener('keydown', (e) => e.key === 'Escape' && (review.isOpen() ? review.close() : walkman.isOpen() ? walkman.close() : talk.isOpen() ? talk.close() : quiz.on ? setQuiz(false) : deselect()));
 
 // ---------------------------------------------------------------- frame loop
 const clock = new THREE.Clock();
@@ -664,7 +681,7 @@ function frame() {
   }
   syncOverview();
   // nothing to draw behind a full panel (HTML scenes, dialogues, walkman)
-  if (!panels[sceneId] && !talk.isOpen() && !walkman.isOpen()) {
+  if (!panels[sceneId] && !talk.isOpen() && !walkman.isOpen() && !review.isOpen()) {
     if (cullIslands() || rendered++ % 4 === 0) renderer.shadowMap.needsUpdate = true;
     pixel.render();
   }
@@ -691,4 +708,4 @@ function measure(all = false, shadows = true) {
   renderer.info.autoReset = true;
   return calls;
 }
-window.__miniWorld = { measure, islands, overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, panels, phone: panels.phone, food: panels.food, talk };
+if (new URLSearchParams(location.search).has('debug')) window.__miniWorld = { review, measure, islands, overview, goOverview, items, primary, select, camera, quiz, toScreen, setScene, panels, phone: panels.phone, food: panels.food, talk };

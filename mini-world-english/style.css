@@ -493,3 +493,58 @@ body.overview:not(.phone-mode) .isles { display: block; }
   .scene-grid button { padding: 10px; }
   .scene-grid button span { font-size: 22px; }
 }
+
+/* ================================================================ review and mistake book */
+#rvBtn { position: relative; }
+#rvBadge { font-style: normal; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 5px; border-radius: 999px; background: #e5483f; color: #fff; font-size: 11px; font-weight: 700; display: inline-grid; place-items: center; }
+#rvBadge[hidden] { display: none; }
+.rv-box { width: min(560px, 100%); height: min(680px, 100%); display: flex; flex-direction: column; border-radius: 22px; background: #fff; box-shadow: var(--shadow); overflow: hidden; }
+.rv-box > header { position: relative; display: flex; align-items: baseline; gap: 12px; padding: 15px 56px 13px 20px; border-bottom: 1px solid var(--line); }
+.rv-box > header b { font-size: 17px; }
+.rv-box > header span { font-size: 12.5px; color: var(--muted); }
+#rvTabs { margin: 12px 18px 4px; }
+#rvTabs i { font-style: normal; margin-left: 4px; opacity: 0.75; }
+#rvBody { flex: 1; min-height: 0; overflow: auto; padding: 8px 18px 18px; display: flex; flex-direction: column; }
+.rv-hero { margin: 18px 0 6px; text-align: center; display: grid; gap: 4px; }
+.rv-hero b { font-size: 54px; line-height: 1; color: var(--accent); font-family: "Nunito", "Segoe UI", system-ui, sans-serif; }
+.rv-hero span { font-size: 15px; }
+.rv-note { margin: 10px 2px; font-size: 13px; line-height: 1.7; color: var(--muted); }
+.rv-empty { margin: auto; padding: 30px 10px; text-align: center; font-size: 14px; line-height: 1.9; color: var(--muted); }
+.rv-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0; }
+.rv-go { height: 44px; padding: 0 24px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 15px; font-weight: 700; }
+.rv-go.ghost { background: #eef3f6; color: var(--ink); }
+.rv-go:hover { filter: brightness(0.96); }
+.rv-list { display: grid; gap: 4px; margin-top: 6px; }
+.rv-row { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 9px 12px; border-radius: 12px; background: #f4f7f9; text-align: left; }
+.rv-row:hover { background: #eaf0f4; }
+.rv-row b { font-size: 15px; font-family: "Nunito", "Segoe UI", system-ui, sans-serif; overflow-wrap: anywhere; }
+.rv-row span { font-size: 13.5px; }
+.rv-row small { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.rv-bar { height: 6px; border-radius: 99px; background: #eef3f6; overflow: hidden; }
+.rv-bar i { display: block; height: 100%; background: var(--accent); transition: width 0.3s; }
+.rv-count { margin: 8px 0 0; font-size: 12px; color: var(--muted); text-align: center; }
+.rv-q { margin: 18px 0 16px; display: grid; gap: 6px; justify-items: center; text-align: center; }
+.rv-q b { font-size: 36px; line-height: 1.15; font-family: "Nunito", "Segoe UI", system-ui, sans-serif; overflow-wrap: anywhere; }
+.rv-q b.zh { font-size: 30px; font-family: inherit; }
+.rv-q small { font-size: 14px; color: var(--muted); }
+.rv-say { margin-top: 4px; height: 32px; padding: 0 14px; border-radius: 999px; background: #eef3f6; font-size: 13px; }
+.rv-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rv-opts button { min-height: 54px; padding: 8px 12px; border-radius: 14px; background: #f4f7f9; border: 2px solid transparent; font-size: 15.5px; font-weight: 600; overflow-wrap: anywhere; }
+.rv-opts button:hover:not(:disabled) { background: #eaf0f4; }
+.rv-opts button.good { border-color: #4fb36a; background: #e9f7ed; }
+.rv-opts button.bad { border-color: #e5574f; background: #fdecea; }
+.rv-after { margin-top: 14px; display: grid; gap: 8px; justify-items: center; text-align: center; }
+.rv-after[hidden] { display: none; }
+.rv-after p { margin: 0; font-size: 14px; }
+.rv-after p.ok { color: #2f8f4c; }
+.rv-after p.no { color: #c0392b; }
+.rv-after p.ex { font-size: 15px; font-weight: 600; }
+.rv-after p.ex small { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
+@media (max-width: 760px) {
+  .progress { display: none; }
+  .rv-box { width: 100%; height: 100%; border-radius: 0; }
+  .rv-box > header span { display: none; }
+  .rv-q b { font-size: 30px; }
+}
+/* the 3D view is paused behind a panel, so hide the floating island names with it */
+body:has(.talk:not([hidden])) .isles { display: none; }
