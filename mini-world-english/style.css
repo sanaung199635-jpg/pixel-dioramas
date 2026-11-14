@@ -548,3 +548,37 @@ body.overview:not(.phone-mode) .isles { display: block; }
 }
 /* the 3D view is paused behind a panel, so hide the floating island names with it */
 body:has(.talk:not([hidden])) .isles { display: none; }
+
+/* ================================================================ card read-through toggle, stats and backup */
+.say.toggle.on { background: var(--ink); color: #fff; }
+.rv-strip { position: relative; flex: none; display: flex; justify-content: space-around; gap: 8px; margin: 4px 0 6px; padding: 9px 10px 12px; border-radius: 14px; background: #f4f7f9; font-size: 12.5px; color: var(--muted); overflow: hidden; }
+.rv-strip b { font-size: 15px; color: var(--ink); }
+.rv-strip > i { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--accent); transition: width 0.3s; }
+#rvBody h4 { margin: 18px 2px 8px; font-size: 13px; letter-spacing: 0.04em; }
+.rv-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
+.rv-cards div { padding: 12px 6px; border-radius: 14px; background: #f4f7f9; text-align: center; display: grid; gap: 2px; }
+.rv-cards b { font-size: 24px; color: var(--accent); font-family: "Nunito", "Segoe UI", system-ui, sans-serif; }
+.rv-cards span { font-size: 11.5px; color: var(--muted); }
+.rv-chart { flex: none; display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; height: 120px; }
+.rv-chart div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.rv-chart em { flex: 1; display: flex; flex-direction: column-reverse; border-radius: 6px; background: #f4f7f9; overflow: hidden; }
+.rv-chart i { display: block; }
+.rv-chart i.n, .dot.n { background: var(--accent); }
+.rv-chart i.r, .dot.r { background: #4aa8e0; }
+.rv-chart small { font-size: 9.5px; color: var(--muted); text-align: center; white-space: nowrap; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 4px; }
+.rv-goals { display: flex; gap: 8px; flex-wrap: wrap; }
+.rv-goals button { height: 34px; padding: 0 16px; border-radius: 999px; background: #eef3f6; font-size: 13px; font-weight: 600; }
+.rv-goals button.on { background: var(--ink); color: #fff; }
+.rv-scenes { display: grid; gap: 7px; }
+.rv-scene { display: grid; grid-template-columns: 64px 1fr 62px; gap: 10px; align-items: center; font-size: 13px; }
+.rv-scene em { height: 8px; border-radius: 99px; background: #eef3f6; overflow: hidden; }
+.rv-scene em i { display: block; height: 100%; background: #4fb36a; }
+.rv-scene small { font-size: 11.5px; color: var(--muted); text-align: right; }
+@media (max-width: 760px) {
+  .rv-cards { grid-template-columns: repeat(2, 1fr); }
+  .rv-strip { font-size: 12px; }
+}
+@media (max-width: 760px) {
+  .rv-chart div:nth-child(odd) small { visibility: hidden; } /* every other date, so labels do not collide */
+}

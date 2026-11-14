@@ -5,6 +5,9 @@
 import { WORDS, WORD_BY_ID, CATS, SCENES } from './data.js';
 
 const KEY = 'mini-world-english:srs';
+const STAT_KEY = 'mini-world-english:stats';
+const PREFIX = 'mini-world-english:';
+const GOALS = [5, 10, 20, 30];
 const GAPS = [1, 3, 7, 14, 30, 60]; // days until the next review, by level
 const SESSION = 15; // most words asked in one go
 const $ = (id) => document.getElementById(id);
@@ -35,11 +38,43 @@ export function createReview({ speak, onChange }) {
     onChange?.();
   };
 
+  // ---- daily activity: { goal, days: { dayNumber: { n: new words, r: reviews, ok: right answers, s: seconds listened } } }
+  let stats = { goal: 10, days: {} };
+  try {
+    stats = { ...stats, ...JSON.parse(localStorage.getItem(STAT_KEY) || '{}') };
+  } catch (e) {}
+  const saveStats = () => {
+    for (const k in stats.days) if (+k < today() - 180) delete stats.days[k];
+    try {
+      localStorage.setItem(STAT_KEY, JSON.stringify(stats));
+    } catch (e) {}
+  };
+  const dayOf = (k = today()) => (stats.days[k] ??= { n: 0, r: 0, ok: 0, s: 0 });
+  const active = (k) => {
+    const d = stats.days[k];
+    return !!d && (d.n + d.r > 0 || d.s >= 60);
+  };
+  function streak() {
+    let k = today();
+    if (!active(k)) k--; // today not started yet: the streak is still alive until midnight
+    let c = 0;
+    while (active(k)) {
+      c++;
+      k--;
+    }
+    return c;
+  }
+
   const due = () => Object.keys(cards).filter((id) => cards[id].due <= today());
   const mistakes = () => Object.keys(cards).filter((id) => cards[id].miss > 0 && cards[id].run < 2);
   const dueIn = (days) => Object.keys(cards).filter((id) => cards[id].due > today() && cards[id].due <= today() + days).length;
 
-  function grade(id, right) {
+  function grade(id, right, counted = true) {
+    if (counted) {
+      dayOf().r++;
+      if (right) dayOf().ok++;
+      saveStats();
+    }
     const c = (cards[id] ??= { lv: 0, due: today() + 1, miss: 0, run: 0 });
     if (right) {
       c.run++;
@@ -69,17 +104,106 @@ export function createReview({ speak, onChange }) {
     return `<button class="rv-row" data-say="${id}"><b>${esc(w.en)}</b><span>${esc(zh1(w))}</span><small>${esc(SCENES[CATS[w.cat].scene].zh)}${extra}</small></button>`;
   };
 
+  function strip() {
+    const d = stats.days[today()] || { n: 0, r: 0, ok: 0, s: 0 };
+    const done = Math.min(1, d.n / stats.goal);
+    return `<div class="rv-strip"><span>🔥 连续 <b>${streak()}</b> 天</span><span>今日新学 <b>${d.n}</b> / ${stats.goal}</span><span>复习 <b>${d.r}</b></span><i style="width:${done * 100}%"></i></div>`;
+  }
+  function statsView() {
+    const all = Object.keys(cards);
+    const mastered = all.filter((id) => cards[id].lv >= 3).length;
+    const days = [];
+    for (let k = today() - 13; k <= today(); k++) days.push({ k, ...(stats.days[k] || { n: 0, r: 0, ok: 0, s: 0 }) });
+    const top = Math.max(1, ...days.map((d) => d.n + d.r));
+    const sum = days.slice(-7).reduce((a, d) => ({ n: a.n + d.n, r: a.r + d.r, ok: a.ok + d.ok, s: a.s + d.s }), { n: 0, r: 0, ok: 0, s: 0 });
+    const label = (k) => {
+      const dt = new Date(k * 86400000);
+      return `${dt.getUTCMonth() + 1}/${dt.getUTCDate()}`;
+    };
+    const scenes = Object.keys(SCENES).map((s) => {
+      const words = WORDS.filter((w) => CATS[w.cat].scene === s);
+      const learned = words.filter((w) => cards[w.id]).length;
+      return `<div class="rv-scene"><span>${esc(SCENES[s].zh)}</span><em><i style="width:${(learned / words.length) * 100}%"></i></em><small>${learned} / ${words.length}</small></div>`;
+    });
+    return `${strip()}
+      <div class="rv-cards"><div><b>${all.length}</b><span>已学单词</span></div><div><b>${mastered}</b><span>已掌握</span></div><div><b>${sum.r ? Math.round((sum.ok / sum.r) * 100) + '%' : '—'}</b><span>近 7 天正确率</span></div><div><b>${Math.round(sum.s / 60)}</b><span>近 7 天听了（分钟）</span></div></div>
+      <h4>最近 14 天</h4>
+      <div class="rv-chart">${days.map((d) => `<div title="新学 ${d.n} · 复习 ${d.r}"><em><i class="r" style="height:${(d.r / top) * 100}%"></i><i class="n" style="height:${(d.n / top) * 100}%"></i></em><small>${label(d.k)}</small></div>`).join('')}</div>
+      <p class="rv-note"><i class="dot n"></i>新学　<i class="dot r"></i>复习　“已掌握”指连续答对、间隔已到 14 天以上的单词。</p>
+      <h4>每日新词目标</h4>
+      <div class="rv-goals">${GOALS.map((g) => `<button data-goal="${g}" class="${g === stats.goal ? 'on' : ''}">${g} 个</button>`).join('')}</div>
+      <h4>各场景进度</h4>
+      <div class="rv-scenes">${scenes.join('')}</div>
+      <h4>备份进度</h4>
+      <p class="rv-note">进度只保存在这台设备的浏览器里。导出成文件后，可以在另一台设备上导入，或者留作备份。</p>
+      <div class="rv-actions"><button class="rv-go ghost" data-export="1">导出进度</button><button class="rv-go ghost" data-import="1">导入进度</button></div>
+      <p class="rv-note" id="rvBackupMsg"></p>`;
+  }
+
+  function exportProgress() {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k.startsWith(PREFIX)) data[k] = localStorage.getItem(k);
+    }
+    const stamp = new Date().toISOString().slice(0, 10);
+    const blob = new Blob([JSON.stringify({ app: 'mini-world-english', exported: new Date().toISOString(), data }, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `mini-world-progress-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    $('rvBackupMsg').textContent = `已导出：mini-world-progress-${stamp}.json（${Object.keys(cards).length} 个已学单词）`;
+  }
+  function importProgress(file) {
+    const say = (t) => ($('rvBackupMsg').textContent = t);
+    const reader = new FileReader();
+    reader.onerror = () => say('读取文件失败。');
+    reader.onload = () => {
+      let obj;
+      try {
+        obj = JSON.parse(reader.result);
+      } catch (e) {
+        return say('这不是有效的进度文件。');
+      }
+      const keys = obj && obj.app === 'mini-world-english' && obj.data ? Object.keys(obj.data).filter((k) => k.startsWith(PREFIX) && typeof obj.data[k] === 'string') : [];
+      if (!keys.length) return say('这不是迷你小世界导出的进度文件。');
+      let n = 0;
+      try {
+        n = Object.keys(JSON.parse(obj.data[KEY] || '{}')).length;
+      } catch (e) {}
+      if (!window.confirm(`导入后会覆盖这台设备上现有的进度。\n文件里有 ${n} 个已学单词，导出时间 ${String(obj.exported || '').slice(0, 10)}。\n确定导入吗？`)) return say('已取消导入。');
+      try {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const k = localStorage.key(i);
+          if (k.startsWith(PREFIX)) localStorage.removeItem(k);
+        }
+        for (const k of keys) localStorage.setItem(k, obj.data[k]);
+      } catch (e) {
+        return say('写入失败，浏览器可能禁用了本地存储。');
+      }
+      location.reload();
+    };
+    reader.readAsText(file);
+  }
+
   function home() {
     session = null;
     paintTabs();
     const n = due().length;
     const all = Object.keys(cards);
+    if (tab === 'stats') {
+      body.innerHTML = statsView();
+      return;
+    }
     if (tab === 'due') {
-      body.innerHTML = all.length
+      body.innerHTML = strip() + (all.length
         ? `<div class="rv-hero"><b>${n}</b><span>${n ? '个单词今天该复习了' : '今天没有需要复习的单词'}</span></div>
            <p class="rv-note">明天 ${dueIn(1)} 个 · 未来一周 ${dueIn(7)} 个。答对的词会隔得越来越久再出现：1、3、7、14、30、60 天。</p>
            <div class="rv-actions">${n ? `<button class="rv-go" data-start="due">开始复习${n > SESSION ? `（先做 ${SESSION} 个）` : ''}</button>` : `<button class="rv-go" data-start="early">提前复习 10 个</button>`}</div>`
-        : '<p class="rv-empty">还没有学过的单词。<br>去任意场景点开单词卡片，它们就会自动进入复习计划。</p>';
+        : '<p class="rv-empty">还没有学过的单词。<br>去任意场景点开单词卡片，它们就会自动进入复习计划。</p>');
     } else if (tab === 'miss') {
       const m = mistakes().sort((a, b) => cards[b].miss - cards[a].miss);
       body.innerHTML = m.length
@@ -172,6 +296,12 @@ export function createReview({ speak, onChange }) {
     else if (t.dataset.start) start(t.dataset.start);
     else if (t.dataset.home) home();
     else if (t.dataset.say) speak(WORD_BY_ID[t.dataset.say].en);
+    else if (t.dataset.goal) {
+      stats.goal = +t.dataset.goal;
+      saveStats();
+      home();
+    } else if (t.dataset.export) exportProgress();
+    else if (t.dataset.import) $('rvFile').click();
   });
   $('rvTabs').addEventListener('click', (e) => {
     const b = e.target.closest('button');
@@ -179,19 +309,34 @@ export function createReview({ speak, onChange }) {
     tab = b.dataset.tab;
     home();
   });
+  $('rvFile').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    e.target.value = '';
+    if (f) importProgress(f);
+  });
   $('rvClose').addEventListener('click', () => api.close());
   panel.addEventListener('click', (e) => e.target === panel && api.close());
 
   const api = {
     /** a word card was opened for the first time: schedule its first review for tomorrow */
-    learn(id) {
+    learn(id, silent = false) {
       if (cards[id]) return;
       cards[id] = { lv: 0, due: today() + 1, miss: 0, run: 0 };
+      if (!silent) {
+        dayOf().n++;
+        saveStats();
+      }
       save();
     },
+    /** seconds of walkman audio listened to */
+    logListen(sec) {
+      dayOf().s += sec;
+      saveStats();
+    },
+    streak,
     /** answered wrong somewhere else in the app (the listen-and-find quiz) */
     miss(id) {
-      grade(id, false);
+      grade(id, false, false);
     },
     dueCount: () => due().length,
     mistakeCount: () => mistakes().length,
