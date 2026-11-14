@@ -4,12 +4,53 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>迷你小世界 · Mini World English</title>
-  <link rel="stylesheet" href="./style.css" />
+  <meta name="description" content="点一点学英语：3D 迷你小世界、手机界面、食物、旅游、餐厅词汇，情景对话和随身听。" />
+  <meta name="theme-color" content="#dff1fb" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="迷你小世界" />
+  <script>
+    // If a newer version has been published, reload once with a fresh address so the
+    // browser cannot mix this (possibly cached) page with newer scripts.
+    window.__APP_VERSION = 'a3ff5b7324';
+    fetch('./version.txt?t=' + Date.now(), { cache: 'no-store' })
+      .then((r) => (r.ok ? r.text() : ''))
+      .then((v) => {
+        v = v.trim();
+        const shown = new URLSearchParams(location.search).get('v');
+        if (v && v !== window.__APP_VERSION && v !== shown) location.replace(location.pathname + '?v=' + v);
+      })
+      .catch(() => {});
+  </script>
+  <link rel="stylesheet" href="./style.css?v=a3ff5b7324" />
   <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        "three": "./vendor/three.module.min.js?v=a3ff5b7324",
+        "three/addons/": "./vendor/addons/",
+        "./src/board-data.js": "./src/board-data.js?v=a3ff5b7324",
+        "./src/board.js": "./src/board.js?v=a3ff5b7324",
+        "./src/climb.js": "./src/climb.js?v=a3ff5b7324",
+        "./src/course.js": "./src/course.js?v=a3ff5b7324",
+        "./src/data.js": "./src/data.js?v=a3ff5b7324",
+        "./src/dialogues.js": "./src/dialogues.js?v=a3ff5b7324",
+        "./src/food-data.js": "./src/food-data.js?v=a3ff5b7324",
+        "./src/gym.js": "./src/gym.js?v=a3ff5b7324",
+        "./src/home.js": "./src/home.js?v=a3ff5b7324",
+        "./src/main.js": "./src/main.js?v=a3ff5b7324",
+        "./src/market.js": "./src/market.js?v=a3ff5b7324",
+        "./src/phone-data.js": "./src/phone-data.js?v=a3ff5b7324",
+        "./src/phone.js": "./src/phone.js?v=a3ff5b7324",
+        "./src/pixel-renderer.js": "./src/pixel-renderer.js?v=a3ff5b7324",
+        "./src/review.js": "./src/review.js?v=a3ff5b7324",
+        "./src/sports-data.js": "./src/sports-data.js?v=a3ff5b7324",
+        "./src/talk.js": "./src/talk.js?v=a3ff5b7324",
+        "./src/tennis.js": "./src/tennis.js?v=a3ff5b7324",
+        "./src/walkman.js": "./src/walkman.js?v=a3ff5b7324",
+        "./src/world.js": "./src/world.js?v=a3ff5b7324"
       }
     }
   </script>
@@ -28,6 +69,7 @@
     <button class="pill scene-btn" id="sceneBtn" aria-label="选择场景"><span id="sceneBtnText">场景</span><i>▾</i></button>
     <div class="hud-right">
       <div class="progress" id="progress" title="已发现的单词"><b id="found">0</b>/<span id="total">0</span><span class="plabel"> 已发现</span></div>
+      <button class="pill" id="rvBtn">复习<i id="rvBadge" hidden>0</i></button>
       <button class="pill" id="quizBtn"><span class="full">听音找物</span><span class="short">测验</span></button>
       <button class="pill" id="talkBtn"><span class="full">情景对话</span><span class="short">对话</span></button>
       <button class="pill" id="wmBtn"><span class="full">🎧 随身听</span><span class="short">🎧</span></button>
@@ -88,6 +130,15 @@
     </div>
   </div>
 
+  <div class="talk" id="review" hidden>
+    <div class="rv-box" role="dialog" aria-label="复习">
+      <header><b>复习</b><span>按遗忘规律安排，答错的进错词本</span>
+        <button class="card-close" id="rvClose" aria-label="关闭"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+      </header>
+      <div class="talk-tools" id="rvTabs"><button data-tab="due" class="on">今日复习 <i id="rvDueN">0</i></button><button data-tab="miss">错词本 <i id="rvMissN">0</i></button><button data-tab="all">已学 <i id="rvAllN">0</i></button></div>
+      <div id="rvBody"></div>
+    </div>
+  </div>
   <div class="talk" id="sceneSheet" hidden>
     <div class="scene-sheet" role="dialog" aria-label="选择场景">
       <header><b>选择场景</b>
@@ -121,6 +172,6 @@
   <div class="wm-pill" id="wmPill" hidden><button id="wmPillPlay" aria-label="播放或暂停">▶</button><button id="wmPillText">随身听</button></div>
   <audio id="wmAudio" preload="none"></audio>
 
-  <script type="module" src="./src/main.js"></script>
+  <script type="module" src="./src/main.js?v=a3ff5b7324"></script>
 </body>
 </html>
