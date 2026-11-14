@@ -15,7 +15,7 @@
   <script>
     // If a newer version has been published, reload once with a fresh address so the
     // browser cannot mix this (possibly cached) page with newer scripts.
-    window.__APP_VERSION = 'a3ff5b7324';
+    window.__APP_VERSION = '8885d62274';
     fetch('./version.txt?t=' + Date.now(), { cache: 'no-store' })
       .then((r) => (r.ok ? r.text() : ''))
       .then((v) => {
@@ -25,32 +25,32 @@
       })
       .catch(() => {});
   </script>
-  <link rel="stylesheet" href="./style.css?v=a3ff5b7324" />
+  <link rel="stylesheet" href="./style.css?v=8885d62274" />
   <script type="importmap">
     {
       "imports": {
-        "three": "./vendor/three.module.min.js?v=a3ff5b7324",
+        "three": "./vendor/three.module.min.js?v=8885d62274",
         "three/addons/": "./vendor/addons/",
-        "./src/board-data.js": "./src/board-data.js?v=a3ff5b7324",
-        "./src/board.js": "./src/board.js?v=a3ff5b7324",
-        "./src/climb.js": "./src/climb.js?v=a3ff5b7324",
-        "./src/course.js": "./src/course.js?v=a3ff5b7324",
-        "./src/data.js": "./src/data.js?v=a3ff5b7324",
-        "./src/dialogues.js": "./src/dialogues.js?v=a3ff5b7324",
-        "./src/food-data.js": "./src/food-data.js?v=a3ff5b7324",
-        "./src/gym.js": "./src/gym.js?v=a3ff5b7324",
-        "./src/home.js": "./src/home.js?v=a3ff5b7324",
-        "./src/main.js": "./src/main.js?v=a3ff5b7324",
-        "./src/market.js": "./src/market.js?v=a3ff5b7324",
-        "./src/phone-data.js": "./src/phone-data.js?v=a3ff5b7324",
-        "./src/phone.js": "./src/phone.js?v=a3ff5b7324",
-        "./src/pixel-renderer.js": "./src/pixel-renderer.js?v=a3ff5b7324",
-        "./src/review.js": "./src/review.js?v=a3ff5b7324",
-        "./src/sports-data.js": "./src/sports-data.js?v=a3ff5b7324",
-        "./src/talk.js": "./src/talk.js?v=a3ff5b7324",
-        "./src/tennis.js": "./src/tennis.js?v=a3ff5b7324",
-        "./src/walkman.js": "./src/walkman.js?v=a3ff5b7324",
-        "./src/world.js": "./src/world.js?v=a3ff5b7324"
+        "./src/board-data.js": "./src/board-data.js?v=8885d62274",
+        "./src/board.js": "./src/board.js?v=8885d62274",
+        "./src/climb.js": "./src/climb.js?v=8885d62274",
+        "./src/course.js": "./src/course.js?v=8885d62274",
+        "./src/data.js": "./src/data.js?v=8885d62274",
+        "./src/dialogues.js": "./src/dialogues.js?v=8885d62274",
+        "./src/food-data.js": "./src/food-data.js?v=8885d62274",
+        "./src/gym.js": "./src/gym.js?v=8885d62274",
+        "./src/home.js": "./src/home.js?v=8885d62274",
+        "./src/main.js": "./src/main.js?v=8885d62274",
+        "./src/market.js": "./src/market.js?v=8885d62274",
+        "./src/phone-data.js": "./src/phone-data.js?v=8885d62274",
+        "./src/phone.js": "./src/phone.js?v=8885d62274",
+        "./src/pixel-renderer.js": "./src/pixel-renderer.js?v=8885d62274",
+        "./src/review.js": "./src/review.js?v=8885d62274",
+        "./src/sports-data.js": "./src/sports-data.js?v=8885d62274",
+        "./src/talk.js": "./src/talk.js?v=8885d62274",
+        "./src/tennis.js": "./src/tennis.js?v=8885d62274",
+        "./src/walkman.js": "./src/walkman.js?v=8885d62274",
+        "./src/world.js": "./src/world.js?v=8885d62274"
       }
     }
   </script>
@@ -100,6 +100,8 @@
       <button class="say" data-say="us"><i>美</i><span id="cUs"></span><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" /></svg></button>
       <button class="say" data-say="uk"><i>英</i><span id="cUk"></span><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" /></svg></button>
       <button class="say slow" data-say="slow">慢速</button>
+      <button class="say slow" data-say="zh">读中文</button>
+      <button class="say slow toggle" id="chainBtn" title="点开单词后自动读：英文、中文、例句、例句中文">连读：关</button>
     </div>
     <div class="card-ex">
       <button class="say ex" data-say="ex"><span id="cEx"></span><svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" /></svg></button>
@@ -135,7 +137,8 @@
       <header><b>复习</b><span>按遗忘规律安排，答错的进错词本</span>
         <button class="card-close" id="rvClose" aria-label="关闭"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
       </header>
-      <div class="talk-tools" id="rvTabs"><button data-tab="due" class="on">今日复习 <i id="rvDueN">0</i></button><button data-tab="miss">错词本 <i id="rvMissN">0</i></button><button data-tab="all">已学 <i id="rvAllN">0</i></button></div>
+      <div class="talk-tools" id="rvTabs"><button data-tab="due" class="on">今日复习 <i id="rvDueN">0</i></button><button data-tab="miss">错词本 <i id="rvMissN">0</i></button><button data-tab="all">已学 <i id="rvAllN">0</i></button><button data-tab="stats">统计</button></div>
+      <input type="file" id="rvFile" accept="application/json,.json" hidden />
       <div id="rvBody"></div>
     </div>
   </div>
@@ -172,6 +175,6 @@
   <div class="wm-pill" id="wmPill" hidden><button id="wmPillPlay" aria-label="播放或暂停">▶</button><button id="wmPillText">随身听</button></div>
   <audio id="wmAudio" preload="none"></audio>
 
-  <script type="module" src="./src/main.js?v=a3ff5b7324"></script>
+  <script type="module" src="./src/main.js?v=8885d62274"></script>
 </body>
 </html>

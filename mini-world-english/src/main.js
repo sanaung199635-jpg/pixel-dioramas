@@ -185,7 +185,7 @@ if (synth) {
 function voiceFor(lang) {
   const norm = (s) => s.replace('_', '-').toLowerCase();
   const exact = voices.filter((v) => norm(v.lang) === lang.toLowerCase());
-  return exact.find((v) => /natural|google|samantha|daniel/i.test(v.name)) || exact[0] || voices.find((v) => norm(v.lang).startsWith('en')) || null;
+  return exact.find((v) => /natural|google|samantha|daniel/i.test(v.name)) || exact[0] || voices.find((v) => norm(v.lang).startsWith(lang.slice(0, 2).toLowerCase())) || null;
 }
 /** two different English voices for the two speakers of a dialogue */
 let walkman = null; // created below; pauses itself while a word is spoken
@@ -196,7 +196,9 @@ function pairVoices() {
   const list = us.length >= 2 ? us : en;
   return [list[0] || null, list[1] || list[0] || null];
 }
-function speak(text, { lang = 'en-US', rate = 0.9, button = null, voiceIndex = null, onend = null } = {}) {
+let chainId = 0; // any new speech cancels a read-through that is still running
+function speak(text, { lang = 'en-US', rate = 0.9, button = null, voiceIndex = null, onend = null, chained = false } = {}) {
+  if (!chained) chainId++;
   if (!synth) return void onend?.();
   walkman?.pauseForSpeech();
   synth.cancel();
@@ -215,6 +217,34 @@ function speak(text, { lang = 'en-US', rate = 0.9, button = null, voiceIndex = n
   };
   synth.speak(u);
 }
+
+/** speak several parts one after another, e.g. word -> Chinese -> example -> its translation */
+function speakChain(parts) {
+  const my = ++chainId;
+  let i = 0;
+  const next = () => {
+    if (my !== chainId || i >= parts.length) return;
+    const p = parts[i++];
+    speak(p.text, { lang: p.lang, rate: p.rate, chained: true, onend: () => setTimeout(next, 280) });
+  };
+  next();
+}
+const zhSay = (s) => s.replace(/（[^）]*）/g, '').split('；').join('，');
+const PREFS_KEY = 'mini-world-english:prefs';
+let prefs = { chain: false };
+try {
+  prefs = { ...prefs, ...JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') };
+} catch (e) {}
+function paintChain() {
+  $('chainBtn').textContent = prefs.chain ? '连读：开' : '连读：关';
+  $('chainBtn').classList.toggle('on', prefs.chain);
+}
+const readThrough = (w) => [
+  { text: w.en, lang: 'en-US', rate: 0.9 },
+  { text: zhSay(w.zh), lang: 'zh-CN', rate: 1 },
+  { text: w.ex, lang: 'en-US', rate: 0.85 },
+  { text: w.exZh, lang: 'zh-CN', rate: 1 },
+];
 
 // ---------------------------------------------------------------- progress + word list
 const STORE = 'mini-world-english:found';
@@ -441,7 +471,7 @@ function openCard(word, say) {
   chips[word.id].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
   markFound(word.id);
   $('hint').classList.add('gone');
-  if (say) speak(word.en);
+  if (say) prefs.chain ? speakChain(readThrough(word)) : speak(word.en);
 }
 function deselect() {
   current = null;
@@ -451,7 +481,18 @@ function deselect() {
   for (const id in chips) chips[id].classList.remove('active');
 }
 $('cardClose').addEventListener('click', deselect);
+paintChain();
 card.addEventListener('click', (e) => {
+  if (e.target.closest('#chainBtn')) {
+    prefs.chain = !prefs.chain;
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    } catch (err) {}
+    paintChain();
+    if (prefs.chain && current) speakChain(readThrough(current.word));
+    else synth?.cancel();
+    return;
+  }
   const b = e.target.closest('[data-say]');
   if (!b || !current) return;
   const w = current.word;
@@ -459,6 +500,7 @@ card.addEventListener('click', (e) => {
   if (kind === 'us') speak(w.en, { lang: 'en-US', button: b });
   else if (kind === 'uk') speak(w.en, { lang: 'en-GB', button: b });
   else if (kind === 'slow') speak(w.en, { rate: 0.45, button: b });
+  else if (kind === 'zh') speak(zhSay(w.zh), { lang: 'zh-CN', rate: 1, button: b });
   else speak(w.ex, { rate: 0.85, button: b });
 });
 
@@ -571,7 +613,7 @@ canvas.addEventListener('pointermove', (e) => {
   canvas.style.cursor = pick(e) ? 'pointer' : 'grab';
 });
 // ---------------------------------------------------------------- dialogues
-walkman = createWalkman({ beforePlay: () => synth?.cancel() });
+walkman = createWalkman({ beforePlay: () => synth?.cancel(), onListen: (sec) => review?.logListen(sec) });
 // ---------------------------------------------------------------- review
 function paintReviewBadge() {
   const n = review.dueCount();
@@ -579,7 +621,7 @@ function paintReviewBadge() {
   $('rvBadge').hidden = !n;
 }
 review = createReview({ speak: (text) => speak(text), onChange: paintReviewBadge });
-for (const id of found) review.learn(id); // words opened before the review feature existed
+for (const id of found) review.learn(id, true); // words opened before the review feature existed (not counted as today's)
 paintReviewBadge();
 $('rvBtn').addEventListener('click', () => {
   if (quiz.on) setQuiz(false);

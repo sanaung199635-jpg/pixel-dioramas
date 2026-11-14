@@ -29,7 +29,7 @@ function scriptOf(id) {
   return [];
 }
 
-export function createWalkman({ beforePlay }) {
+export function createWalkman({ beforePlay, onListen }) {
   const panel = $('walkman');
   const audio = $('wmAudio');
   const pill = $('wmPill');
@@ -178,6 +178,7 @@ export function createWalkman({ beforePlay }) {
     if (Date.now() - lastSave > 5000) {
       lastSave = Date.now();
       save();
+      if (!audio.paused) onListen?.(5); // listening time for the daily stats
     }
   });
   seek.addEventListener('input', () => (audio.currentTime = +seek.value));
